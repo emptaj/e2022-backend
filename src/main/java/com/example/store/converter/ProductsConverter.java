@@ -17,15 +17,13 @@ public class ProductsConverter {
     
     
     public ProductEntity create(ProductModel model) {
-        WarehouseEntity warehouse = warehouseService.findWarehouseById(model.getWarehouseId());
-        return ProductEntity.builder()
-                .name(model.getName())
-                .description(model.getDescription())
-                .warehouse(warehouse)
-                .price(model.getPrice())
+        ProductEntity entity = ProductEntity.builder()
                 .unitsInStock(0)
                 .unitsInOrder(0)
                 .build();
+        
+        update(entity, model);
+        return entity;        
     }
 
     public ProductModel toModel(ProductEntity entity) {
@@ -36,5 +34,13 @@ public class ProductsConverter {
                 .warehouseId(entity.getWarehouse().getId())
                 .price(entity.getPrice())
                 .build();
+    }
+
+    public void update(ProductEntity entity, ProductModel model) {
+        WarehouseEntity warehouse = warehouseService.findWarehouseById(model.getWarehouseId());
+        entity.setName(model.getName());
+        entity.setDescription(model.getDescription());
+        entity.setWarehouse(warehouse);
+        entity.setPrice(model.getPrice());
     }
 }

@@ -60,4 +60,12 @@ public class ProductsService {
         if (product.getPrice() < 0.0f)
             throw new ValidationException("Product price cannot be negative");
     }
+
+
+    public ProductModel updateProduct(Long productId, ProductModel product) {
+        ProductEntity entity = findProductById(productId);
+        validateInput(product);
+        converter.update(entity, product);
+        return converter.toModel(entity);
+    }
 }
