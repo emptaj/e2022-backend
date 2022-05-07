@@ -34,7 +34,12 @@ public class ProductsService {
                 .map(converter::toModel)
                 .collect(Collectors.toList());
     }
-    
+
+    public ProductModel getProduct(Long id) {
+        ProductEntity entity = findProductById(id);
+        return converter.toModel(entity);
+    }
+
 
     public ProductModel createProduct(ProductModel product) {
         validateInput(product);
