@@ -1,11 +1,8 @@
 package com.example.store.entity;
 
-import java.sql.Date;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -14,20 +11,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "Warehouses")
+@Table(name = "DeliveryTypes")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Warehouse {
+public class DeliveryTypeEntity {
     @Id
     @GeneratedValue
     private Long id;
-    private Date creationDate;
-    
-    @OneToOne
-    private Address address;
-
-    private Boolean active;
-    private Date modificationDate;
+    private String name;
+    private String email;
+    private String telephone;
 }

@@ -1,5 +1,7 @@
 package com.example.store.entity;
 
+import java.sql.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
@@ -7,7 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import com.example.store.entity.enums.UserRole;
+import com.example.store.entity.enums.OrderState;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,22 +17,34 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name="WarehouseUsers")
+@Table(name = "Orders")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WarehouseUser {
+public class OrderEntity {
     @Id
     @GeneratedValue
     private Long id;
 
     @Enumerated
-    private UserRole role;
+    private OrderState state;
+    
+    @OneToOne
+    private UserEntity buyer;
+    private Date orderDate;
+    
+    @OneToOne
+    private WarehouseUserEntity modificationOperator;
+    private Date modificationDate;
 
     @OneToOne
-    private User user;
+    private WarehouseEntity warehouse;
 
     @OneToOne
-    private Warehouse warehouse;
+    private AddressEntity address;
+    private String telephone;
+
+    @OneToOne
+    private DeliveryTypeEntity deliveryType;
 }

@@ -3,7 +3,7 @@ package com.example.store.entity;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -12,24 +12,22 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "Products")
+@Table(name="OrderDetails")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product {
+public class OrderDetailsEntity {
     @Id
     @GeneratedValue
     private Long id;
+    
+    @ManyToOne
+    private ProductEntity product;
 
-    private String name;
-    private String description;
+    @ManyToOne
+    private OrderEntity order;
 
-    @OneToOne
-    private Warehouse warehouse;
-
-    private Float price;
-    private Integer unitsInStock;
-    private Integer unitsInOrder;
-
+    private Integer quantity;
+    private Float unitPrice;
 }

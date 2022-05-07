@@ -14,20 +14,20 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "Users")
+@Table(name = "Warehouses")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class WarehouseEntity {
     @Id
     @GeneratedValue
     private Long id;
-    private String username;
-    private String password;
-    private String email;
     private Date creationDate;
-
+    
     @OneToOne
-    private Address address;
+    private AddressEntity address;
+
+    private Boolean active;
+    private Date modificationDate;
 }

@@ -11,16 +11,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "DeliveryTypes")
+@Table(name = "Addresses")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeliveryType {
+public class AddressEntity {
     @Id
     @GeneratedValue
     private Long id;
-    private String name;
-    private String email;
-    private String telephone;
+    private String country;
+    private String city;
+    private String postalCode;
+    private String street;
+    private String houseNum;
+    private String flatNum;
 }

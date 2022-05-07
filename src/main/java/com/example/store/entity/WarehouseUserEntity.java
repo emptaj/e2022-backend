@@ -1,10 +1,13 @@
 package com.example.store.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import com.example.store.entity.enums.UserRole;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,22 +15,22 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name="OrderDetails")
+@Table(name="WarehouseUsers")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderDetails {
+public class WarehouseUserEntity {
     @Id
     @GeneratedValue
     private Long id;
-    
-    @ManyToOne
-    private Product product;
 
-    @ManyToOne
-    private Order order;
+    @Enumerated
+    private UserRole role;
 
-    private Integer quantity;
-    private Float unitPrice;
+    @OneToOne
+    private UserEntity user;
+
+    @OneToOne
+    private WarehouseEntity warehouse;
 }
