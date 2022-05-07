@@ -1,10 +1,11 @@
 package com.example.store.exception;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
-public class ValidationException extends HttpStatusCodeException {
+@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+public class ValidationException extends RuntimeException {
     public ValidationException(String message) {
-        super(HttpStatus.BAD_REQUEST, message);
+        super(message);
     }
 }
