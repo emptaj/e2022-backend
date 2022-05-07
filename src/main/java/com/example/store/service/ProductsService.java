@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import com.example.store.converter.ProductsConverter;
 import com.example.store.entity.ProductEntity;
+import com.example.store.exception.NotFoundException;
 import com.example.store.exception.ValidationException;
 import com.example.store.model.ProductModel;
 import com.example.store.repository.ProductRepository;
@@ -20,6 +21,12 @@ public class ProductsService {
 
     private final ProductRepository repository;
     private final ProductsConverter converter;
+
+
+    public ProductEntity findProductById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new NotFoundException(ProductEntity.class, id));
+    }
 
 
     public List<ProductModel> getProducts() {
