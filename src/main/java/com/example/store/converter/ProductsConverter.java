@@ -18,6 +18,7 @@ public class ProductsConverter {
     
     public ProductEntity create(ProductModel model) {
         ProductEntity entity = ProductEntity.builder()
+                .active(true)
                 .unitsInStock(0)
                 .unitsInOrder(0)
                 .build();

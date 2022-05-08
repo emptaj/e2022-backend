@@ -68,4 +68,11 @@ public class ProductsService {
         converter.update(entity, product);
         return converter.toModel(entity);
     }
+
+
+    public void deleteProduct(Long productId) {
+        ProductEntity entity = findProductById(productId);
+        entity.setActive(false);
+        repository.save(entity);
+    }
 }
