@@ -21,6 +21,7 @@ public class ProductEntity {
     @Id
     @GeneratedValue
     private Long id;
+    private Boolean active;
 
     private String name;
     private String description;
