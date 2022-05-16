@@ -10,12 +10,12 @@ import com.example.store.exception.ValidationException;
 import com.example.store.model.ProductModel;
 import com.example.store.repository.ProductRepository;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import lombok.RequiredArgsConstructor;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class ProductsService {
 
