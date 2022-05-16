@@ -4,13 +4,13 @@ import com.example.store.converter.AddressMapper;
 import com.example.store.entity.AddressEntity;
 import com.example.store.exception.NotFoundException;
 import com.example.store.model.address.AddressDTO;
+import com.example.store.model.address.UpdateAddressDTO;
 import com.example.store.repository.AddressRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -42,5 +42,21 @@ public class AddressService {
         AddressEntity addressEntity = addressRepository.findById(addressId).
                 orElseThrow(() -> new NotFoundException(AddressEntity.class, addressId));
         addressRepository.delete(addressEntity);
+    }
+
+    @Transactional
+    public AddressDTO updateAddress(Long addressId, UpdateAddressDTO updateAddressDTO) {
+        AddressEntity addressEntity = addressRepository.findById(addressId).
+                orElseThrow(() -> new NotFoundException(AddressEntity.class, addressId));
+
+        addressEntity.setCity(updateAddressDTO.getCity());
+        addressEntity.setCountry(updateAddressDTO.getCountry());
+        addressEntity.setFlatNum(updateAddressDTO.getFlatNum());
+        addressEntity.setHouseNum(updateAddressDTO.getHouseNum());
+        addressEntity.setPostalCode(updateAddressDTO.getPostalCode());
+        addressEntity.setStreet(updateAddressDTO.getPostalCode());
+
+        return addressMapper.toDTO(addressEntity);
+
     }
 }

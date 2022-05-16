@@ -1,6 +1,7 @@
 package com.example.store.controller;
 
 import com.example.store.model.address.AddressDTO;
+import com.example.store.model.address.UpdateAddressDTO;
 import com.example.store.service.AddressService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -35,6 +36,12 @@ public class AddressController {
     @DeleteMapping("/{addressId}")
     public void deleteAddress(@PathVariable Long addressId) {
         addressService.deleteAddress(addressId);
+    }
+
+    @PutMapping("/{addressId}")
+    public AddressDTO updateAddress(@PathVariable Long addressId,
+                                    @RequestBody UpdateAddressDTO updateAddressDTO) {
+        return addressService.updateAddress(addressId, updateAddressDTO);
     }
 
 }
