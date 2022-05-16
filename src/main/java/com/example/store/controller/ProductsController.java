@@ -28,7 +28,7 @@ public class ProductsController {
 
     private final ProductsService service;
 
-    
+
     @GetMapping("")
     List<ProductModel> getProducts() {
         return service.getProducts();
@@ -51,8 +51,9 @@ public class ProductsController {
     }
 
     @PutMapping("/{productId}")
-    ProductModel updateProduct(@PathVariable Long productId, 
+    ProductModel updateProduct(@PathVariable Long productId,
                                @RequestBody ProductModel product) {
         return service.updateProduct(productId, product);
     }
+
 }

@@ -32,5 +32,9 @@ public class AddressController {
         return addressService.createAddress(addressDTO);
     }
 
+    @DeleteMapping("/{addressId}")
+    public void deleteAddress(@PathVariable Long addressId) {
+        addressService.deleteAddress(addressId);
+    }
 
 }

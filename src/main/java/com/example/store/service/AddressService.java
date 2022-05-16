@@ -8,7 +8,9 @@ import com.example.store.repository.AddressRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -33,5 +35,12 @@ public class AddressService {
     public AddressDTO createAddress(AddressDTO addressDTO) {
         AddressEntity saved = addressRepository.save(addressMapper.toEntity(addressDTO));
         return addressMapper.toDTO(saved);
+    }
+
+    @Transactional
+    public void deleteAddress(Long addressId) {
+        AddressEntity addressEntity = addressRepository.findById(addressId).
+                orElseThrow(() -> new NotFoundException(AddressEntity.class, addressId));
+        addressRepository.delete(addressEntity);
     }
 }
