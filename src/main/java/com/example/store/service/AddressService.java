@@ -24,5 +24,9 @@ public class AddressService {
                 .collect(Collectors.toList());
     }
 
- 
+    public AddressDTO getSingleAddress(Long addressId) {
+        AddressEntity addressEntity = addressRepository.findById(addressId).
+                orElseThrow(() -> new NotFoundException(AddressEntity.class, addressId));
+        return addressMapper.toDTO(addressEntity);
+    }
 }
