@@ -21,7 +21,7 @@ public class AddressController {
         return addressService.getAddresses();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{addressId}")
     public AddressDTO getSingleAddress(@PathVariable Long addressId) {
         return addressService.getSingleAddress(addressId);
     }
