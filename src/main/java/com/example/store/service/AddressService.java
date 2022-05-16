@@ -7,6 +7,7 @@ import com.example.store.model.address.AddressDTO;
 import com.example.store.model.address.UpdateAddressDTO;
 import com.example.store.repository.AddressRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -20,9 +21,10 @@ public class AddressService {
     private final AddressRepository addressRepository;
     private final AddressMapper addressMapper = AddressMapper.INSTANCE;
 
-    public List<AddressDTO> getAddresses() {
-        return addressRepository.findAll().stream()
-                .map(entity -> addressMapper.toDTO(entity))
+    public List<AddressDTO> getAddresses(int pageNum, int pageSize) {
+        return addressRepository.findAll(PageRequest.of(pageNum, pageSize)).
+                stream()
+                .map(addressMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
