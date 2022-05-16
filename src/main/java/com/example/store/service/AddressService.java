@@ -49,13 +49,7 @@ public class AddressService {
         AddressEntity addressEntity = addressRepository.findById(addressId).
                 orElseThrow(() -> new NotFoundException(AddressEntity.class, addressId));
 
-        addressEntity.setCity(updateAddressDTO.getCity());
-        addressEntity.setCountry(updateAddressDTO.getCountry());
-        addressEntity.setFlatNum(updateAddressDTO.getFlatNum());
-        addressEntity.setHouseNum(updateAddressDTO.getHouseNum());
-        addressEntity.setPostalCode(updateAddressDTO.getPostalCode());
-        addressEntity.setStreet(updateAddressDTO.getPostalCode());
-
+        addressEntity = addressMapper.toEntity(updateAddressDTO, addressEntity);
         return addressMapper.toDTO(addressEntity);
 
     }
