@@ -29,4 +29,9 @@ public class AddressService {
                 orElseThrow(() -> new NotFoundException(AddressEntity.class, addressId));
         return addressMapper.toDTO(addressEntity);
     }
+
+    public AddressDTO createAddress(AddressDTO addressDTO) {
+        AddressEntity saved = addressRepository.save(addressMapper.toEntity(addressDTO));
+        return addressMapper.toDTO(saved);
+    }
 }

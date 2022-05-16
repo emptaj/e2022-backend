@@ -26,5 +26,11 @@ public class AddressController {
         return addressService.getSingleAddress(addressId);
     }
 
+    @PostMapping("/")
+    @ResponseStatus(HttpStatus.CREATED)
+    public AddressDTO createAddress(@RequestBody AddressDTO addressDTO) {
+        return addressService.createAddress(addressDTO);
+    }
+
 
 }
