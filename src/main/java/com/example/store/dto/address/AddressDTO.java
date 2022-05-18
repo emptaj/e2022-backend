@@ -1,13 +1,15 @@
-package com.example.store.model.address;
+package com.example.store.dto.address;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.lang.Nullable;
 
-@Data
 @Builder
-public class UpdateAddressDTO {
+@Data
+public class AddressDTO {
+    private Long id;
     private String country;
     private String city;
     private String postalCode;

@@ -1,8 +1,9 @@
 package com.example.store.mapper;
 
+import com.example.store.dto.address.AddressDTO;
+import com.example.store.dto.address.UpdateAddressDTO;
 import com.example.store.entity.AddressEntity;
-import com.example.store.model.address.AddressDTO;
-import com.example.store.model.address.UpdateAddressDTO;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;

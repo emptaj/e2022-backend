@@ -1,7 +1,7 @@
 package com.example.store.controller;
 
-import com.example.store.model.address.AddressDTO;
-import com.example.store.model.address.UpdateAddressDTO;
+import com.example.store.dto.address.AddressDTO;
+import com.example.store.dto.address.UpdateAddressDTO;
 import com.example.store.service.AddressService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;

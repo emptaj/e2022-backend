@@ -1,10 +1,10 @@
 package com.example.store.service;
 
+import com.example.store.dto.address.AddressDTO;
+import com.example.store.dto.address.UpdateAddressDTO;
 import com.example.store.entity.AddressEntity;
 import com.example.store.exception.NotFoundException;
 import com.example.store.mapper.AddressMapper;
-import com.example.store.model.address.AddressDTO;
-import com.example.store.model.address.UpdateAddressDTO;
 import com.example.store.repository.AddressRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;

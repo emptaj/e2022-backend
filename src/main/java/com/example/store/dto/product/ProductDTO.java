@@ -1,4 +1,4 @@
-package com.example.store.model;
+package com.example.store.dto.product;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,10 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductModel {
+public class ProductDTO {
     private Long id;
     private String name;
     private String description;
-    private Long warehouseId;
     private Float price;
 }
