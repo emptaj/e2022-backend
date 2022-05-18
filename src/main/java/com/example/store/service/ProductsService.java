@@ -3,24 +3,28 @@ package com.example.store.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.example.store.converter.ProductsConverter;
+import com.example.store.dto.product.ProductDTO;
+import com.example.store.dto.product.UpdateProductDTO;
 import com.example.store.entity.ProductEntity;
+import com.example.store.entity.WarehouseEntity;
 import com.example.store.exception.NotFoundException;
 import com.example.store.exception.ValidationException;
-import com.example.store.model.ProductModel;
+import com.example.store.mapper.ProductMapper;
 import com.example.store.repository.ProductRepository;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import lombok.RequiredArgsConstructor;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class ProductsService {
 
     private final ProductRepository repository;
-    private final ProductsConverter converter;
+    private final ProductMapper mapper = ProductMapper.INSTANCE;
+
+    private final WarehouseService warehouseService;
 
 
     public ProductEntity findProductById(Long id) {
@@ -29,32 +33,32 @@ public class ProductsService {
     }
 
 
-    public List<ProductModel> getProducts() {
+    public List<ProductDTO> getProducts() {
         return repository.findAll().stream()
-                .map(converter::toModel)
+                .map(mapper::toDTO)
                 .collect(Collectors.toList());
     }
 
-    public ProductModel getProduct(Long id) {
+    public ProductDTO getProduct(Long id) {
         ProductEntity entity = findProductById(id);
-        return converter.toModel(entity);
+        return mapper.toDTO(entity);
     }
 
 
-    public ProductModel createProduct(ProductModel product) {
+    public ProductDTO createProduct(Long warehouseId, UpdateProductDTO product) {
         validateInput(product);
-        ProductEntity entity = converter.create(product);
+        WarehouseEntity warehouse = warehouseService.findWarehouseById(warehouseId);
+
+        ProductEntity entity = mapper.createEntity(product, warehouse);
         entity = repository.save(entity);
-        return converter.toModel(entity);
+        return mapper.toDTO(entity);
     }
 
-    private void validateInput(ProductModel product) {
+    private void validateInput(UpdateProductDTO product) {
         if (!StringUtils.hasText(product.getName()))
             throw new ValidationException("Product name cannot be empty");
         if (!StringUtils.hasText(product.getDescription()))
             throw new ValidationException("Product description cannot be empty");
-        if (product.getWarehouseId() == null)
-            throw new ValidationException("Product warehouse cannot be empty");
         if (product.getPrice() == null)
             throw new ValidationException("Product price cannot be empty");
         if (product.getPrice() < 0.0f)
@@ -62,11 +66,11 @@ public class ProductsService {
     }
 
 
-    public ProductModel updateProduct(Long productId, ProductModel product) {
+    public ProductDTO updateProduct(Long productId, UpdateProductDTO product) {
         ProductEntity entity = findProductById(productId);
         validateInput(product);
-        converter.update(entity, product);
-        return converter.toModel(entity);
+        entity = mapper.updateEntity(product, entity);
+        return mapper.toDTO(entity);
     }
 
 

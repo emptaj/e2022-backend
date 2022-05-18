@@ -4,7 +4,8 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import com.example.store.model.ProductModel;
+import com.example.store.dto.product.ProductDTO;
+import com.example.store.dto.product.UpdateProductDTO;
 import com.example.store.service.ProductsService;
 
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping(path = "/products")
+@RequestMapping(path = "/api")
 @Transactional
 @RequiredArgsConstructor
 public class ProductsController {
@@ -29,30 +30,31 @@ public class ProductsController {
     private final ProductsService service;
 
 
-    @GetMapping("")
-    List<ProductModel> getProducts() {
+    @GetMapping("/products")
+    List<ProductDTO> getProducts() {
         return service.getProducts();
     }
 
-    @GetMapping("/{productId}")
-    ProductModel getProduct(@PathVariable Long productId) {
+    @GetMapping("/products/{productId}")
+    ProductDTO getProduct(@PathVariable Long productId) {
         return service.getProduct(productId);
     }
 
-    @DeleteMapping("/{productId}")
+    @DeleteMapping("/products/{productId}")
     void deleteProduct(@PathVariable Long productId) {
         service.deleteProduct(productId);
     }
 
-    @PostMapping("")
+    @PostMapping("/warehouses/{warehouseId}/products")
     @ResponseStatus(value = HttpStatus.CREATED)
-    ProductModel createProduct(@RequestBody ProductModel product) {
-        return service.createProduct(product);
+    ProductDTO createProduct(@PathVariable Long warehouseId,
+                             @RequestBody UpdateProductDTO product) {
+        return service.createProduct(warehouseId, product);
     }
 
-    @PutMapping("/{productId}")
-    ProductModel updateProduct(@PathVariable Long productId,
-                               @RequestBody ProductModel product) {
+    @PutMapping("/products/{productId}")
+    ProductDTO updateProduct(@PathVariable Long productId,
+                             @RequestBody UpdateProductDTO product) {
         return service.updateProduct(productId, product);
     }
 
