@@ -12,6 +12,7 @@ import com.example.store.exception.ValidationException;
 import com.example.store.mapper.ProductMapper;
 import com.example.store.repository.ProductRepository;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -33,8 +34,8 @@ public class ProductsService {
     }
 
 
-    public List<ProductDTO> getProducts() {
-        return repository.findAll().stream()
+    public List<ProductDTO> getProducts(int page, int size) {
+        return repository.findAllByActive(true, PageRequest.of(page, size)).stream()
                 .map(mapper::toDTO)
                 .collect(Collectors.toList());
     }
