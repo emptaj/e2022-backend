@@ -3,10 +3,10 @@ package com.example.store.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.example.store.converter.ProductsConverter;
 import com.example.store.entity.ProductEntity;
 import com.example.store.exception.NotFoundException;
 import com.example.store.exception.ValidationException;
+import com.example.store.mapper.ProductsConverter;
 import com.example.store.model.ProductModel;
 import com.example.store.repository.ProductRepository;
 

@@ -1,4 +1,4 @@
-package com.example.store.converter;
+package com.example.store.mapper;
 
 import com.example.store.entity.ProductEntity;
 import com.example.store.entity.WarehouseEntity;
