@@ -15,6 +15,7 @@ public interface ProductMapper {
     ProductMapper INSTANCE = Mappers.getMapper(ProductMapper.class);
 
     @Mapping(target = "warehouse", expression = "java(warehouse)")
+    @Mapping(target = "id", ignore = true)
     ProductEntity createEntity(UpdateProductDTO dto, WarehouseEntity warehouse);
 
     ProductEntity updateEntity(UpdateProductDTO dto, @MappingTarget ProductEntity productEntity);
