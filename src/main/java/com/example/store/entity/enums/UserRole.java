@@ -1,6 +1,8 @@
 package com.example.store.entity.enums;
 
+import org.springframework.context.annotation.Bean;
+
 public enum UserRole {
-    ADMINISTRATOR,
-    CLIENT
+    CLIENT,
+    ADMINISTRATOR
 }

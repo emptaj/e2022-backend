@@ -1,6 +1,7 @@
 package com.example.store.controller;
 
 import com.example.store.dto.user.CreateUserDTO;
+import com.example.store.entity.UserEntity;
 import com.example.store.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +16,8 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/")
-    private void registerUser(@RequestBody CreateUserDTO createUserDTO) {
+    private UserEntity registerUser(@RequestBody CreateUserDTO createUserDTO) {
+        return userService.registerUser(createUserDTO);
+
     }
 }
