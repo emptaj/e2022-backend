@@ -24,12 +24,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/**")
-                .permitAll()
-                .anyRequest()
+                .antMatchers("/api/*/**")
                 .authenticated()
+                .anyRequest()
+                .permitAll()
                 .and()
-                .formLogin();
+                .formLogin()
+                .and()
+                .logout();
     }
 
     @Override
@@ -37,7 +39,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         auth.authenticationProvider(daoAuthenticationProvider());
     }
 
-    @Bean
     DaoAuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
 

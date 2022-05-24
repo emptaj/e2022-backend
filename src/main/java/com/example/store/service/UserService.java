@@ -48,6 +48,9 @@ public class UserService implements UserDetailsService {
                 UserEntity userEntity = userMapper.toEntity(createUserDTO);
                 userEntity.setUserRole(UserRole.CLIENT);
                 userRepository.save(userEntity);
+
+                //RegistrationToken
+                
                 return userEntity;
             }
         }
