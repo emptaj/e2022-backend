@@ -3,6 +3,7 @@ package com.example.store.service;
 import com.example.store.dto.user.CreateUserDTO;
 import com.example.store.entity.UserEntity;
 import com.example.store.entity.enums.UserRole;
+import com.example.store.exception.ValidationException;
 import com.example.store.mapper.UserMapper;
 import com.example.store.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -34,15 +35,21 @@ public class UserService implements UserDetailsService {
         Optional<UserEntity> byUsername = userRepository.findByUsername(createUserDTO.getUsername());
 
         if (byUsername.isPresent())
-            throw new RuntimeException(String.format("User with username  %s already exists!", createUserDTO.getUsername()));
+            throw new ValidationException(String.format("User with username %s already exists!", createUserDTO.getUsername()));
 
         else {
-            String encoded = bCryptPasswordEncoder.encode(createUserDTO.getPassword());
-            createUserDTO.setPassword(encoded);
-            UserEntity userEntity = userMapper.toEntity(createUserDTO);
-            userEntity.setUserRole(UserRole.CLIENT);
-            userRepository.save(userEntity);
-            return userEntity;
+            Optional<UserEntity> byEmail = userRepository.findByEmail(createUserDTO.getEmail());
+
+            if (byEmail.isPresent())
+                throw new ValidationException(String.format("User with email %s already exists!", createUserDTO.getEmail()));
+            else {
+                String encoded = bCryptPasswordEncoder.encode(createUserDTO.getPassword());
+                createUserDTO.setPassword(encoded);
+                UserEntity userEntity = userMapper.toEntity(createUserDTO);
+                userEntity.setUserRole(UserRole.CLIENT);
+                userRepository.save(userEntity);
+                return userEntity;
+            }
         }
 
     }
