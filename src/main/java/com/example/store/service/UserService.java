@@ -9,13 +9,13 @@ import com.example.store.mapper.UserMapper;
 import com.example.store.repository.RegistrationTokenRepository;
 import com.example.store.repository.UserRepository;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -37,7 +37,7 @@ public class UserService implements UserDetailsService {
                 );
     }
 
-    public UserEntity registerUser(CreateUserDTO createUserDTO) {
+    public String registerUser(CreateUserDTO createUserDTO) {
         Optional<UserEntity> byUsername = userRepository.findByUsername(createUserDTO.getUsername());
 
         if (byUsername.isPresent())
@@ -62,18 +62,37 @@ public class UserService implements UserDetailsService {
                 LocalDateTime creationAt = LocalDateTime.now();
                 LocalDateTime expiresAt = creationAt.plusMinutes(20);
 
-                RegistrationTokenEntity registrationTokenEntity = new RegistrationTokenEntity(null,
+                RegistrationTokenEntity registrationTokenEntity = new RegistrationTokenEntity(
                         token,
                         creationAt,
                         expiresAt,
                         userEntity);
 
                 registrationTokenRepository.save(registrationTokenEntity);
-                return userEntity;
+                return String.format("http://localhost:8080/api/users/activate/?activateToken=%s/", token);
             }
         }
 
     }
 
+    @Transactional
+    public String activateUser(String activateToken) {
+        RegistrationTokenEntity registrationTokenEntity = registrationTokenRepository.findByToken(activateToken).orElseThrow(
+                () -> new ValidationException("Token does not exists!")
+        );
 
+        if (registrationTokenEntity.getConfirmedAt() != null)
+            throw new ValidationException("Account has been already activated!");
+
+        LocalDateTime now = LocalDateTime.now();
+
+        if (registrationTokenEntity.getExpiresAt().isBefore(now))
+            throw new ValidationException("Token expired!");
+
+        UserEntity user = registrationTokenEntity.getUser();
+        user.setEnabled(true);
+        registrationTokenEntity.setConfirmedAt(now);
+
+        return "Account has been activated!";
+    }
 }
