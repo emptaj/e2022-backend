@@ -2,6 +2,7 @@ package com.example.store.entity;
 
 import java.sql.Date;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.*;
@@ -13,6 +14,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
@@ -29,12 +31,12 @@ public class UserEntity implements UserDetails {
     private String password;
     private String email;
     private Boolean locked;
-    private Boolean activated;
-    
+    private Boolean enabled;
+
     @CreationTimestamp
     private Date creationDate;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
     @OneToOne
@@ -42,26 +44,37 @@ public class UserEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(userRole.name());
+        return Collections.singletonList(authority);
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return !locked;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return enabled;
     }
 }
