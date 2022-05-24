@@ -15,7 +15,6 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/")
-    private String registerUser(@RequestBody CreateUserDTO createUserDTO) {
-        
+    private void registerUser(@RequestBody CreateUserDTO createUserDTO) {
     }
 }
