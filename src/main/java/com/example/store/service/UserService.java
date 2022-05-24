@@ -44,34 +44,31 @@ public class UserService implements UserDetailsService {
             throw new ValidationException(String.format("User with username %s already exists!",
                     createUserDTO.getUsername()));
 
-        else {
-            Optional<UserEntity> byEmail = userRepository.findByEmail(createUserDTO.getEmail());
+        Optional<UserEntity> byEmail = userRepository.findByEmail(createUserDTO.getEmail());
 
-            if (byEmail.isPresent())
-                throw new ValidationException(String.format("User with email %s already exists!",
-                        createUserDTO.getEmail()));
-            else {
-                String encoded = bCryptPasswordEncoder.encode(createUserDTO.getPassword());
-                createUserDTO.setPassword(encoded);
-                UserEntity userEntity = userMapper.toEntity(createUserDTO);
-                userEntity.setUserRole(UserRole.CLIENT);
-                userRepository.save(userEntity);
+        if (byEmail.isPresent())
+            throw new ValidationException(String.format("User with email %s already exists!",
+                    createUserDTO.getEmail()));
 
-                //RegistrationToken
-                String token = String.valueOf(UUID.randomUUID());
-                LocalDateTime creationAt = LocalDateTime.now();
-                LocalDateTime expiresAt = creationAt.plusMinutes(20);
+        String encoded = bCryptPasswordEncoder.encode(createUserDTO.getPassword());
+        createUserDTO.setPassword(encoded);
+        UserEntity userEntity = userMapper.toEntity(createUserDTO);
+        userEntity.setUserRole(UserRole.CLIENT);
+        userRepository.save(userEntity);
 
-                RegistrationTokenEntity registrationTokenEntity = new RegistrationTokenEntity(
-                        token,
-                        creationAt,
-                        expiresAt,
-                        userEntity);
+        //RegistrationToken
+        String token = String.valueOf(UUID.randomUUID());
+        LocalDateTime creationAt = LocalDateTime.now();
+        LocalDateTime expiresAt = creationAt.plusMinutes(20);
 
-                registrationTokenRepository.save(registrationTokenEntity);
-                return String.format("http://localhost:8080/api/users/activate/?activateToken=%s/", token);
-            }
-        }
+        RegistrationTokenEntity registrationTokenEntity = new RegistrationTokenEntity(
+                token,
+                creationAt,
+                expiresAt,
+                userEntity);
+
+        registrationTokenRepository.save(registrationTokenEntity);
+        return String.format("http://localhost:8080/api/users/activate/?activateToken=%s", token);
 
     }
 
