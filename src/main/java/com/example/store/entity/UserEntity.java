@@ -21,6 +21,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "Users")
 public class UserEntity implements UserDetails {
     @Id
     @GeneratedValue

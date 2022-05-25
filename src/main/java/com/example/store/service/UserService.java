@@ -1,10 +1,12 @@
 package com.example.store.service;
 
 import com.example.store.dto.user.CreateUserDTO;
+import com.example.store.dto.user.RegistrationTokenDTO;
 import com.example.store.entity.RegistrationTokenEntity;
 import com.example.store.entity.UserEntity;
 import com.example.store.entity.enums.UserRole;
 import com.example.store.exception.ValidationException;
+import com.example.store.mapper.RegistrationTokenMapper;
 import com.example.store.mapper.UserMapper;
 import com.example.store.repository.RegistrationTokenRepository;
 import com.example.store.repository.UserRepository;
@@ -40,7 +42,7 @@ public class UserService implements UserDetailsService {
                 );
     }
 
-    public ResponseEntity<String> registerUser(CreateUserDTO createUserDTO) {
+    public ResponseEntity<RegistrationTokenDTO> registerUser(CreateUserDTO createUserDTO) {
         Optional<UserEntity> byUsername = userRepository.findByUsername(createUserDTO.getUsername());
 
         if (byUsername.isPresent())
@@ -71,10 +73,11 @@ public class UserService implements UserDetailsService {
                 userEntity);
 
         registrationTokenRepository.save(registrationTokenEntity);
-        Map<String, String> response = Map.of("activation_link",
-                String.format("http://localhost:8080/api/users/activate?activateToken=%s", token));
+//        Map<String, String> response = Map.of("activation_link",
+//                String.format("http://localhost:8080/api/users/activate?activateToken=%s", token));
 
-        return new ResponseEntity(response, HttpStatus.CREATED);
+        RegistrationTokenDTO registrationTokenDTO = RegistrationTokenMapper.INSTANCE.toDTO(registrationTokenEntity);
+        return new ResponseEntity(registrationTokenDTO, HttpStatus.CREATED);
 
     }
 

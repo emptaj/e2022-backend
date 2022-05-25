@@ -1,6 +1,7 @@
 package com.example.store.controller;
 
 import com.example.store.dto.user.CreateUserDTO;
+import com.example.store.dto.user.RegistrationTokenDTO;
 import com.example.store.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/")
-    private ResponseEntity<String> registerUser(@Valid @RequestBody CreateUserDTO createUserDTO) {
+    private ResponseEntity<RegistrationTokenDTO> registerUser(@Valid @RequestBody CreateUserDTO createUserDTO) {
         return userService.registerUser(createUserDTO);
 
     }
