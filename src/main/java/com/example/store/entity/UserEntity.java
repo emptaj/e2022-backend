@@ -3,7 +3,6 @@ package com.example.store.entity;
 import java.sql.Date;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import javax.persistence.*;
 
@@ -18,7 +17,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
-@Table(name = "Users")
 @Data
 @Builder
 @NoArgsConstructor
@@ -27,8 +25,13 @@ public class UserEntity implements UserDetails {
     @Id
     @GeneratedValue
     private Long id;
+
+    @Column(unique = true)
     private String username;
+
     private String password;
+
+    @Column(unique = true)
     private String email;
     private Boolean locked;
     private Boolean enabled;
