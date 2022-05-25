@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api//users/")
+@RequestMapping("api/users/")
 @AllArgsConstructor
 public class UserController {
     private final UserService userService;
@@ -20,7 +20,7 @@ public class UserController {
 
     }
 
-    @PostMapping("/activate/")
+    @PostMapping("/activate")
     private String activateUser(@RequestParam String activateToken) {
         return userService.activateUser(activateToken);
     }

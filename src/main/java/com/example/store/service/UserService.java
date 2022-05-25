@@ -68,7 +68,7 @@ public class UserService implements UserDetailsService {
                 userEntity);
 
         registrationTokenRepository.save(registrationTokenEntity);
-        return String.format("http://localhost:8080/api/users/activate/?activateToken=%s", token);
+        return String.format("http://localhost:8080/api/users/activate?activateToken=%s", token);
 
     }
 
