@@ -22,8 +22,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/")
-    @ResponseStatus(HttpStatus.CREATED)
-    private String registerUser(@Valid @RequestBody CreateUserDTO createUserDTO) {
+    private ResponseEntity<String> registerUser(@Valid @RequestBody CreateUserDTO createUserDTO) {
         return userService.registerUser(createUserDTO);
 
     }

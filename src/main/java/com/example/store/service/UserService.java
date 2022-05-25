@@ -9,6 +9,8 @@ import com.example.store.mapper.UserMapper;
 import com.example.store.repository.RegistrationTokenRepository;
 import com.example.store.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -37,7 +40,7 @@ public class UserService implements UserDetailsService {
                 );
     }
 
-    public String registerUser(CreateUserDTO createUserDTO) {
+    public ResponseEntity<String> registerUser(CreateUserDTO createUserDTO) {
         Optional<UserEntity> byUsername = userRepository.findByUsername(createUserDTO.getUsername());
 
         if (byUsername.isPresent())
@@ -68,7 +71,10 @@ public class UserService implements UserDetailsService {
                 userEntity);
 
         registrationTokenRepository.save(registrationTokenEntity);
-        return String.format("http://localhost:8080/api/users/activate?activateToken=%s", token);
+        Map<String, String> response = Map.of("activation_link",
+                String.format("http://localhost:8080/api/users/activate?activateToken=%s", token));
+
+        return new ResponseEntity(response, HttpStatus.CREATED);
 
     }
 
