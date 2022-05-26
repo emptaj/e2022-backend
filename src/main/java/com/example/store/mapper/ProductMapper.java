@@ -1,6 +1,7 @@
 package com.example.store.mapper;
 
 import com.example.store.dto.product.ProductDTO;
+import com.example.store.dto.product.ProductExDTO;
 import com.example.store.dto.product.UpdateProductDTO;
 import com.example.store.entity.ProductEntity;
 import com.example.store.entity.WarehouseEntity;
@@ -16,9 +17,13 @@ public interface ProductMapper {
 
     @Mapping(target = "warehouse", expression = "java(warehouse)")
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "unitsInStock", constant = "0")
+    @Mapping(target = "unitsInOrder", constant = "0")
     ProductEntity createEntity(UpdateProductDTO dto, WarehouseEntity warehouse);
 
     ProductEntity updateEntity(UpdateProductDTO dto, @MappingTarget ProductEntity productEntity);
 
     ProductDTO toDTO(ProductEntity entity);
+
+    ProductExDTO toExDTO(ProductEntity entity);
 }

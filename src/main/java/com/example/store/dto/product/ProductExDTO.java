@@ -9,10 +9,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductDTO {
+public class ProductExDTO {
     private Long id;
+    private Boolean active;
     private String name;
     private String description;
     private Float price;
     private Integer unitsInStock;
+    private Integer unitsInOrder;
 }
