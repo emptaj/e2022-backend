@@ -2,9 +2,11 @@ package com.example.store.service;
 
 import com.example.store.dto.user.CreateUserDTO;
 import com.example.store.dto.user.RegistrationTokenDTO;
+import com.example.store.dto.user.ResetActivationTokenDTO;
 import com.example.store.entity.RegistrationTokenEntity;
 import com.example.store.entity.UserEntity;
 import com.example.store.entity.enums.UserRole;
+import com.example.store.exception.NotFoundException;
 import com.example.store.exception.ValidationException;
 import com.example.store.mapper.RegistrationTokenMapper;
 import com.example.store.mapper.UserMapper;
@@ -13,6 +15,7 @@ import com.example.store.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +28,7 @@ import java.util.UUID;
 @Service
 public class UserRegistrationService {
     private final UserRepository userRepository;
+    private final UserService userService;
     private final RegistrationTokenRepository registrationTokenRepository;
     private final UserMapper userMapper = UserMapper.INSTANCE;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -60,7 +64,7 @@ public class UserRegistrationService {
                 userEntity);
 
         registrationTokenRepository.save(registrationTokenEntity);
-        
+
         RegistrationTokenDTO registrationTokenDTO = RegistrationTokenMapper.INSTANCE.toDTO(registrationTokenEntity);
         return new ResponseEntity(registrationTokenDTO, HttpStatus.CREATED);
 
@@ -68,9 +72,10 @@ public class UserRegistrationService {
 
     @Transactional
     public String activateUser(String activateToken) {
-        RegistrationTokenEntity registrationTokenEntity = registrationTokenRepository.findByToken(activateToken).orElseThrow(
-                () -> new ValidationException("Token does not exists!")
-        );
+        RegistrationTokenEntity registrationTokenEntity = registrationTokenRepository.findByToken(activateToken).
+                orElseThrow(
+                        () -> new ValidationException("Token does not exists!")
+                );
 
         if (registrationTokenEntity.getConfirmedAt() != null)
             throw new ValidationException("Account has been already activated!");
@@ -85,5 +90,31 @@ public class UserRegistrationService {
         registrationTokenEntity.setConfirmedAt(now);
 
         return "Account has been activated!";
+    }
+
+    @Transactional
+    public ResponseEntity<RegistrationTokenDTO> resetActivationToken(ResetActivationTokenDTO resetActivationLinkDTO) {
+        UserEntity userEntity = userRepository.findByEmail(resetActivationLinkDTO.getEmail()).
+                orElseThrow(
+                        () -> new ValidationException("Email not found")
+                );
+
+        RegistrationTokenEntity registrationTokenEntity = registrationTokenRepository.findByUser(userEntity)
+                .orElseThrow(
+                        () -> new ValidationException("Email not found")
+                );
+        ;
+
+        if (registrationTokenEntity.getConfirmedAt() != null) {
+            throw new ValidationException("Account has been already activated!");
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        registrationTokenEntity.setToken(String.valueOf(UUID.randomUUID()));
+        registrationTokenEntity.setCreatedAt(now);
+        registrationTokenEntity.setExpiresAt(now.plusMinutes(20));
+
+        return new ResponseEntity(RegistrationTokenMapper.INSTANCE.toDTO(registrationTokenEntity), HttpStatus.ACCEPTED);
+
     }
 }

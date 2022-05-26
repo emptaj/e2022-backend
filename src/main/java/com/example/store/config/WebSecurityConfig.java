@@ -1,9 +1,7 @@
 package com.example.store.config;
 
-import com.example.store.security.PasswordEncoder;
 import com.example.store.service.UserService;
 import lombok.AllArgsConstructor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -24,11 +22,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/api/users/**")
+                .antMatchers("/api/users/*")
                 .permitAll()
                 .antMatchers("/swagger-ui.html")
                 .permitAll()
-                .antMatchers("/api/**")
+                .antMatchers("/api/*")
                 .authenticated()
                 .anyRequest()
                 .permitAll()
