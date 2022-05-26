@@ -2,11 +2,10 @@ package com.example.store.service;
 
 import com.example.store.dto.user.CreateUserDTO;
 import com.example.store.dto.user.RegistrationTokenDTO;
-import com.example.store.dto.user.ResetActivationTokenDTO;
+import com.example.store.dto.user.CreateResetActivationTokenDTO;
 import com.example.store.entity.RegistrationTokenEntity;
 import com.example.store.entity.UserEntity;
 import com.example.store.entity.enums.UserRole;
-import com.example.store.exception.NotFoundException;
 import com.example.store.exception.ValidationException;
 import com.example.store.mapper.RegistrationTokenMapper;
 import com.example.store.mapper.UserMapper;
@@ -15,7 +14,6 @@ import com.example.store.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -93,7 +91,7 @@ public class UserRegistrationService {
     }
 
     @Transactional
-    public ResponseEntity<RegistrationTokenDTO> resetActivationToken(ResetActivationTokenDTO resetActivationLinkDTO) {
+    public ResponseEntity<RegistrationTokenDTO> resetActivationToken(CreateResetActivationTokenDTO resetActivationLinkDTO) {
         UserEntity userEntity = userRepository.findByEmail(resetActivationLinkDTO.getEmail()).
                 orElseThrow(
                         () -> new ValidationException("Email not found")

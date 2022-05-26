@@ -1,6 +1,6 @@
 package com.example.store.controller;
 
-import com.example.store.dto.user.ResetActivationTokenDTO;
+import com.example.store.dto.user.CreateResetActivationTokenDTO;
 import com.example.store.dto.user.CreateUserDTO;
 import com.example.store.dto.user.RegistrationTokenDTO;
 import com.example.store.service.UserRegistrationService;
@@ -23,14 +23,14 @@ public class UserRegistrationController {
     }
 
     @PostMapping("/activate")
-    private String activateUser(@RequestParam String activateToken) {
-        return userRegistrationService.activateUser(activateToken);
+    private String activateUser(@RequestParam String activationToken) {
+        return userRegistrationService.activateUser(activationToken);
     }
 
     @PostMapping("/activate/reset")
     private ResponseEntity<RegistrationTokenDTO> resetActivationToken(
             @Valid
-            @RequestBody ResetActivationTokenDTO resetActivationLinkDTO) {
+            @RequestBody CreateResetActivationTokenDTO resetActivationLinkDTO) {
         return userRegistrationService.resetActivationToken(resetActivationLinkDTO);
     }
 }

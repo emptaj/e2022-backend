@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Builder
 public class RegistrationTokenDTO {
 
-    public static final String CONFIRMATION_PATH = "http://localhost:8080/api/users/activate?activateToken=%s";
+    public static final String CONFIRMATION_PATH = "http://localhost:8080/api/users/activate?activationToken=%s";
 
     private String token;
     private LocalDateTime createdAt;
