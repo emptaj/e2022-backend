@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.example.store.dto.product.ProductDTO;
+import com.example.store.dto.product.ProductExDTO;
+import com.example.store.dto.product.ProductStockDTO;
 import com.example.store.dto.product.UpdateProductDTO;
 import com.example.store.entity.ProductEntity;
 import com.example.store.entity.WarehouseEntity;
@@ -79,5 +81,39 @@ public class ProductsService {
         ProductEntity entity = findProductById(productId);
         entity.setActive(false);
         repository.save(entity);
+    }
+
+
+    public List<ProductExDTO> getProductsEx(Long warehouseId, boolean onlyActive, int page, int size) {
+        warehouseService.findWarehouseById(warehouseId);
+        PageRequest pageRequest = PageRequest.of(page, size);
+        List<ProductEntity> entities;
+        if (onlyActive)
+            entities = repository.findAllByWarehouseIdAndActive(warehouseId, true, pageRequest);
+        else
+            entities = repository.findAllByWarehouseId(warehouseId, pageRequest);
+        return entities.stream()
+                .map(mapper::toExDTO)
+                .collect(Collectors.toList());
+    }
+
+
+    public ProductExDTO getProductEx(Long productId) {
+        ProductEntity entity = findProductById(productId);
+        return mapper.toExDTO(entity);
+    }
+
+
+    public ProductExDTO restockProduct(Long productId, ProductStockDTO stock) {
+        ProductEntity entity = findProductById(productId);
+        validateNonNegativeStock(stock);
+        entity.setUnitsInStock(stock.getValue());
+        entity = repository.save(entity);
+        return mapper.toExDTO(entity);
+    }
+
+    private void validateNonNegativeStock(ProductStockDTO stock) {
+        if (stock.getValue() < 0)
+            throw new ValidationException("Nr products in stock cannot be negative");
     }
 }

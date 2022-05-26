@@ -11,4 +11,8 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
     List<ProductEntity> findAllByActive(boolean active, Pageable p);
+
+    List<ProductEntity> findAllByWarehouseId(Long warehouseId, Pageable p);
+
+    List<ProductEntity> findAllByWarehouseIdAndActive(Long warehouseId, Boolean active, Pageable p);
 }
