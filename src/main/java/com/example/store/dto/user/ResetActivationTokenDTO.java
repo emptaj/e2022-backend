@@ -9,7 +9,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
 @AllArgsConstructor
-@Data
+@NoArgsConstructor
+@Getter
 public class ResetActivationTokenDTO {
 
     @NotNull(message = "Email should not be empty")

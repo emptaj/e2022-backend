@@ -103,7 +103,6 @@ public class UserRegistrationService {
                 .orElseThrow(
                         () -> new ValidationException("Email not found")
                 );
-        ;
 
         if (registrationTokenEntity.getConfirmedAt() != null) {
             throw new ValidationException("Account has been already activated!");
