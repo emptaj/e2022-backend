@@ -1,9 +1,8 @@
 package com.example.store.controller;
 
-import java.util.List;
-
 import javax.transaction.Transactional;
 
+import com.example.store.dto.ListDTO;
 import com.example.store.dto.product.ProductDTO;
 import com.example.store.dto.product.ProductExDTO;
 import com.example.store.dto.product.ProductStockDTO;
@@ -26,16 +25,16 @@ public class ProductsController {
 
 
     @GetMapping("/products")
-    List<ProductDTO> getProducts(@RequestParam(required = false, defaultValue = "0") int page,
-                                 @RequestParam(required = false, defaultValue = "20") int size) {
+    ListDTO<ProductDTO> getProducts(@RequestParam(required = false, defaultValue = "0")  int page,
+                                    @RequestParam(required = false, defaultValue = "20") int size) {
         return service.getProducts(page, size);
     }
     
     @GetMapping("/warehouses/{warehouseId}/products")
-    List<ProductExDTO> getProductsEx(@PathVariable Long warehouseId,
-                                     @RequestParam(required = false, defaultValue = "true") boolean onlyActive,
-                                     @RequestParam(required = false, defaultValue = "0") int page,
-                                     @RequestParam(required = false, defaultValue = "20") int size) {
+    ListDTO<ProductExDTO> getProductsEx(@PathVariable Long warehouseId,
+                                        @RequestParam(required = false, defaultValue = "true") boolean onlyActive,
+                                        @RequestParam(required = false, defaultValue = "0")    int page,
+                                        @RequestParam(required = false, defaultValue = "20")   int size) {
         return service.getProductsEx(warehouseId, onlyActive, page, size);
     }
 
