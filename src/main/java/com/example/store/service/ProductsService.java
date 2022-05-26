@@ -1,9 +1,7 @@
 package com.example.store.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.example.store.dto.product.ProductDTO;
+import com.example.store.dto.product.ProductListDTO;
 import com.example.store.dto.product.UpdateProductDTO;
 import com.example.store.entity.ProductEntity;
 import com.example.store.entity.WarehouseEntity;
@@ -12,11 +10,15 @@ import com.example.store.exception.ValidationException;
 import com.example.store.mapper.ProductMapper;
 import com.example.store.repository.ProductRepository;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,10 +36,19 @@ public class ProductsService {
     }
 
 
-    public List<ProductDTO> getProducts(int page, int size) {
-        return repository.findAllByActive(true, PageRequest.of(page, size)).stream()
+    public ProductListDTO getProducts(int page, int size) {
+        Page<ProductEntity> pageResponse = repository.findAllByActive(true, PageRequest.of(page, size));
+
+        List<ProductDTO> collect = pageResponse.getContent().stream()
                 .map(mapper::toDTO)
                 .collect(Collectors.toList());
+
+        ProductListDTO productList = ProductListDTO.builder()
+                .products(collect)
+                .pageCount(Long.valueOf(pageResponse.getTotalPages()))
+                .build();
+
+        return productList;
     }
 
     public ProductDTO getProduct(Long id) {

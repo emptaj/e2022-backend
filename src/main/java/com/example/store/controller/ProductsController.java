@@ -5,9 +5,11 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import com.example.store.dto.product.ProductDTO;
+import com.example.store.dto.product.ProductListDTO;
 import com.example.store.dto.product.UpdateProductDTO;
 import com.example.store.service.ProductsService;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,8 +26,8 @@ public class ProductsController {
 
 
     @GetMapping("/products")
-    List<ProductDTO> getProducts(@RequestParam(required = false, defaultValue = "0") int page,
-                                 @RequestParam(required = false, defaultValue = "20") int size) {
+    ProductListDTO getProducts(@RequestParam(required = false, defaultValue = "0") int page,
+                               @RequestParam(required = false, defaultValue = "20") int size) {
         return service.getProducts(page, size);
     }
 
