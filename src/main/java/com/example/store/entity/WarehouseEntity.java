@@ -1,6 +1,6 @@
 package com.example.store.entity;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -23,11 +23,11 @@ public class WarehouseEntity {
     @Id
     @GeneratedValue
     private Long id;
-    private Date creationDate;
+    private LocalDate creationDate;
     
     @OneToOne
     private AddressEntity address;
 
     private Boolean active;
-    private Date modificationDate;
+    private LocalDate modificationDate;
 }
