@@ -1,9 +1,9 @@
 package com.example.store.service;
 
 import com.example.store.dto.ListDTO;
+import com.example.store.dto.SingleValueDTO;
 import com.example.store.dto.product.ProductDTO;
 import com.example.store.dto.product.ProductExDTO;
-import com.example.store.dto.product.ProductStockDTO;
 import com.example.store.dto.product.UpdateProductDTO;
 import com.example.store.entity.ProductEntity;
 import com.example.store.entity.WarehouseEntity;
@@ -113,7 +113,7 @@ public class ProductsService {
     }
 
 
-    public ProductExDTO restockProduct(Long productId, ProductStockDTO stock) {
+    public ProductExDTO restockProduct(Long productId, SingleValueDTO<Integer> stock) {
         ProductEntity entity = findProductById(productId);
         validateNonNegativeStock(stock);
         entity.setUnitsInStock(stock.getValue());
@@ -121,7 +121,7 @@ public class ProductsService {
         return mapper.toExDTO(entity);
     }
 
-    private void validateNonNegativeStock(ProductStockDTO stock) {
+    private void validateNonNegativeStock(SingleValueDTO<Integer> stock) {
         if (stock.getValue() < 0)
             throw new ValidationException("Nr products in stock cannot be negative");
     }
