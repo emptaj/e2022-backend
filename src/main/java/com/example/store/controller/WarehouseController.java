@@ -7,6 +7,8 @@ import com.example.store.dto.warehouse.WarehouseDTO;
 import com.example.store.service.WarehouseService;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,5 +30,10 @@ public class WarehouseController {
     @PostMapping("")
     public WarehouseDTO createWarehouse(@RequestBody SingleValueDTO<Long> addressId) {
         return service.createWarehouse(addressId);
+    }
+
+    @DeleteMapping("/{warehouseId}")
+    public void deleteWarehouse(@PathVariable Long warehouseId) {
+        service.deleteWarehouse(warehouseId);
     }
 }

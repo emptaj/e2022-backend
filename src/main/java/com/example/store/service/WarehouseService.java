@@ -36,5 +36,12 @@ public class WarehouseService {
         return mapper.toDTO(entity);
     }
 
+
+    public void deleteWarehouse(Long warehouseId) {
+        WarehouseEntity entity = findWarehouseById(warehouseId);
+        mapper.delete(entity, LocalDate.now());
+        repository.save(entity);
+    }
+
     
 }

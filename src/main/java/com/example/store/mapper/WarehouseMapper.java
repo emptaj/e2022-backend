@@ -8,6 +8,7 @@ import com.example.store.entity.WarehouseEntity;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
@@ -25,4 +26,8 @@ public interface WarehouseMapper {
 
     @Mapping(target = "addressId", source = "entity.address.id")
     WarehouseDTO toDTO(WarehouseEntity entity);
+
+    @Mapping(target = "active", constant = "false")
+    @Mapping(target = "modificationDate", expression = "java(modificationDate)")
+    WarehouseEntity delete(@MappingTarget WarehouseEntity entity, LocalDate modificationDate);
 }
