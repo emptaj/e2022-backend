@@ -21,6 +21,11 @@ public class AddressService {
     private final AddressRepository addressRepository;
     private final AddressMapper addressMapper = AddressMapper.INSTANCE;
 
+    public AddressEntity findAddressById(Long addressId) {
+        return addressRepository.findById(addressId).
+                orElseThrow(() -> new NotFoundException(AddressEntity.class, addressId));
+    }
+
     public List<AddressDTO> getAddresses(int pageNum, int pageSize) {
         return addressRepository.findAll(PageRequest.of(pageNum, pageSize)).
                 stream()
@@ -29,8 +34,7 @@ public class AddressService {
     }
 
     public AddressDTO getSingleAddress(Long addressId) {
-        AddressEntity addressEntity = addressRepository.findById(addressId).
-                orElseThrow(() -> new NotFoundException(AddressEntity.class, addressId));
+        AddressEntity addressEntity = findAddressById(addressId);
         return addressMapper.toDTO(addressEntity);
     }
 
@@ -41,8 +45,7 @@ public class AddressService {
 
     @Transactional
     public void deleteAddress(Long addressId) {
-        AddressEntity addressEntity = addressRepository.findById(addressId).
-                orElseThrow(() -> new NotFoundException(AddressEntity.class, addressId));
+        AddressEntity addressEntity = findAddressById(addressId);
         addressRepository.delete(addressEntity);
     }
 
