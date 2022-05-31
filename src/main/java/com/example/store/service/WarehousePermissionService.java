@@ -18,7 +18,7 @@ public class WarehousePermissionService {
     private final WarehouseUserRepository warehouseUserRepository;
 
     public Boolean hasAccess(Long warehouseId, UserEntity user, Collection<WarehouseRole> roles) {
-        List<WarehouseUserEntity> byWarehouseAndUserAAndRoleIn = warehouseUserRepository.findByWarehouseAndUserAAndRoleIn(
+        List<WarehouseUserEntity> byWarehouseAndUserAAndRoleIn = warehouseUserRepository.findByWarehouseAndUserAndRoleIn(
                 warehouseId,
                 user,
                 roles);
@@ -26,7 +26,7 @@ public class WarehousePermissionService {
     }
 
     public Boolean hasAccess(Long warehouseId, UserEntity user, WarehouseRole role) {
-        Optional<WarehouseUserEntity> byWarehouseAndUser = warehouseUserRepository.findByWarehouseAndUserAAndRole(
+        Optional<WarehouseUserEntity> byWarehouseAndUser = warehouseUserRepository.findByWarehouseAndUserAndRole(
                 warehouseId,
                 user,
                 role);

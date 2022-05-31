@@ -2,6 +2,7 @@ package com.example.store.service;
 
 import com.example.store.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,5 +27,11 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(
                         () -> new UsernameNotFoundException(String.format("User with given email %s does not exists",
                                 email)));
+    }
+    
+    public UserDetails getLoggedUser() {
+        return (UserDetails) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
     }
 }

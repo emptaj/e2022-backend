@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
+import java.security.Principal;
+
 
 @RestController
 @RequestMapping(path = "/api/warehouses")
@@ -26,13 +28,13 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 @RequiredArgsConstructor
 public class WarehouseController {
-    
+
     private final WarehouseService service;
-    
+
     @GetMapping
     public ListDTO<WarehouseDTO> getWarehouses(
-            @RequestParam(required = false, defaultValue = "0")    int page,
-            @RequestParam(required = false, defaultValue = "20")   int size) {
+            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "20") int size) {
         return service.getWarehouses(page, size);
     }
 

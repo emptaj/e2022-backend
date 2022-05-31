@@ -12,11 +12,11 @@ import java.util.Optional;
 
 @Repository
 public interface WarehouseUserRepository extends JpaRepository<WarehouseUserEntity, Long> {
-    List<WarehouseUserEntity> findByWarehouseAndUserAAndRoleIn(Long warehouseId,
-                                                               UserEntity userId,
-                                                               Collection<WarehouseRole> roles);
+    List<WarehouseUserEntity> findByWarehouseAndUserAndRoleIn(Long warehouseId,
+                                                              UserEntity userId,
+                                                              Collection<WarehouseRole> roles);
 
-    Optional<WarehouseUserEntity> findByWarehouseAndUserAAndRole(Long warehouseId,
-                                                                 UserEntity userId,
-                                                                 WarehouseRole role);
+    Optional<WarehouseUserEntity> findByWarehouseAndUserAndRole(Long warehouseId,
+                                                                UserEntity userId,
+                                                                WarehouseRole role);
 }

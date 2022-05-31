@@ -19,6 +19,7 @@ public interface ProductMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "unitsInStock", constant = "0")
     @Mapping(target = "unitsInOrder", constant = "0")
+    @Mapping(target = "name", source = "dto.name")
     ProductEntity createEntity(UpdateProductDTO dto, WarehouseEntity warehouse);
 
     ProductEntity updateEntity(UpdateProductDTO dto, @MappingTarget ProductEntity productEntity);
