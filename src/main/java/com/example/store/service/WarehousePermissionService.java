@@ -13,8 +13,8 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-
 public class WarehousePermissionService {
+    private final UserService userService;
     private final WarehouseUserRepository warehouseUserRepository;
 
     public Boolean hasAccess(Long warehouseId, UserEntity user, Collection<WarehouseRole> roles) {
@@ -25,7 +25,8 @@ public class WarehousePermissionService {
         return !byWarehouseAndUserAAndRoleIn.isEmpty();
     }
 
-    public Boolean hasAccess(Long warehouseId, UserEntity user, WarehouseRole role) {
+    public Boolean hasAccess(Long warehouseId, WarehouseRole role) {
+        UserEntity user = (UserEntity) userService.getLoggedUser();
         Optional<WarehouseUserEntity> byWarehouseAndUser = warehouseUserRepository.findByWarehouseAndUserAndRole(
                 warehouseId,
                 user,

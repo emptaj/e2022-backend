@@ -79,4 +79,8 @@ public class WarehouseService {
     }
 
 
+    public WarehouseDTO getWarehouse(Long warehouseId) {
+        return mapper.toDTO(repository.findById(warehouseId).orElseThrow(
+                () -> new NotFoundException(WarehouseEntity.class, warehouseId)));
+    }
 }
