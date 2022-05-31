@@ -9,13 +9,14 @@ import javax.persistence.Table;
 
 import com.example.store.entity.enums.UserRole;
 
+import com.example.store.entity.enums.WarehouseRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name="WarehouseUsers")
+@Table(name = "WarehouseUsers")
 @Data
 @Builder
 @NoArgsConstructor
@@ -26,7 +27,7 @@ public class WarehouseUserEntity {
     private Long id;
 
     @Enumerated
-    private UserRole role;
+    private WarehouseRole role;
 
     @OneToOne
     private UserEntity user;
