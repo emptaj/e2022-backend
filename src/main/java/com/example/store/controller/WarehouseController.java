@@ -44,7 +44,7 @@ public class WarehouseController {
     }
 
     @GetMapping("/{warehouseId}")
-    @PreAuthorize("@permissionService.hasAccess(#warehouseId, @WarehouseRole.OPERATOR)")
+    @PreAuthorize("hasPermission(#warehouseId, 'WarehouseEntity', 'WarehouseRole.OWNER')")
     public WarehouseDTO getWarehouse(@PathVariable Long warehouseId, Principal principal) {
         return service.getWarehouse(warehouseId);
     }
