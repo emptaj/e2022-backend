@@ -39,8 +39,13 @@ public class AddressService {
     }
 
     public AddressDTO createAddress(AddressDTO addressDTO) {
-        AddressEntity saved = addressRepository.save(addressMapper.toEntity(addressDTO));
-        return addressMapper.toDTO(saved);
+        AddressEntity entity = createAddressEntity(addressDTO);
+        return addressMapper.toDTO(entity);
+    }
+
+    public AddressEntity createAddressEntity(AddressDTO addressDTO) {
+        AddressEntity entity = addressMapper.toEntity(addressDTO);
+        return addressRepository.save(entity);
     }
 
     @Transactional

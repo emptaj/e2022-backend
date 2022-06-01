@@ -23,6 +23,7 @@ public class WarehouseEntity {
     @Id
     @GeneratedValue
     private Long id;
+    private String name;
     private LocalDate creationDate;
     
     @OneToOne
