@@ -18,11 +18,12 @@ public interface WarehouseMapper {
 
     
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "name", expression = "java(name)")
     @Mapping(target = "creationDate", expression = "java(creationDate)")
     @Mapping(target = "address", expression = "java(address)")
     @Mapping(target = "active", constant = "true")
     @Mapping(target = "modificationDate", ignore = true)
-    WarehouseEntity create(AddressEntity address, LocalDate creationDate);
+    WarehouseEntity create(String name, AddressEntity address, LocalDate creationDate);
 
     @Mapping(target = "addressId", source = "entity.address.id")
     WarehouseDTO toDTO(WarehouseEntity entity);

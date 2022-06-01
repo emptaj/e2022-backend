@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class WarehouseDTO {
     private Long id;
+    private String name;
     private LocalDate creationDate;
     private Long addressId;
     private Boolean active;

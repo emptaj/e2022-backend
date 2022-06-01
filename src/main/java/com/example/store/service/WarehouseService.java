@@ -5,17 +5,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.example.store.dto.ListDTO;
-import com.example.store.dto.SingleValueDTO;
+import com.example.store.dto.warehouse.CreateWarehouseDTO;
 import com.example.store.dto.warehouse.WarehouseDTO;
 import com.example.store.entity.AddressEntity;
 import com.example.store.entity.WarehouseEntity;
 import com.example.store.exception.NotFoundException;
+import com.example.store.exception.ValidationException;
 import com.example.store.mapper.WarehouseMapper;
 import com.example.store.repository.WarehouseRepository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,11 +36,17 @@ public class WarehouseService {
     }
 
 
-    public WarehouseDTO createWarehouse(SingleValueDTO<Long> addressId) {
-        AddressEntity address = addressService.findAddressById(addressId.getValue());
-        WarehouseEntity entity = mapper.create(address, LocalDate.now());
+    public WarehouseDTO createWarehouse(CreateWarehouseDTO dto) {
+        validateName(dto.getName());
+        AddressEntity address = addressService.createAddressEntity(dto.getAddress());
+        WarehouseEntity entity = mapper.create(dto.getName(), address, LocalDate.now());
         entity = repository.save(entity);
         return mapper.toDTO(entity);
+    }
+
+    private void validateName(String name) {
+        if (!StringUtils.hasText(name))
+            throw new ValidationException("Warehouse name cannot be empty");
     }
 
 

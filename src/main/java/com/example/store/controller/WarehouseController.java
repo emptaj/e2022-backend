@@ -3,7 +3,7 @@ package com.example.store.controller;
 import javax.transaction.Transactional;
 
 import com.example.store.dto.ListDTO;
-import com.example.store.dto.SingleValueDTO;
+import com.example.store.dto.warehouse.CreateWarehouseDTO;
 import com.example.store.dto.warehouse.WarehouseDTO;
 import com.example.store.service.WarehouseService;
 
@@ -37,8 +37,8 @@ public class WarehouseController {
     }
 
     @PostMapping("")
-    public WarehouseDTO createWarehouse(@RequestBody SingleValueDTO<Long> addressId) {
-        return service.createWarehouse(addressId);
+    public WarehouseDTO createWarehouse(@RequestBody CreateWarehouseDTO dto) {
+        return service.createWarehouse(dto);
     }
 
     @DeleteMapping("/{warehouseId}")
