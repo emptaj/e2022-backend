@@ -1,5 +1,7 @@
 package com.example.store.entity;
 
+import java.time.LocalDate;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -21,9 +23,12 @@ public class DeliveryTypeEntity {
     @Id
     @GeneratedValue
     private Long id;
+    private Boolean active;
     private String name;
     private String email;
 
     @ManyToOne
     private AddressEntity address;
+
+    private LocalDate modificationDate;
 }

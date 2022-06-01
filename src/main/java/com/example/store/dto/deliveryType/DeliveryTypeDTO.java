@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DeliveryTypeDTO {
     private Long id;
+    private Boolean active;
     private String name;
     private String email;
     private Long addressId;

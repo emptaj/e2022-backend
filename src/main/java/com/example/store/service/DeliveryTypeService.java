@@ -1,5 +1,6 @@
 package com.example.store.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,6 +14,7 @@ import com.example.store.dto.deliveryType.CreateDeliveryTypeDTO;
 import com.example.store.dto.deliveryType.DeliveryTypeDTO;
 import com.example.store.entity.AddressEntity;
 import com.example.store.entity.DeliveryTypeEntity;
+import com.example.store.exception.NotFoundException;
 import com.example.store.exception.ValidationException;
 import com.example.store.mapper.DeliveryTypeMapper;
 import com.example.store.repository.DeliveryTypeRepository;
@@ -29,9 +31,15 @@ public class DeliveryTypeService {
     private final AddressService addressService;
 
 
-    public ListDTO<DeliveryTypeDTO> getDeliveryTypes(int page, int size) {
+    public DeliveryTypeEntity findDeliveryTypeById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new NotFoundException(DeliveryTypeEntity.class, id));
+    }
 
-        Page<DeliveryTypeEntity> pageResponse = repository.findAll(PageRequest.of(page, size));
+
+    public ListDTO<DeliveryTypeDTO> getActiveDeliveryTypes(int page, int size) {
+
+        Page<DeliveryTypeEntity> pageResponse = repository.findAllByActive(true, PageRequest.of(page, size));
         List<DeliveryTypeDTO> deliveryTypes = pageResponse.getContent().stream()
                 .map(mapper::toDTO)
                 .collect(Collectors.toList());
@@ -54,6 +62,13 @@ public class DeliveryTypeService {
     private void validateName(String name) {
         if (!StringUtils.hasText(name))
             throw new ValidationException("Delivery type name cannot be empty");
+    }
+
+
+    public void deleteDeliveryType(Long deliveryTypeId) {
+        DeliveryTypeEntity entity = findDeliveryTypeById(deliveryTypeId);
+        entity = mapper.delete(entity, LocalDate.now());
+        repository.save(entity);
     }
     
 }
