@@ -26,4 +26,5 @@ public class AddressEntity {
     private String street;
     private String houseNum;
     private String flatNum;
+    private String phone;
 }

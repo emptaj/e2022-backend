@@ -6,7 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.example.store.entity.enums.OrderState;
@@ -30,21 +30,20 @@ public class OrderEntity {
     @Enumerated
     private OrderState state;
     
-    @OneToOne
+    @ManyToOne
     private UserEntity buyer;
     private Date orderDate;
     
-    @OneToOne
+    @ManyToOne
     private WarehouseUserEntity modificationOperator;
     private Date modificationDate;
 
-    @OneToOne
+    @ManyToOne
     private WarehouseEntity warehouse;
 
-    @OneToOne
+    @ManyToOne
     private AddressEntity address;
-    private String telephone;
 
-    @OneToOne
+    @ManyToOne
     private DeliveryTypeEntity deliveryType;
 }

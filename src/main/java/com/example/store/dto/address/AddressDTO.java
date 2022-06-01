@@ -2,9 +2,6 @@ package com.example.store.dto.address;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.lang.Nullable;
 
 @Builder
 @Data
@@ -16,4 +13,5 @@ public class AddressDTO {
     private String street;
     private String houseNum;
     private String flatNum;
+    private String phone;
 }

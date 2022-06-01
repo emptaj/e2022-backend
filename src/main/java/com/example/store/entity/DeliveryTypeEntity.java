@@ -3,6 +3,7 @@ package com.example.store.entity;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -22,5 +23,7 @@ public class DeliveryTypeEntity {
     private Long id;
     private String name;
     private String email;
-    private String telephone;
+
+    @ManyToOne
+    private AddressEntity address;
 }
