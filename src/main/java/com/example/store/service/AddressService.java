@@ -44,7 +44,7 @@ public class AddressService {
     }
 
     public AddressEntity createAddressEntity(AddressDTO addressDTO) {
-        AddressEntity entity = addressMapper.toEntity(addressDTO);
+        AddressEntity entity = addressMapper.create(addressDTO);
         return addressRepository.save(entity);
     }
 
@@ -59,7 +59,7 @@ public class AddressService {
         AddressEntity addressEntity = addressRepository.findById(addressId).
                 orElseThrow(() -> new NotFoundException(AddressEntity.class, addressId));
 
-        addressEntity = addressMapper.toEntity(updateAddressDTO, addressEntity);
+        addressEntity = addressMapper.update(updateAddressDTO, addressEntity);
         return addressMapper.toDTO(addressEntity);
 
     }

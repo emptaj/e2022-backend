@@ -5,6 +5,7 @@ import com.example.store.dto.address.UpdateAddressDTO;
 import com.example.store.entity.AddressEntity;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
@@ -15,7 +16,8 @@ public interface AddressMapper {
 
     public AddressDTO toDTO(AddressEntity addressEntity);
 
-    public AddressEntity toEntity(AddressDTO addressDTO);
+    @Mapping(target = "id", ignore = true)
+    public AddressEntity create(AddressDTO addressDTO);
 
-    public AddressEntity toEntity(UpdateAddressDTO addressDTO, @MappingTarget AddressEntity addressEntity);
+    public AddressEntity update(UpdateAddressDTO addressDTO, @MappingTarget AddressEntity addressEntity);
 }
