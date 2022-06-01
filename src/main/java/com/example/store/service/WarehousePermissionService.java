@@ -25,11 +25,10 @@ public class WarehousePermissionService {
         return !byWarehouseAndUserAAndRoleIn.isEmpty();
     }
 
-    public Boolean hasAccess(Long warehouseId, WarehouseRole role) {
-        UserEntity user = (UserEntity) userService.getLoggedUser();
-        Optional<WarehouseUserEntity> byWarehouseAndUser = warehouseUserRepository.findByWarehouseAndUserAndRole(
+    public Boolean hasAccess(UserEntity principal, Long warehouseId, WarehouseRole role) {
+        Optional<WarehouseUserEntity> byWarehouseAndUser = warehouseUserRepository.findByWarehouseIdAndUserIdAndRole(
                 warehouseId,
-                user,
+                principal.getId(),
                 role);
         return byWarehouseAndUser.isPresent();
 

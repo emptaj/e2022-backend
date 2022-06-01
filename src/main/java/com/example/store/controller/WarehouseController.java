@@ -5,6 +5,8 @@ import javax.transaction.Transactional;
 import com.example.store.dto.ListDTO;
 import com.example.store.dto.SingleValueDTO;
 import com.example.store.dto.warehouse.WarehouseDTO;
+import com.example.store.entity.enums.OrderState;
+import com.example.store.entity.enums.WarehouseRole;
 import com.example.store.service.UserService;
 import com.example.store.service.WarehousePermissionService;
 import com.example.store.service.WarehouseService;
@@ -44,8 +46,8 @@ public class WarehouseController {
     }
 
     @GetMapping("/{warehouseId}")
-    @PreAuthorize("hasPermission(#warehouseId, 'WarehouseEntity', 'WarehouseRole.OWNER')")
-    public WarehouseDTO getWarehouse(@PathVariable Long warehouseId, Principal principal) {
+    @PreAuthorize("hasPermission(#warehouseId, 'WarehouseEntity', 'OWNER')")
+    public WarehouseDTO getWarehouse(@PathVariable Long warehouseId) {
         return service.getWarehouse(warehouseId);
     }
 

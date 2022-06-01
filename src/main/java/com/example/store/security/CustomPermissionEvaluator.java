@@ -3,18 +3,14 @@ package com.example.store.security;
 import com.example.store.entity.UserEntity;
 import com.example.store.entity.enums.WarehouseRole;
 import com.example.store.service.WarehousePermissionService;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
+import java.lang.reflect.AnnotatedType;
+import java.security.Principal;
 
 @RequiredArgsConstructor
 @Component
@@ -34,8 +30,16 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
 
     @Override
     public boolean hasPermission(Authentication authentication, Serializable targetId, String targetType, Object permission) {
-        UserEntity userEntity = (UserEntity) authentication.getPrincipal();
-        return warehousePermissionService.hasAccess((Long) targetId, (WarehouseRole) permission);
+        if ((authentication == null) || (targetType == null) || !(permission instanceof String)) {
+            return false;
+        }
+
+        System.out.println(permission.getClass());
+        System.out.println(permission);
+        UserEntity principal = (UserEntity) authentication.getPrincipal();
+        return warehousePermissionService.hasAccess(principal, (Long) targetId, WarehouseRole.valueOf(permission.toString()));
+
+
     }
 
 

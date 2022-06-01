@@ -1,10 +1,8 @@
 package com.example.store.config;
 
 import com.example.store.security.CustomPermissionEvaluator;
-import com.example.store.service.WarehousePermissionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;

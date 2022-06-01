@@ -16,7 +16,7 @@ public interface WarehouseUserRepository extends JpaRepository<WarehouseUserEnti
                                                               UserEntity userId,
                                                               Collection<WarehouseRole> roles);
 
-    Optional<WarehouseUserEntity> findByWarehouseAndUserAndRole(Long warehouseId,
-                                                                UserEntity userId,
-                                                                WarehouseRole role);
+    Optional<WarehouseUserEntity> findByWarehouseIdAndUserIdAndRole(Long warehouseId,
+                                                                    Long userId,
+                                                                    WarehouseRole role);
 }
