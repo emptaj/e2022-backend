@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
-
+    
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsername(username)
@@ -28,7 +28,7 @@ public class UserService implements UserDetailsService {
                         () -> new UsernameNotFoundException(String.format("User with given email %s does not exists",
                                 email)));
     }
-    
+
     public UserDetails getLoggedUser() {
         return (UserDetails) SecurityContextHolder.getContext()
                 .getAuthentication()

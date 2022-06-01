@@ -1,6 +1,5 @@
 package com.example.store.security;
 
-import com.example.store.entity.UserEntity;
 import com.example.store.entity.enums.WarehouseRole;
 import com.example.store.service.WarehousePermissionService;
 import lombok.RequiredArgsConstructor;
@@ -9,8 +8,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
-import java.lang.reflect.AnnotatedType;
-import java.security.Principal;
 
 @RequiredArgsConstructor
 @Component
@@ -34,10 +31,7 @@ public class CustomPermissionEvaluator implements PermissionEvaluator {
             return false;
         }
 
-        System.out.println(permission.getClass());
-        System.out.println(permission);
-        UserEntity principal = (UserEntity) authentication.getPrincipal();
-        return warehousePermissionService.hasAccess(principal, (Long) targetId, WarehouseRole.valueOf(permission.toString()));
+        return warehousePermissionService.hasAccess((Long) targetId, WarehouseRole.valueOf(permission.toString()));
 
 
     }
