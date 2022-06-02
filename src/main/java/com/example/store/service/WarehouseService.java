@@ -1,7 +1,7 @@
 package com.example.store.service;
 
-import java.security.Principal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,16 +11,15 @@ import com.example.store.dto.warehouse.WarehouseDTO;
 import com.example.store.entity.AddressEntity;
 import com.example.store.entity.UserEntity;
 import com.example.store.entity.WarehouseEntity;
-import com.example.store.entity.WarehouseUserEntity;
-import com.example.store.entity.enums.WarehouseRole;
+import com.example.store.entity.WarehousePermissionEntity;
 import com.example.store.exception.NotFoundException;
 import com.example.store.mapper.WarehouseMapper;
+import com.example.store.repository.UserRepository;
+import com.example.store.repository.WarehousePermissionRepository;
 import com.example.store.repository.WarehouseRepository;
 
-import com.example.store.repository.WarehouseUserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -32,7 +31,7 @@ import javax.transaction.Transactional;
 public class WarehouseService {
 
     private final WarehouseRepository repository;
-    private final WarehouseUserRepository permissionRepository;
+    private final WarehousePermissionService permissionService;
     private final AddressService addressService;
     private final UserService userService;
     private final WarehouseMapper mapper = WarehouseMapper.INSTANCE;
@@ -47,16 +46,12 @@ public class WarehouseService {
     public WarehouseDTO createWarehouse(SingleValueDTO<Long> addressId) {
         AddressEntity addressEntity = addressService.findAddressById(addressId.getValue());
         WarehouseEntity warehouseEntity = mapper.create(addressEntity, LocalDate.now());
-        UserEntity userEntity = (UserEntity) userService.getLoggedUser();
-
-        WarehouseUserEntity permissionEntity = WarehouseUserEntity.builder()
-                .warehouse(warehouseEntity)
-                .user(userEntity)
-                .role(WarehouseRole.OWNER)
-                .build();
+        UserEntity userEntity = userService.getLoggedUserEntity();
 
         repository.save(warehouseEntity);
-        permissionRepository.save(permissionEntity);
+        List<WarehousePermissionEntity> permissions = permissionService.createPermissions(warehouseEntity);
+        permissionService.assignAllPermissions(userEntity, permissions);
+
         return mapper.toDTO(warehouseEntity);
     }
 
@@ -83,4 +78,6 @@ public class WarehouseService {
         return mapper.toDTO(repository.findById(warehouseId).orElseThrow(
                 () -> new NotFoundException(WarehouseEntity.class, warehouseId)));
     }
+
+
 }

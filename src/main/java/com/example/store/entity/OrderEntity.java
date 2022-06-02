@@ -29,13 +29,13 @@ public class OrderEntity {
 
     @Enumerated
     private OrderState state;
-    
+
     @OneToOne
     private UserEntity buyer;
     private Date orderDate;
-    
+
     @OneToOne
-    private WarehouseUserEntity modificationOperator;
+    private UserEntity modificationOperator;
     private Date modificationDate;
 
     @OneToOne

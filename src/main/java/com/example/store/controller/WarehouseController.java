@@ -34,7 +34,6 @@ import java.security.Principal;
 public class WarehouseController {
 
     private final WarehouseService service;
-    private final WarehousePermissionService permissionService;
 
     @GetMapping
     public ListDTO<WarehouseDTO> getWarehouses(
@@ -44,7 +43,6 @@ public class WarehouseController {
     }
 
     @GetMapping("/{warehouseId}")
-    @PreAuthorize("@permissionService.hasAccess(#warehouseId, @WarehouseRole.OPERATOR)")
     public WarehouseDTO getWarehouse(@PathVariable Long warehouseId, Principal principal) {
         return service.getWarehouse(warehouseId);
     }
@@ -59,8 +57,4 @@ public class WarehouseController {
         service.deleteWarehouse(warehouseId);
     }
 
-    @Bean
-    public WarehousePermissionService permissionService() {
-        return permissionService;
-    }
 }
