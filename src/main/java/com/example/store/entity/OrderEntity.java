@@ -1,6 +1,6 @@
 package com.example.store.entity;
 
-import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -36,11 +36,11 @@ public class OrderEntity {
     
     @ManyToOne
     private UserEntity buyer;
-    private Date orderDate;
+    private LocalDate orderDate;
     
     @ManyToOne
     private WarehouseUserEntity modificationOperator;
-    private Date modificationDate;
+    private LocalDate modificationDate;
 
     @ManyToOne
     private WarehouseEntity warehouse;
