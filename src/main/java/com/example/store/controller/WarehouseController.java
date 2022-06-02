@@ -35,16 +35,17 @@ public class WarehouseController {
 
     private final WarehouseService service;
 
+    @PreAuthorize("hasAuthority(#warehouseId + ':READ')")
+    @GetMapping("/{warehouseId}")
+    public WarehouseDTO getWarehouse(@PathVariable Long warehouseId, Principal principal) {
+        return service.getWarehouse(warehouseId);
+    }
+
     @GetMapping
     public ListDTO<WarehouseDTO> getWarehouses(
             @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "20") int size) {
         return service.getWarehouses(page, size);
-    }
-
-    @GetMapping("/{warehouseId}")
-    public WarehouseDTO getWarehouse(@PathVariable Long warehouseId, Principal principal) {
-        return service.getWarehouse(warehouseId);
     }
 
     @PostMapping("")
