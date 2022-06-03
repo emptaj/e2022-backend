@@ -1,7 +1,6 @@
 package com.example.store.service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,8 +13,6 @@ import com.example.store.entity.WarehouseEntity;
 import com.example.store.entity.WarehousePermissionEntity;
 import com.example.store.exception.NotFoundException;
 import com.example.store.mapper.WarehouseMapper;
-import com.example.store.repository.UserRepository;
-import com.example.store.repository.WarehousePermissionRepository;
 import com.example.store.repository.WarehouseRepository;
 
 import org.springframework.data.domain.Page;

@@ -5,6 +5,7 @@ import javax.transaction.Transactional;
 import com.example.store.dto.ListDTO;
 import com.example.store.dto.SingleValueDTO;
 import com.example.store.dto.warehouse.WarehouseDTO;
+import com.example.store.entity.enums.WarehousePermission;
 import com.example.store.service.UserService;
 import com.example.store.service.WarehousePermissionService;
 import com.example.store.service.WarehouseService;

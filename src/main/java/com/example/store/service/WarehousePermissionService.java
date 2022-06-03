@@ -36,15 +36,17 @@ public class WarehousePermissionService {
         return warehousePermissionEntityList;
     }
 
-    public WarehousePermissionEntity assignPermissionToUser(Long warehouseId, Long userId, WarehousePermission permission) {
+    @Transactional
+    public void assignPermissionToUser(Long warehouseId, Long userId, WarehousePermission permission) {
         UserEntity user = userService.getUserById(userId);
-
+        String permissionName = String.format("%d:%s", warehouseId, permission.name());
+        WarehousePermissionEntity permissionEntity = getPermissionEntityByName(permissionName);
+        assignPermission(user, permissionEntity);
     }
 
     @Transactional
     public void assignAllPermissions(UserEntity user, Collection<WarehousePermissionEntity> permissionEntities) {
         user.getWarehousePermissions().addAll(permissionEntities);
-
     }
 
     @Transactional
