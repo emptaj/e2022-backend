@@ -1,6 +1,13 @@
 package com.example.store.service;
 
+import static com.example.store.entity.enums.OrderState.ACCEPTED;
+import static com.example.store.entity.enums.OrderState.REJECTED;
+import static com.example.store.entity.enums.OrderState.CANCELLED;
+import static com.example.store.entity.enums.OrderState.SENT;
+import static com.example.store.entity.enums.OrderState.DELIVERED;
+
 import com.example.store.dto.ListDTO;
+import com.example.store.dto.SingleValueDTO;
 import com.example.store.dto.order.CreateOrderDTO;
 import com.example.store.dto.order.CreateOrderDetailsDTO;
 import com.example.store.dto.order.OrderDTO;
@@ -12,6 +19,7 @@ import com.example.store.entity.OrderEntity;
 import com.example.store.entity.ProductEntity;
 import com.example.store.entity.UserEntity;
 import com.example.store.entity.WarehouseEntity;
+import com.example.store.entity.WarehouseUserEntity;
 import com.example.store.entity.enums.OrderState;
 import com.example.store.exception.NotFoundException;
 import com.example.store.exception.ValidationException;
@@ -111,7 +119,7 @@ public class OrderService {
         for (CreateOrderDetailsDTO item : orderDetails) {
             ProductEntity product = productService.findProductById(item.getProductId());
             Integer quantity = item.getQuantity();
-            validatePositiveQuantity(quantity);
+            validatePositiveValue(quantity, "Product quantity must be positive");
 
             WarehouseEntity warehouse = product.getWarehouse();
             List<Pair<ProductEntity, Integer>> productList = ordersMap.get(warehouse);
@@ -168,9 +176,9 @@ public class OrderService {
         return orderDetailsList;
     }
     
-    private void validatePositiveQuantity(Integer number) {
-        if (number <= 0)
-            throw new ValidationException("Product quantity must be positive");
+    private void validatePositiveValue(Integer value, String message) {
+        if (value <= 0)
+            throw new ValidationException(message);
     }
 
     
@@ -191,5 +199,56 @@ public class OrderService {
         }
         
         return new ListDTO<>(pageResponse.getTotalPages(), result);
+    }
+
+    public OrderDTO changeOrderState(Long orderId, SingleValueDTO<OrderState> state) {
+        OrderEntity order = findOrderById(orderId);
+        OrderState currentState = order.getState();
+        OrderState nextState = state.getValue();
+
+        validateNextState(currentState, nextState);
+        if (nextState == SENT) {
+            for (OrderDetailsEntity details : order.getOrderDetails()) {
+                ProductEntity product = details.getProduct();
+                Integer quantity = details.getQuantity();
+                Integer stock = product.getUnitsInStock();
+
+                validatePositiveValue(stock - quantity, "There are not enough items in stock to send");
+                product.setUnitsInStock(stock - quantity);
+                product.setUnitsInOrder(product.getUnitsInOrder() - quantity);
+                productRepository.save(product);
+            }
+        }
+
+        WarehouseUserEntity user = new WarehouseUserEntity(); // FIXME: get currently signed in warehouse user; DO NOT CREATE NEW ONE
+        mapper.changeState(order, nextState, user, LocalDate.now());
+        order = repository.save(order);
+
+        List<OrderDetailsDTO> orderDetailsDTO = order.getOrderDetails().stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
+        
+        return mapper.toDTO(order, orderDetailsDTO);
+    }
+    
+    private void validateNextState(OrderState currentState, OrderState nextState) {
+        switch (currentState) {
+            case NEW:
+                validateStateIn(nextState, List.of(ACCEPTED, REJECTED, CANCELLED));
+                break;
+            case ACCEPTED:
+                validateStateIn(nextState, List.of(CANCELLED, SENT));
+                break;
+            case SENT:
+                validateStateIn(nextState, List.of(DELIVERED));
+                break;
+            default:
+                validateStateIn(nextState, new ArrayList<>());
+        }
+    }
+    
+    private void validateStateIn(OrderState state, List<OrderState> orderStates) {
+        if (!orderStates.contains(state))
+            throw new ValidationException("Cannot change order state to " + state.name());
     }
 }
