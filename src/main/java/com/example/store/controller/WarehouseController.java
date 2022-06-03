@@ -59,4 +59,5 @@ public class WarehouseController {
         service.deleteWarehouse(warehouseId);
     }
 
+
 }

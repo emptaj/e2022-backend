@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/api/warehouses")
@@ -19,12 +20,35 @@ public class WarehousePermissionController {
     private final WarehousePermissionService warehousePermissionService;
 
     @PreAuthorize("hasAuthority(#warehouseId + ':UPDATE')")
-    @PutMapping("/{warehouseId}/permissions/{userId}")
+    @PutMapping("/{warehouseId}/permissions/users/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void assignPermissionToUser(@PathVariable Long warehouseId,
-                                       @PathVariable Long userId,
-                                       @RequestBody WarehousePermission warehousePermission) {
-        warehousePermissionService.assignPermissionToUser(warehouseId, userId, warehousePermission);
+    public void assignPermissionToWarehouse(@PathVariable Long warehouseId,
+                                            @PathVariable Long userId,
+                                            @RequestBody WarehousePermission warehousePermission) {
+        warehousePermissionService.assignPermissionToWarehouse(warehouseId, userId, warehousePermission);
 
     }
+
+    @PreAuthorize("hasAuthority(#warehouseId + ':UPDATE')")
+    @DeleteMapping("/{warehouseId}/permissions/users/{userId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletePermissionToUser(@PathVariable Long warehouseId,
+                                       @PathVariable Long userId,
+                                       @RequestBody WarehousePermission warehousePermission) {
+        warehousePermissionService.removePermissionToWarehouse(warehouseId, userId, warehousePermission);
+
+    }
+
+    @GetMapping("/")
+    public List<WarehousePermissionEntity> getPermisions() {
+        return warehousePermissionService.getAll();
+    }
+
+    
+    @GetMapping("/{warehouseId}")
+    public List<WarehousePermissionEntity> getPermisionsForWarehouse(@PathVariable Long warehouseId) {
+        return warehousePermissionService.getForWarehouse(warehouseId);
+    }
+
+
 }

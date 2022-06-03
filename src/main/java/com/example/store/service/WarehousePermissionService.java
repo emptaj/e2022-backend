@@ -37,7 +37,7 @@ public class WarehousePermissionService {
     }
 
     @Transactional
-    public void assignPermissionToUser(Long warehouseId, Long userId, WarehousePermission permission) {
+    public void assignPermissionToWarehouse(Long warehouseId, Long userId, WarehousePermission permission) {
         UserEntity user = userService.getUserById(userId);
         String permissionName = String.format("%d:%s", warehouseId, permission.name());
         WarehousePermissionEntity permissionEntity = getPermissionEntityByName(permissionName);
@@ -58,5 +58,26 @@ public class WarehousePermissionService {
         return warehousePermissionRepository.findByName(permissionName).orElseThrow(
                 () -> new NotFoundException(WarehousePermissionEntity.class, permissionName)
         );
+    }
+
+    @Transactional
+    public void removePermission(UserEntity user, WarehousePermissionEntity permission) {
+        user.getWarehousePermissions().remove(permission);
+    }
+
+    @Transactional
+    public void removePermissionToWarehouse(Long warehouseId, Long userId, WarehousePermission warehousePermission) {
+        UserEntity user = userService.getUserById(userId);
+        String permissionName = String.format("%d:%s", warehouseId, warehousePermission.name());
+        WarehousePermissionEntity permissionEntity = getPermissionEntityByName(permissionName);
+        removePermission(user, permissionEntity);
+    }
+
+    public List<WarehousePermissionEntity> getAll() {
+        return warehousePermissionRepository.findAll();
+    }
+
+    public List<WarehousePermissionEntity> getForWarehouse(Long warehouseId) {
+        return warehousePermissionRepository.findAllByWarehouseId(warehouseId);
     }
 }
