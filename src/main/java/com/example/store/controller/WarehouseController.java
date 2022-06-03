@@ -35,7 +35,6 @@ public class WarehouseController {
 
     private final WarehouseService service;
 
-    @PreAuthorize("hasAuthority(#warehouseId + ':READ')")
     @GetMapping("/{warehouseId}")
     public WarehouseDTO getWarehouse(@PathVariable Long warehouseId, Principal principal) {
         return service.getWarehouse(warehouseId);
@@ -53,6 +52,7 @@ public class WarehouseController {
         return service.createWarehouse(addressId);
     }
 
+    @PreAuthorize("hasAuthority(#warehouseId + ':DELETE')")
     @DeleteMapping("/{warehouseId}")
     public void deleteWarehouse(@PathVariable Long warehouseId) {
         service.deleteWarehouse(warehouseId);
