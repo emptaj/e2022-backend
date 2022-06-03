@@ -13,6 +13,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("api/users/")
 @AllArgsConstructor
+@CrossOrigin
 public class UserRegistrationController {
     private final UserRegistrationService userRegistrationService;
 

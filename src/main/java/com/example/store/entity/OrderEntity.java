@@ -33,9 +33,9 @@ public class OrderEntity {
     @ManyToOne
     private UserEntity buyer;
     private Date orderDate;
-    
+
     @ManyToOne
-    private WarehouseUserEntity modificationOperator;
+    private UserEntity modificationOperator;
     private Date modificationDate;
 
     @ManyToOne

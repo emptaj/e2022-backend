@@ -16,11 +16,7 @@ public interface WarehouseMapper {
 
     static WarehouseMapper INSTANCE = Mappers.getMapper(WarehouseMapper.class);
 
-    
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "name", expression = "java(name)")
-    @Mapping(target = "creationDate", expression = "java(creationDate)")
-    @Mapping(target = "address", expression = "java(address)")
     @Mapping(target = "active", constant = "true")
     @Mapping(target = "modificationDate", ignore = true)
     WarehouseEntity create(String name, AddressEntity address, LocalDate creationDate);

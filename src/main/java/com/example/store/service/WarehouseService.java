@@ -8,7 +8,9 @@ import com.example.store.dto.ListDTO;
 import com.example.store.dto.warehouse.CreateWarehouseDTO;
 import com.example.store.dto.warehouse.WarehouseDTO;
 import com.example.store.entity.AddressEntity;
+import com.example.store.entity.UserEntity;
 import com.example.store.entity.WarehouseEntity;
+import com.example.store.entity.WarehousePermissionEntity;
 import com.example.store.exception.NotFoundException;
 import com.example.store.exception.ValidationException;
 import com.example.store.mapper.WarehouseMapper;
@@ -21,12 +23,15 @@ import org.springframework.util.StringUtils;
 
 import lombok.RequiredArgsConstructor;
 
+
 @Service
 @RequiredArgsConstructor
 public class WarehouseService {
 
     private final WarehouseRepository repository;
+    private final WarehousePermissionService permissionService;
     private final AddressService addressService;
+    private final UserService userService;
     private final WarehouseMapper mapper = WarehouseMapper.INSTANCE;
 
 
@@ -40,7 +45,11 @@ public class WarehouseService {
         validateName(dto.getName());
         AddressEntity address = addressService.createAddressEntity(dto.getAddress());
         WarehouseEntity entity = mapper.create(dto.getName(), address, LocalDate.now());
+        UserEntity userEntity = userService.getLoggedUserEntity();
         entity = repository.save(entity);
+
+        List<WarehousePermissionEntity> permissions = permissionService.createPermissions(entity);
+        permissionService.assignAllPermissions(userEntity, permissions);
         return mapper.toDTO(entity);
     }
 
@@ -67,5 +76,11 @@ public class WarehouseService {
         return new ListDTO<>(pageResponse.getTotalPages(), warehouses);
     }
 
-    
+
+    public WarehouseDTO getWarehouse(Long warehouseId) {
+        return mapper.toDTO(repository.findById(warehouseId).orElseThrow(
+                () -> new NotFoundException(WarehouseEntity.class, warehouseId)));
+    }
+
+
 }
