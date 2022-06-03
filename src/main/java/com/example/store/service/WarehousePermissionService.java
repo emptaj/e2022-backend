@@ -4,6 +4,7 @@ import com.example.store.entity.UserEntity;
 import com.example.store.entity.WarehouseEntity;
 import com.example.store.entity.WarehousePermissionEntity;
 import com.example.store.entity.enums.WarehousePermission;
+import com.example.store.exception.NotFoundException;
 import com.example.store.repository.WarehousePermissionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class WarehousePermissionService {
     private final WarehousePermissionRepository warehousePermissionRepository;
+    private final UserService userService;
 
     @Transactional
     public List<WarehousePermissionEntity> createPermissions(WarehouseEntity warehouseEntity) {
@@ -34,6 +36,11 @@ public class WarehousePermissionService {
         return warehousePermissionEntityList;
     }
 
+    public WarehousePermissionEntity assignPermissionToUser(Long warehouseId, Long userId, WarehousePermission permission) {
+        UserEntity user = userService.getUserById(userId);
+
+    }
+
     @Transactional
     public void assignAllPermissions(UserEntity user, Collection<WarehousePermissionEntity> permissionEntities) {
         user.getWarehousePermissions().addAll(permissionEntities);
@@ -43,5 +50,11 @@ public class WarehousePermissionService {
     @Transactional
     public void assignPermission(UserEntity user, WarehousePermissionEntity permissionEntity) {
         user.getWarehousePermissions().add(permissionEntity);
+    }
+
+    public WarehousePermissionEntity getPermissionEntityByName(String permissionName) {
+        return warehousePermissionRepository.findByName(permissionName).orElseThrow(
+                () -> new NotFoundException(WarehousePermissionEntity.class, permissionName)
+        );
     }
 }
