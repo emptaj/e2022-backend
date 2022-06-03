@@ -30,20 +30,20 @@ public interface OrderMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "state", constant = "NEW")
-    @Mapping(target = "buyer", expression = "java(buyer)")
-    @Mapping(target = "orderDate", expression = "java(orderDate)")
+    // @Mapping(target = "buyer", expression = "java(buyer)")
+    // @Mapping(target = "orderDate", expression = "java(orderDate)")
     @Mapping(target = "modificationOperator", ignore = true)
     @Mapping(target = "modificationDate", ignore = true)
-    @Mapping(target = "warehouse", expression = "java(warehouse)")
-    @Mapping(target = "address", expression = "java(address)")
-    @Mapping(target = "deliveryType", expression = "java(deliveryType)")
-    OrderEntity create(UserEntity buyer, LocalDate orderDate, WarehouseEntity warehouse,
+    // @Mapping(target = "warehouse", expression = "java(warehouse)")
+    @Mapping(target = "address", source = "address")
+    // @Mapping(target = "deliveryType", expression = "java(deliveryType)")
+    OrderEntity create(UserEntity user, LocalDate orderDate, WarehouseEntity warehouse,
                        AddressEntity address, DeliveryTypeEntity deliveryType);
     
     @Mapping(target = "productId", source = "product.id")
     OrderDetailsDTO toDTO(OrderDetailsEntity entity);
 
-    @Mapping(target = "buyerId", source = "entity.buyer.id")
+    @Mapping(target = "userId", source = "entity.user.id")
     @Mapping(target = "warehouseId", source = "entity.warehouse.id")
     @Mapping(target = "addressId", source = "entity.address.id")
     @Mapping(target = "deliveryTypeId", source = "entity.deliveryType.id")

@@ -35,7 +35,7 @@ public class OrderEntity {
     private OrderState state;
     
     @ManyToOne
-    private UserEntity buyer;
+    private UserEntity user;
     private LocalDate orderDate;
     
     @ManyToOne

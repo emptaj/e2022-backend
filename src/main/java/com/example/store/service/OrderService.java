@@ -1,5 +1,6 @@
 package com.example.store.service;
 
+import com.example.store.dto.ListDTO;
 import com.example.store.dto.order.CreateOrderDTO;
 import com.example.store.dto.order.CreateOrderDetailsDTO;
 import com.example.store.dto.order.OrderDTO;
@@ -11,6 +12,7 @@ import com.example.store.entity.OrderEntity;
 import com.example.store.entity.ProductEntity;
 import com.example.store.entity.UserEntity;
 import com.example.store.entity.WarehouseEntity;
+import com.example.store.entity.enums.OrderState;
 import com.example.store.exception.NotFoundException;
 import com.example.store.exception.ValidationException;
 import com.example.store.mapper.OrderMapper;
@@ -27,6 +29,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
@@ -146,10 +150,10 @@ public class OrderService {
         }
     }
 
-    private List<OrderDetailsEntity> prepareOrderDetails(List<Pair<ProductEntity, Integer>> details, OrderEntity order) {
+    private List<OrderDetailsEntity> prepareOrderDetails(List<Pair<ProductEntity, Integer>> items, OrderEntity order) {
         var orderDetailsList = new ArrayList<OrderDetailsEntity>();
 
-        for (var item : details) {
+        for (var item : items) {
             ProductEntity product = item.getFirst();
             Integer quantity = item.getSecond();
             
@@ -167,5 +171,25 @@ public class OrderService {
     private void validatePositiveQuantity(Integer number) {
         if (number <= 0)
             throw new ValidationException("Product quantity must be positive");
+    }
+
+    
+    public ListDTO<OrderDTO> getUserOrders(Long userId, int page, int size) {
+        UserEntity user = UserEntity.builder().id(userId).build(); // FIXME: find user
+        userRepository.save(user);                      // FIXME: remove this
+        Page<OrderEntity> pageResponse = repository.findAllByUserIdAndStateNotIn(
+                user, List.of(OrderState.CANCELLED, OrderState.DELIVERED, OrderState.REJECTED),
+                PageRequest.of(page, size));
+        
+        var result = new ArrayList<OrderDTO>();
+        for (var entity : pageResponse.getContent()) {
+            List<OrderDetailsDTO> details = entity.getOrderDetails().stream()
+                    .map(mapper::toDTO)
+                    .collect(Collectors.toList());
+
+            result.add(mapper.toDTO(entity, details));
+        }
+        
+        return new ListDTO<>(pageResponse.getTotalPages(), result);
     }
 }
