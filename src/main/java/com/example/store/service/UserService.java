@@ -55,4 +55,8 @@ public class UserService implements UserDetailsService {
                         () -> new UsernameNotFoundException("Auth: user must be logged in")
                 );
     }
+
+    public UserEntity getUserById(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new NotFoundException(UserEntity.class, userId));
+    }
 }
