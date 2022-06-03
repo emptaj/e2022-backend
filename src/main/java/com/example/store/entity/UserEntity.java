@@ -1,10 +1,7 @@
 package com.example.store.entity;
 
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.persistence.*;
@@ -47,7 +44,7 @@ public class UserEntity implements UserDetails {
     private UserRole userRole;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    private List<WarehousePermissionEntity> warehousePermissions;
+    private Set<WarehousePermissionEntity> warehousePermissions;
 
     @OneToOne
     private AddressEntity address;

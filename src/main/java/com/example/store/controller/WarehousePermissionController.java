@@ -13,7 +13,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/api/warehouses")
+@RequestMapping(path = "/api/warehouses/")
 @CrossOrigin
 @RequiredArgsConstructor
 public class WarehousePermissionController {
@@ -44,8 +44,8 @@ public class WarehousePermissionController {
         return warehousePermissionService.getAll();
     }
 
-    
-    @GetMapping("/{warehouseId}")
+
+    @GetMapping("/{warehouseId}/permissions")
     public List<WarehousePermissionEntity> getPermisionsForWarehouse(@PathVariable Long warehouseId) {
         return warehousePermissionService.getForWarehouse(warehouseId);
     }
