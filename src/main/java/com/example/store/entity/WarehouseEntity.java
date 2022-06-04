@@ -19,7 +19,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 @AllArgsConstructor
 public class WarehouseEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id;
     private String name;
 
