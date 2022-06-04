@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
+import javax.validation.ValidationException;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,6 @@ import com.example.store.dto.address.AddressDTO;
 import com.example.store.dto.warehouse.CreateWarehouseDTO;
 import com.example.store.dto.warehouse.WarehouseDTO;
 import com.example.store.exception.NotFoundException;
-import com.example.store.exception.ValidationException;
 import com.example.store.service.AddressService;
 import com.example.store.service.WarehouseService;
 
