@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.store.dto.ListDTO;
 import com.example.store.dto.deliveryType.CreateDeliveryTypeDTO;
 import com.example.store.dto.deliveryType.DeliveryTypeDTO;
+import com.example.store.dto.deliveryType.DeliveryTypeExDTO;
 import com.example.store.service.DeliveryTypeService;
 
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,13 @@ public class DeliveryTypeController {
         @RequestParam(defaultValue = "20") int size
     ) {
         return service.getActiveDeliveryTypes(page, size);
+    }
+
+    public ListDTO<DeliveryTypeExDTO> getDeliveryTypesEx(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "20") int size
+    ) {
+        return service.getDeliveryTypesEx(page, size);
     }
 
     @PostMapping("")

@@ -8,6 +8,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
 import com.example.store.dto.deliveryType.DeliveryTypeDTO;
+import com.example.store.dto.deliveryType.DeliveryTypeExDTO;
 import com.example.store.dto.deliveryType.CreateDeliveryTypeDTO;
 import com.example.store.entity.AddressEntity;
 import com.example.store.entity.DeliveryTypeEntity;
@@ -25,6 +26,9 @@ public interface DeliveryTypeMapper {
 
     @Mapping(target = "addressId", source = "address.id")
     DeliveryTypeDTO toDTO(DeliveryTypeEntity entity);
+
+    @Mapping(target = "addressId", source = "address.id")
+    DeliveryTypeExDTO toExDTO(DeliveryTypeEntity entity);
 
     @Mapping(target = "active", constant = "false")
     DeliveryTypeEntity delete(@MappingTarget DeliveryTypeEntity entity, LocalDate modificationDate);
