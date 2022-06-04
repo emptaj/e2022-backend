@@ -25,6 +25,6 @@ public interface WarehouseMapper {
     WarehouseDTO toDTO(WarehouseEntity entity);
 
     @Mapping(target = "active", constant = "false")
-    @Mapping(target = "modificationDate", expression = "java(modificationDate)")
+    @Mapping(target = "modificationDate", source = "modificationDate")
     WarehouseEntity delete(@MappingTarget WarehouseEntity entity, LocalDate modificationDate);
 }
