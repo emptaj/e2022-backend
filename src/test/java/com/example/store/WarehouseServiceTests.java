@@ -2,9 +2,9 @@ package com.example.store;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
+
+import javax.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +30,7 @@ class WarehouseServiceTests {
     private AddressService addressService;
 
     @Test
+    @Transactional
     void getNonExistingWarehouseByIdTest() throws NotFoundException{
         Long id = -1L;
 
@@ -39,6 +40,7 @@ class WarehouseServiceTests {
     }
 
     @Test
+    @Transactional
     void createdWarehouseTest(){
         CreateWarehouseDTO warehouse = ExampleDTOBuilder.buildExampleWarehouseDTO();
         WarehouseDTO createdWarehouse = service.createWarehouse(warehouse);
@@ -48,6 +50,7 @@ class WarehouseServiceTests {
     }
 
     @Test
+    @Transactional
     void findAddressFromCreatedWarehouseTest(){
         CreateWarehouseDTO warehouse = ExampleDTOBuilder.buildExampleWarehouseDTO();
         WarehouseDTO createdWarehouse = service.createWarehouse(warehouse);
@@ -57,6 +60,7 @@ class WarehouseServiceTests {
     }
 
     @Test
+    @Transactional
     void findCreatedWarehouseTest(){
         CreateWarehouseDTO warehouse = ExampleDTOBuilder.buildExampleWarehouseDTO();
         WarehouseDTO createdWarehouse = service.createWarehouse(warehouse);
@@ -69,6 +73,7 @@ class WarehouseServiceTests {
     }
 
     @Test
+    @Transactional
     void createWarehouseWithEmptyNameTest() throws ValidationException{
         CreateWarehouseDTO warehouse = new CreateWarehouseDTO("", ExampleDTOBuilder.BuildExampleAddress());
 
@@ -78,6 +83,7 @@ class WarehouseServiceTests {
     }
 
     @Test
+    @Transactional
     void findUnactivedWarehouseTest(){
         CreateWarehouseDTO warehouse = ExampleDTOBuilder.buildExampleWarehouseDTO();
         WarehouseDTO createdWarehouse = service.createWarehouse(warehouse);
@@ -92,6 +98,7 @@ class WarehouseServiceTests {
     }
 
     @Test
+    @Transactional
     void findActiveWarehouseTest(){
         CreateWarehouseDTO warehouse = ExampleDTOBuilder.buildExampleWarehouseDTO();
         WarehouseDTO createdWarehouse = service.createWarehouse(warehouse);

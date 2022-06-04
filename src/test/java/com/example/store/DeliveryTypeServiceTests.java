@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,6 +32,7 @@ class DeliveryTypeServiceTests {
 
 
     @Test
+    @Transactional
     void getNonExistingDeliveryTypeByIdTest() throws NotFoundException{
         Long id = -1L;
         assertThrows(NotFoundException.class, () -> {
@@ -38,15 +41,16 @@ class DeliveryTypeServiceTests {
     }
 
     @Test
+    @Transactional
     void getAddressFromExistingDeliveryTypeTest(){
         CreateDeliveryTypeDTO deliveryType = ExampleDTOBuilder.buildExampleDeliveryTypeDTO();
         DeliveryTypeDTO createdDeliveryType = service.createDeliveryType(deliveryType);
         AddressDTO addressCreated = addressService.getSingleAddress(createdDeliveryType.getAddressId());
         assertTrue(EqualDTOChecker.ifAddressEquals(deliveryType.getAddress(), addressCreated));
-        service.deleteDeliveryType(createdDeliveryType.getId());
     }
 
     @Test
+    @Transactional
     void getAddressUnactiveDeliveryTypeTest() throws NotFoundException{
         CreateDeliveryTypeDTO deliveryType = ExampleDTOBuilder.buildExampleDeliveryTypeDTO();
         DeliveryTypeDTO createdDeliveryType = service.createDeliveryType(deliveryType);
@@ -60,15 +64,16 @@ class DeliveryTypeServiceTests {
     }
 
     @Test
+    @Transactional
     void getExistingDeliveryTypeByIdTest(){
         CreateDeliveryTypeDTO deliveryType = ExampleDTOBuilder.buildExampleDeliveryTypeDTO();
         DeliveryTypeDTO createdDeliveryType = service.createDeliveryType(deliveryType);
         AddressDTO addressCreated = addressService.getSingleAddress(createdDeliveryType.getAddressId());
-        service.deleteDeliveryType(createdDeliveryType.getId());
         assertTrue(EqualDTOChecker.ifDeliveryTypeEqual(deliveryType, createdDeliveryType, addressCreated));
     }
 
     @Test
+    @Transactional
     void CreateFindAndDeleteDeliveryTypeTest(){
         CreateDeliveryTypeDTO deliveryType = ExampleDTOBuilder.buildExampleDeliveryTypeDTO();
         DeliveryTypeDTO createdDeliveryType = service.createDeliveryType(deliveryType);
@@ -82,6 +87,7 @@ class DeliveryTypeServiceTests {
     }
 
     @Test
+    @Transactional
     void getUnactiveDeliveryTypeTest() throws NotFoundException{
         CreateDeliveryTypeDTO deliveryType = ExampleDTOBuilder.buildExampleDeliveryTypeDTO();
         DeliveryTypeDTO createdDeliveryType = service.createDeliveryType(deliveryType);
@@ -96,6 +102,7 @@ class DeliveryTypeServiceTests {
     }
 
     @Test
+    @Transactional
     void getActiveDeliveryTypeTest() throws NotFoundException{
         CreateDeliveryTypeDTO deliveryType = ExampleDTOBuilder.buildExampleDeliveryTypeDTO();
         DeliveryTypeDTO createdDeliveryType = service.createDeliveryType(deliveryType);
@@ -107,10 +114,10 @@ class DeliveryTypeServiceTests {
         .collect(Collectors.toList())
         .isEmpty());
 
-        service.deleteDeliveryType(createdDeliveryType.getId());
     }
 
     @Test
+    @Transactional
     void createDeliveryTypeWithEmptyName() throws ValidationException{
         CreateDeliveryTypeDTO deliveryType = CreateDeliveryTypeDTO.builder().name("").email("Example@email.com").address(ExampleDTOBuilder.BuildExampleAddress()).build();
 

@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,7 +23,9 @@ class AddressServiceTests {
     @Autowired
     private AddressService service;
 
+    
     @Test
+    @Transactional
     void getNonExistingAddressByIdTest() throws NotFoundException{
         Long id = -1L;
 
@@ -31,15 +35,16 @@ class AddressServiceTests {
     }
 
     @Test
+    @Transactional
     void getExistingAddressByIdTest() throws NotFoundException{
         AddressDTO address = ExampleDTOBuilder.BuildExampleAddress();
         AddressDTO createdAdress = service.createAddress(address);
-        service.deleteAddress(createdAdress.getId());
 
         assertTrue(EqualDTOChecker.ifAddressEquals(address, createdAdress));
     }
 
     @Test
+    @Transactional
     void CreateFindAndDeleteAddressTest() throws NotFoundException{
         AddressDTO address = ExampleDTOBuilder.BuildExampleAddress();
         AddressDTO createdAddress = service.createAddress(address);
@@ -51,6 +56,7 @@ class AddressServiceTests {
     }
 
     @Test
+    @Transactional
     void getDeletedAddressTest() throws NotFoundException{
         AddressDTO address = ExampleDTOBuilder.BuildExampleAddress();
         AddressDTO createdAddress = service.createAddress(address);
@@ -62,6 +68,7 @@ class AddressServiceTests {
     }
 
     @Test
+    @Transactional
     void getActiveAddressFromListTest() throws NotFoundException{
         AddressDTO address = ExampleDTOBuilder.BuildExampleAddress();
         AddressDTO createdAddress = service.createAddress(address);
