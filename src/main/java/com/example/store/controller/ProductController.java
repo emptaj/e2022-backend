@@ -3,7 +3,6 @@ package com.example.store.controller;
 import javax.transaction.Transactional;
 
 import com.example.store.dto.ListDTO;
-import com.example.store.dto.SingleValueDTO;
 import com.example.store.dto.product.ProductDTO;
 import com.example.store.dto.product.ProductExDTO;
 import com.example.store.dto.product.UpdateProductDTO;
@@ -68,7 +67,7 @@ public class ProductController {
 
     @PutMapping("/products/{productId}/stock")
     ProductExDTO restockProduct(@PathVariable Long productId,
-                                @RequestBody SingleValueDTO<Integer> stock) {
+                                @RequestParam Integer stock) {
         return service.restockProduct(productId, stock);
     }
 }

@@ -12,14 +12,13 @@ import com.example.store.entity.UserEntity;
 import com.example.store.entity.WarehouseEntity;
 import com.example.store.entity.WarehousePermissionEntity;
 import com.example.store.exception.NotFoundException;
-import com.example.store.exception.ValidationException;
 import com.example.store.mapper.WarehouseMapper;
 import com.example.store.repository.WarehouseRepository;
+import com.example.store.validator.Validator;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -42,7 +41,7 @@ public class WarehouseService {
 
 
     public WarehouseDTO createWarehouse(CreateWarehouseDTO dto) {
-        validateName(dto.getName());
+        Validator.stringNotEmpty(dto.getName(), "Warehouse name cannot be empty");
         AddressEntity address = addressService.createAddressEntity(dto.getAddress());
         WarehouseEntity entity = mapper.create(dto.getName(), address, LocalDate.now());
         UserEntity userEntity = userService.getLoggedUserEntity();
@@ -51,11 +50,6 @@ public class WarehouseService {
         List<WarehousePermissionEntity> permissions = permissionService.createPermissions(entity);
         permissionService.assignAllPermissions(userEntity, permissions);
         return mapper.toDTO(entity);
-    }
-
-    private void validateName(String name) {
-        if (!StringUtils.hasText(name))
-            throw new ValidationException("Warehouse name cannot be empty");
     }
 
 

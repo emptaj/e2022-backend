@@ -25,6 +25,7 @@ import com.example.store.mapper.OrderMapper;
 import com.example.store.repository.OrderDetailsRepository;
 import com.example.store.repository.OrderRepository;
 import com.example.store.repository.ProductRepository;
+import com.example.store.validator.Validator;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -106,7 +107,7 @@ public class OrderService {
         for (CreateOrderDetailsDTO item : orderDetails) {
             ProductEntity product = productService.findProductById(item.getProductId());
             Integer quantity = item.getQuantity();
-            validatePositiveValue(quantity, "Product quantity must be positive");
+            Validator.positiveValue(quantity, "Product quantity must be positive");
 
             WarehouseEntity warehouse = product.getWarehouse();
             List<Pair<ProductEntity, Integer>> productList = ordersMap.get(warehouse);
@@ -162,13 +163,8 @@ public class OrderService {
 
         return orderDetailsList;
     }
-    
-    private void validatePositiveValue(Integer value, String message) {
-        if (value <= 0)
-            throw new ValidationException(message);
-    }
 
-    
+
     public ListDTO<OrderDTO> getUserOrders(Long userId, int page, int size) {
         UserEntity user = userService.getUserById(userId);
         Page<OrderEntity> pageResponse = repository.findAllByUserIdAndStateNotIn(
@@ -193,7 +189,7 @@ public class OrderService {
                 Integer quantity = details.getQuantity();
                 Integer stock = product.getUnitsInStock();
 
-                validatePositiveValue(stock - quantity, "There are not enough items in stock to send");
+                Validator.positiveValue(stock - quantity, "There are not enough items in stock to send");
                 product.setUnitsInStock(stock - quantity);
                 product.setUnitsInOrder(product.getUnitsInOrder() - quantity);
                 productRepository.save(product);
@@ -227,6 +223,7 @@ public class OrderService {
         if (!orderStates.contains(state))
             throw new ValidationException("Cannot change order state to " + state.name());
     }
+
 
     public ListDTO<OrderDTO> getPendingOrders(int page, int size) {
         Page<OrderEntity> pageResponse = repository.findAllByStateIn(
