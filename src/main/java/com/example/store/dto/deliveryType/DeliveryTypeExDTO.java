@@ -9,8 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DeliveryTypeDTO {
+public class DeliveryTypeExDTO {
     private Long id;
+    private Boolean active;
     private String name;
     private String email;
     private Long addressId;
