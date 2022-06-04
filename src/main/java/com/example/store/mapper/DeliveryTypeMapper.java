@@ -20,15 +20,12 @@ public interface DeliveryTypeMapper {
     
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "active", constant = "true")
-    @Mapping(target = "name", source = "dto.name")
-    @Mapping(target = "email", source = "dto.email")
-    @Mapping(target = "address", expression = "java(address)")
+    @Mapping(target = "address", source = "address")
     DeliveryTypeEntity create(CreateDeliveryTypeDTO dto, AddressEntity address);
 
     @Mapping(target = "addressId", source = "address.id")
     DeliveryTypeDTO toDTO(DeliveryTypeEntity entity);
 
     @Mapping(target = "active", constant = "false")
-    @Mapping(target = "modificationDate", expression = "java(modificationDate)")
     DeliveryTypeEntity delete(@MappingTarget DeliveryTypeEntity entity, LocalDate modificationDate);
 }
