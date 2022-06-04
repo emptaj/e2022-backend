@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ProductsService {
+public class ProductService {
 
     private final ProductRepository repository;
     private final ProductMapper mapper = ProductMapper.INSTANCE;

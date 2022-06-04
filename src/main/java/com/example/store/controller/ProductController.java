@@ -7,7 +7,7 @@ import com.example.store.dto.SingleValueDTO;
 import com.example.store.dto.product.ProductDTO;
 import com.example.store.dto.product.ProductExDTO;
 import com.example.store.dto.product.UpdateProductDTO;
-import com.example.store.service.ProductsService;
+import com.example.store.service.ProductService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -19,9 +19,9 @@ import lombok.RequiredArgsConstructor;
 @CrossOrigin
 @Transactional
 @RequiredArgsConstructor
-public class ProductsController {
+public class ProductController {
 
-    private final ProductsService service;
+    private final ProductService service;
 
 
     @GetMapping("/products")

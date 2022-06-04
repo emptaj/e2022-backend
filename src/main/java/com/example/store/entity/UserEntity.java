@@ -1,8 +1,8 @@
 package com.example.store.entity;
 
 import java.sql.Date;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.persistence.*;
 
@@ -43,13 +43,17 @@ public class UserEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set<WarehousePermissionEntity> warehousePermissions;
+
     @OneToOne
     private AddressEntity address;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(userRole.name());
-        return Collections.singletonList(authority);
+        return warehousePermissions.stream()
+                .map(permissionEntity -> new SimpleGrantedAuthority(permissionEntity.getName()))
+                .collect(Collectors.toList());
     }
 
     @Override

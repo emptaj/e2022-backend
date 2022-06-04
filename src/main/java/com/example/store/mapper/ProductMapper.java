@@ -15,8 +15,8 @@ import org.mapstruct.factory.Mappers;
 public interface ProductMapper {
     ProductMapper INSTANCE = Mappers.getMapper(ProductMapper.class);
 
-    @Mapping(target = "warehouse", expression = "java(warehouse)")
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "warehouse", source = "warehouse")
     @Mapping(target = "unitsInStock", constant = "0")
     @Mapping(target = "unitsInOrder", constant = "0")
     @Mapping(target = "name", source = "dto.name")

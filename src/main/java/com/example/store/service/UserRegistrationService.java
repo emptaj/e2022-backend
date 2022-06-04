@@ -26,7 +26,6 @@ import java.util.UUID;
 @Service
 public class UserRegistrationService {
     private final UserRepository userRepository;
-    private final UserService userService;
     private final RegistrationTokenRepository registrationTokenRepository;
     private final UserMapper userMapper = UserMapper.INSTANCE;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -64,7 +63,7 @@ public class UserRegistrationService {
         registrationTokenRepository.save(registrationTokenEntity);
 
         RegistrationTokenDTO registrationTokenDTO = RegistrationTokenMapper.INSTANCE.toDTO(registrationTokenEntity);
-        return new ResponseEntity(registrationTokenDTO, HttpStatus.CREATED);
+        return new ResponseEntity<RegistrationTokenDTO>(registrationTokenDTO, HttpStatus.CREATED);
 
     }
 
@@ -111,7 +110,7 @@ public class UserRegistrationService {
         registrationTokenEntity.setCreatedAt(now);
         registrationTokenEntity.setExpiresAt(now.plusMinutes(20));
 
-        return new ResponseEntity(RegistrationTokenMapper.INSTANCE.toDTO(registrationTokenEntity), HttpStatus.ACCEPTED);
+        return new ResponseEntity<RegistrationTokenDTO>(RegistrationTokenMapper.INSTANCE.toDTO(registrationTokenEntity), HttpStatus.ACCEPTED);
 
     }
 }

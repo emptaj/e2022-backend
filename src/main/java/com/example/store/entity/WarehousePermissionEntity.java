@@ -1,7 +1,5 @@
 package com.example.store.entity;
 
-import java.time.LocalDate;
-
 import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
@@ -10,22 +8,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "Warehouses")
+@Table(name = "WarehousePermissions")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class WarehouseEntity {
+public class WarehousePermissionEntity {
     @Id
     @GeneratedValue
     private Long id;
+
     private String name;
 
-    private LocalDate creationDate;
-
-    @OneToOne
-    private AddressEntity address;
-
-    private Boolean active;
-    private LocalDate modificationDate;
+    @ManyToOne
+    private WarehouseEntity warehouse;
 }

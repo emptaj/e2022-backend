@@ -7,6 +7,7 @@ import com.example.store.dto.warehouse.CreateWarehouseDTO;
 import com.example.store.dto.warehouse.WarehouseDTO;
 import com.example.store.service.WarehouseService;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
+import java.security.Principal;
+
 
 @RestController
 @RequestMapping(path = "/api/warehouses")
@@ -26,13 +29,18 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 @RequiredArgsConstructor
 public class WarehouseController {
-    
+
     private final WarehouseService service;
-    
+
+    @GetMapping("/{warehouseId}")
+    public WarehouseDTO getWarehouse(@PathVariable Long warehouseId, Principal principal) {
+        return service.getWarehouse(warehouseId);
+    }
+
     @GetMapping
     public ListDTO<WarehouseDTO> getWarehouses(
-            @RequestParam(required = false, defaultValue = "0")    int page,
-            @RequestParam(required = false, defaultValue = "20")   int size) {
+            @RequestParam(required = false, defaultValue = "0")  int page,
+            @RequestParam(required = false, defaultValue = "20") int size) {
         return service.getWarehouses(page, size);
     }
 
@@ -41,6 +49,7 @@ public class WarehouseController {
         return service.createWarehouse(dto);
     }
 
+    @PreAuthorize("hasAuthority(#warehouseId + ':DELETE')")
     @DeleteMapping("/{warehouseId}")
     public void deleteWarehouse(@PathVariable Long warehouseId) {
         service.deleteWarehouse(warehouseId);

@@ -16,11 +16,7 @@ public interface WarehouseMapper {
 
     static WarehouseMapper INSTANCE = Mappers.getMapper(WarehouseMapper.class);
 
-    
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "name", expression = "java(name)")
-    @Mapping(target = "creationDate", expression = "java(creationDate)")
-    @Mapping(target = "address", expression = "java(address)")
     @Mapping(target = "active", constant = "true")
     @Mapping(target = "modificationDate", ignore = true)
     WarehouseEntity create(String name, AddressEntity address, LocalDate creationDate);
@@ -29,6 +25,6 @@ public interface WarehouseMapper {
     WarehouseDTO toDTO(WarehouseEntity entity);
 
     @Mapping(target = "active", constant = "false")
-    @Mapping(target = "modificationDate", expression = "java(modificationDate)")
+    @Mapping(target = "modificationDate", source = "modificationDate")
     WarehouseEntity delete(@MappingTarget WarehouseEntity entity, LocalDate modificationDate);
 }
