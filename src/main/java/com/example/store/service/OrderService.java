@@ -7,7 +7,6 @@ import static com.example.store.entity.enums.OrderState.SENT;
 import static com.example.store.entity.enums.OrderState.DELIVERED;
 
 import com.example.store.dto.ListDTO;
-import com.example.store.dto.SingleValueDTO;
 import com.example.store.dto.order.CreateOrderDTO;
 import com.example.store.dto.order.CreateOrderDetailsDTO;
 import com.example.store.dto.order.OrderDTO;
@@ -196,10 +195,9 @@ public class OrderService {
         return new ListDTO<>(pageResponse.getTotalPages(), result);
     }
 
-    public OrderDTO changeOrderState(Long orderId, SingleValueDTO<OrderState> state) {
+    public OrderDTO changeOrderState(Long orderId, OrderState nextState) {
         OrderEntity order = findOrderById(orderId);
         OrderState currentState = order.getState();
-        OrderState nextState = state.getValue();
 
         validateNextState(currentState, nextState);
         if (nextState == SENT) {

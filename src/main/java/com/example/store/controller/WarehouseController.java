@@ -5,12 +5,8 @@ import javax.transaction.Transactional;
 import com.example.store.dto.ListDTO;
 import com.example.store.dto.warehouse.CreateWarehouseDTO;
 import com.example.store.dto.warehouse.WarehouseDTO;
-import com.example.store.entity.enums.WarehousePermission;
-import com.example.store.service.UserService;
-import com.example.store.service.WarehousePermissionService;
 import com.example.store.service.WarehouseService;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
