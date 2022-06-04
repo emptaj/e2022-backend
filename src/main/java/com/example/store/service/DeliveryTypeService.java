@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 import com.example.store.dto.ListDTO;
 import com.example.store.dto.deliveryType.CreateDeliveryTypeDTO;
 import com.example.store.dto.deliveryType.DeliveryTypeDTO;
+import com.example.store.dto.deliveryType.DeliveryTypeExDTO;
 import com.example.store.entity.AddressEntity;
 import com.example.store.entity.DeliveryTypeEntity;
 import com.example.store.exception.NotFoundException;
@@ -51,6 +52,19 @@ public class DeliveryTypeService {
     }
 
 
+    public ListDTO<DeliveryTypeExDTO> getDeliveryTypesEx(int page, int size) {
+        Page<DeliveryTypeEntity> pageResponse = repository.findAll(PageRequest.of(page, size));
+        List<DeliveryTypeExDTO> deliveryTypes = pageResponse.getContent().stream()
+                .map(mapper::toExDTO)
+                .collect(Collectors.toList());
+
+        return new ListDTO<>(
+            pageResponse.getTotalPages(),
+            deliveryTypes
+        );
+    }
+
+
     public DeliveryTypeDTO createDeliveryType(CreateDeliveryTypeDTO dto) {
         validateName(dto.getName());
         AddressEntity address = addressService.createAddressEntity(dto.getAddress());
@@ -70,5 +84,4 @@ public class DeliveryTypeService {
         entity = mapper.delete(entity, LocalDate.now());
         repository.save(entity);
     }
-    
 }
