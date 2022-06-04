@@ -2,6 +2,8 @@ package com.example.store;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.time.LocalDate;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -113,5 +115,15 @@ class WarehouseServiceTests {
         .isEmpty());
 
         service.deleteWarehouse(createdWarehouse.getId());
+    }
+
+    @Test
+    @Transactional
+    void checkModificationDateTest(){
+        CreateWarehouseDTO warehouse = ExampleDTOBuilder.buildExampleWarehouseDTO();
+        WarehouseDTO createdWarehouse = service.createWarehouse(warehouse);
+        service.deleteWarehouse(createdWarehouse.getId());
+        WarehouseDTO deletedWarehouse = service.getWarehouse(createdWarehouse.getId());
+        assertTrue(deletedWarehouse.getModificationDate().equals(LocalDate.now()));
     }
 }
