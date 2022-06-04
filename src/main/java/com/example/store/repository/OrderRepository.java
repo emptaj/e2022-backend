@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OrderRepository extends JpaRepository<OrderEntity, Long>{
     
-    Page<OrderEntity> findAllByUserIdAndStateNotIn(Long userId, List<OrderState> state, Pageable p);
+    Page<OrderEntity> findAllByUserIdAndStateNotIn(Long userId, List<OrderState> states, Pageable p);
 
+    Page<OrderEntity> findAllByStateIn(List<OrderState> states, Pageable p);
 }

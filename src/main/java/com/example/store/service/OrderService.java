@@ -1,5 +1,6 @@
 package com.example.store.service;
 
+import static com.example.store.entity.enums.OrderState.NEW;
 import static com.example.store.entity.enums.OrderState.ACCEPTED;
 import static com.example.store.entity.enums.OrderState.REJECTED;
 import static com.example.store.entity.enums.OrderState.CANCELLED;
@@ -243,5 +244,21 @@ public class OrderService {
     private void validateStateIn(OrderState state, List<OrderState> orderStates) {
         if (!orderStates.contains(state))
             throw new ValidationException("Cannot change order state to " + state.name());
+    }
+
+    public ListDTO<OrderDTO> getPendingOrders(int page, int size) {
+        Page<OrderEntity> pageResponse = repository.findAllByStateIn(
+                List.of(NEW, ACCEPTED, SENT), PageRequest.of(page, size));
+
+        var result = new ArrayList<OrderDTO>();
+        for (var entity : pageResponse.getContent()) {
+            List<OrderDetailsDTO> details = entity.getOrderDetails().stream()
+                    .map(mapper::toDTO)
+                    .collect(Collectors.toList());
+
+            result.add(mapper.toDTO(entity, details));
+        }
+                
+        return new ListDTO<>(pageResponse.getTotalPages(), result);
     }
 }
