@@ -35,6 +35,7 @@ public class DeliveryTypeController {
         return service.getActiveDeliveryTypes(page, size);
     }
 
+    @GetMapping("/extended")
     public ListDTO<DeliveryTypeExDTO> getDeliveryTypesEx(
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "20") int size
