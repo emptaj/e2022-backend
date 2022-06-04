@@ -1,5 +1,6 @@
 package com.example.store.service;
 
+import static com.example.store.entity.enums.OrderState.NEW;
 import static com.example.store.entity.enums.OrderState.ACCEPTED;
 import static com.example.store.entity.enums.OrderState.REJECTED;
 import static com.example.store.entity.enums.OrderState.CANCELLED;
@@ -10,7 +11,6 @@ import com.example.store.dto.ListDTO;
 import com.example.store.dto.order.CreateOrderDTO;
 import com.example.store.dto.order.CreateOrderDetailsDTO;
 import com.example.store.dto.order.OrderDTO;
-import com.example.store.dto.order.OrderDetailsDTO;
 import com.example.store.entity.AddressEntity;
 import com.example.store.entity.DeliveryTypeEntity;
 import com.example.store.entity.OrderDetailsEntity;
@@ -25,6 +25,7 @@ import com.example.store.mapper.OrderMapper;
 import com.example.store.repository.OrderDetailsRepository;
 import com.example.store.repository.OrderRepository;
 import com.example.store.repository.ProductRepository;
+import com.example.store.validator.Validator;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -70,11 +71,7 @@ public class OrderService {
 
     public OrderDTO getOrder(Long orderId) {
         OrderEntity entity = findOrderById(orderId);
-        List<OrderDetailsDTO> detailsDTO = entity.getOrderDetails().stream()
-                .map(mapper::toDTO)
-                .collect(Collectors.toList());
-
-        return mapper.toDTO(entity, detailsDTO);
+        return mapper.toDTO(entity);
     }
 
 
@@ -98,11 +95,7 @@ public class OrderService {
             List<OrderDetailsEntity> orderDetailsList = prepareOrderDetails(items, order);
             order.setOrderDetails(orderDetailsList);
 
-            List<OrderDetailsDTO> orderDetailsDTOList = orderDetailsList.stream()
-                    .map(mapper::toDTO)
-                    .collect(Collectors.toList());
-            
-            ordersDTOList.add(mapper.toDTO(order, orderDetailsDTOList));
+            ordersDTOList.add(mapper.toDTO(order));
         }
 
         return ordersDTOList;
@@ -114,7 +107,7 @@ public class OrderService {
         for (CreateOrderDetailsDTO item : orderDetails) {
             ProductEntity product = productService.findProductById(item.getProductId());
             Integer quantity = item.getQuantity();
-            validatePositiveValue(quantity, "Product quantity must be positive");
+            Validator.positiveValue(quantity, "Product quantity must be positive");
 
             WarehouseEntity warehouse = product.getWarehouse();
             List<Pair<ProductEntity, Integer>> productList = ordersMap.get(warehouse);
@@ -170,27 +163,17 @@ public class OrderService {
 
         return orderDetailsList;
     }
-    
-    private void validatePositiveValue(Integer value, String message) {
-        if (value <= 0)
-            throw new ValidationException(message);
-    }
 
-    
+
     public ListDTO<OrderDTO> getUserOrders(Long userId, int page, int size) {
         UserEntity user = userService.getUserById(userId);
         Page<OrderEntity> pageResponse = repository.findAllByUserIdAndStateNotIn(
                 user.getId(), List.of(OrderState.CANCELLED, OrderState.DELIVERED, OrderState.REJECTED),
                 PageRequest.of(page, size));
         
-        var result = new ArrayList<OrderDTO>();
-        for (var entity : pageResponse.getContent()) {
-            List<OrderDetailsDTO> details = entity.getOrderDetails().stream()
-                    .map(mapper::toDTO)
-                    .collect(Collectors.toList());
-
-            result.add(mapper.toDTO(entity, details));
-        }
+        var result = pageResponse.getContent().stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
         
         return new ListDTO<>(pageResponse.getTotalPages(), result);
     }
@@ -206,7 +189,7 @@ public class OrderService {
                 Integer quantity = details.getQuantity();
                 Integer stock = product.getUnitsInStock();
 
-                validatePositiveValue(stock - quantity, "There are not enough items in stock to send");
+                Validator.positiveValue(stock - quantity, "There are not enough items in stock to send");
                 product.setUnitsInStock(stock - quantity);
                 product.setUnitsInOrder(product.getUnitsInOrder() - quantity);
                 productRepository.save(product);
@@ -216,12 +199,8 @@ public class OrderService {
         UserEntity user = userService.getLoggedUserEntity();
         mapper.changeState(order, nextState, user, LocalDate.now());
         order = repository.save(order);
-
-        List<OrderDetailsDTO> orderDetailsDTO = order.getOrderDetails().stream()
-                .map(mapper::toDTO)
-                .collect(Collectors.toList());
         
-        return mapper.toDTO(order, orderDetailsDTO);
+        return mapper.toDTO(order);
     }
     
     private void validateNextState(OrderState currentState, OrderState nextState) {
@@ -243,5 +222,17 @@ public class OrderService {
     private void validateStateIn(OrderState state, List<OrderState> orderStates) {
         if (!orderStates.contains(state))
             throw new ValidationException("Cannot change order state to " + state.name());
+    }
+
+
+    public ListDTO<OrderDTO> getPendingOrders(int page, int size) {
+        Page<OrderEntity> pageResponse = repository.findAllByStateIn(
+                List.of(NEW, ACCEPTED, SENT), PageRequest.of(page, size));
+
+        var result = pageResponse.getContent().stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
+
+        return new ListDTO<>(pageResponse.getTotalPages(), result);
     }
 }

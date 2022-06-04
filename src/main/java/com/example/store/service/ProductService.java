@@ -1,21 +1,19 @@
 package com.example.store.service;
 
 import com.example.store.dto.ListDTO;
-import com.example.store.dto.SingleValueDTO;
 import com.example.store.dto.product.ProductDTO;
 import com.example.store.dto.product.ProductExDTO;
 import com.example.store.dto.product.UpdateProductDTO;
 import com.example.store.entity.ProductEntity;
 import com.example.store.entity.WarehouseEntity;
 import com.example.store.exception.NotFoundException;
-import com.example.store.exception.ValidationException;
 import com.example.store.mapper.ProductMapper;
 import com.example.store.repository.ProductRepository;
+import com.example.store.validator.Validator;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import lombok.RequiredArgsConstructor;
 
@@ -64,14 +62,10 @@ public class ProductService {
     }
 
     private void validateInput(UpdateProductDTO product) {
-        if (!StringUtils.hasText(product.getName()))
-            throw new ValidationException("Product name cannot be empty");
-        if (!StringUtils.hasText(product.getDescription()))
-            throw new ValidationException("Product description cannot be empty");
-        if (product.getPrice() == null)
-            throw new ValidationException("Product price cannot be empty");
-        if (product.getPrice() < 0.0f)
-            throw new ValidationException("Product price cannot be negative");
+        Validator.stringNotEmpty(product.getName(), "Product name cannot be empty");
+        Validator.stringNotEmpty(product.getDescription(), "Product description cannot be empty");
+        Validator.notNull(product.getPrice(), "Product price cannot be empty");
+        Validator.positiveValue(product.getPrice(), "Product price cannot be negative");
     }
 
 
@@ -113,16 +107,11 @@ public class ProductService {
     }
 
 
-    public ProductExDTO restockProduct(Long productId, SingleValueDTO<Integer> stock) {
+    public ProductExDTO restockProduct(Long productId, Integer stock) {
         ProductEntity entity = findProductById(productId);
-        validateNonNegativeStock(stock);
-        entity.setUnitsInStock(stock.getValue());
+        Validator.notNegative(stock, "Nr products in stock cannot be negative");
+        entity.setUnitsInStock(stock);
         entity = repository.save(entity);
         return mapper.toExDTO(entity);
-    }
-
-    private void validateNonNegativeStock(SingleValueDTO<Integer> stock) {
-        if (stock.getValue() < 0)
-            throw new ValidationException("Nr products in stock cannot be negative");
     }
 }

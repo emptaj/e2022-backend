@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import com.example.store.dto.ListDTO;
 import com.example.store.dto.deliveryType.CreateDeliveryTypeDTO;
@@ -16,9 +15,9 @@ import com.example.store.dto.deliveryType.DeliveryTypeExDTO;
 import com.example.store.entity.AddressEntity;
 import com.example.store.entity.DeliveryTypeEntity;
 import com.example.store.exception.NotFoundException;
-import com.example.store.exception.ValidationException;
 import com.example.store.mapper.DeliveryTypeMapper;
 import com.example.store.repository.DeliveryTypeRepository;
+import com.example.store.validator.Validator;
 
 import lombok.RequiredArgsConstructor;
 
@@ -66,18 +65,13 @@ public class DeliveryTypeService {
 
 
     public DeliveryTypeDTO createDeliveryType(CreateDeliveryTypeDTO dto) {
-        validateName(dto.getName());
+        Validator.stringNotEmpty(dto.getName(), "Delivery type name cannot be empty");
         AddressEntity address = addressService.createAddressEntity(dto.getAddress());
         DeliveryTypeEntity entity = mapper.create(dto, address);
         entity = repository.save(entity);
         return mapper.toDTO(entity);
     }
     
-    private void validateName(String name) {
-        if (!StringUtils.hasText(name))
-            throw new ValidationException("Delivery type name cannot be empty");
-    }
-
 
     public void deleteDeliveryType(Long deliveryTypeId) {
         DeliveryTypeEntity entity = findDeliveryTypeById(deliveryTypeId);
