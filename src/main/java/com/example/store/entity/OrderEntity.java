@@ -39,7 +39,7 @@ public class OrderEntity {
     private LocalDate orderDate;
     
     @ManyToOne
-    private WarehouseUserEntity modificationOperator;
+    private UserEntity modificationOperator;
     private LocalDate modificationDate;
 
     @ManyToOne
