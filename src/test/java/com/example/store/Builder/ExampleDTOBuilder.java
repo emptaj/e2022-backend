@@ -2,6 +2,7 @@ package com.example.store.Builder;
 
 import com.example.store.dto.address.AddressDTO;
 import com.example.store.dto.deliveryType.CreateDeliveryTypeDTO;
+import com.example.store.dto.user.CreateUserDTO;
 import com.example.store.dto.warehouse.CreateWarehouseDTO;
 
 public class ExampleDTOBuilder {
@@ -28,6 +29,10 @@ public class ExampleDTOBuilder {
 
     public static CreateWarehouseDTO buildExampleWarehouseDTO(){
         return new CreateWarehouseDTO("exampleName", BuildExampleAddress());
+    }
+
+    public static CreateUserDTO buildExampleUserDTO(){
+        return new CreateUserDTO("ExampleName", "ExamplePassword", "Example@email.com");
     }
 
 }

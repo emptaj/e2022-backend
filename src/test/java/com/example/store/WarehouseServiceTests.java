@@ -9,6 +9,7 @@ import javax.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import com.example.store.Builder.ExampleDTOBuilder;
 import com.example.store.EqualChecker.EqualDTOChecker;
@@ -29,6 +30,7 @@ class WarehouseServiceTests {
     @Autowired
     private AddressService addressService;
 
+    
     @Test
     @Transactional
     void getNonExistingWarehouseByIdTest() throws NotFoundException{
