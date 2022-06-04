@@ -3,6 +3,8 @@ package com.example.store;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,7 +13,6 @@ import com.example.store.Builder.ExampleDTOBuilder;
 import com.example.store.EqualChecker.EqualDTOChecker;
 import com.example.store.dto.address.AddressDTO;
 import com.example.store.exception.NotFoundException;
-import com.example.store.exception.ValidationException;
 import com.example.store.service.AddressService;
 
 @SpringBootTest
@@ -58,6 +59,20 @@ class AddressServiceTests {
         assertThrows(NotFoundException.class, () -> {
             service.getSingleAddress(createdAddress.getId());
         });
+    }
+
+    @Test
+    void getActiveAddressFromListTest() throws NotFoundException{
+        AddressDTO address = ExampleDTOBuilder.BuildExampleAddress();
+        AddressDTO createdAddress = service.createAddress(address);
+        
+        assertTrue(!service.getAddresses(0, 100)
+        .stream()
+        .filter(addressfound -> addressfound.getId() == createdAddress.getId())
+        .collect(Collectors.toList())
+        .isEmpty());
+
+        service.deleteAddress(createdAddress.getId());
     }
 
 }

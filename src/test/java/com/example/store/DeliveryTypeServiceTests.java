@@ -3,6 +3,8 @@ package com.example.store;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,12 +26,12 @@ class DeliveryTypeServiceTests {
     @Autowired
     private DeliveryTypeService service;
     @Autowired
-    private AddressService serviceAddress;
+    private AddressService addressService;
 
 
     @Test
     void getNonExistingDeliveryTypeByIdTest() throws NotFoundException{
-        Long id = 1L;
+        Long id = -1L;
         assertThrows(NotFoundException.class, () -> {
             service.findDeliveryTypeById(id);
         });
@@ -39,27 +41,29 @@ class DeliveryTypeServiceTests {
     void getAddressFromExistingDeliveryTypeTest(){
         CreateDeliveryTypeDTO deliveryType = ExampleDTOBuilder.buildExampleDeliveryTypeDTO();
         DeliveryTypeDTO createdDeliveryType = service.createDeliveryType(deliveryType);
-        AddressDTO addressCreated = serviceAddress.getSingleAddress(createdDeliveryType.getAddressId());
+        AddressDTO addressCreated = addressService.getSingleAddress(createdDeliveryType.getAddressId());
         assertTrue(EqualDTOChecker.ifAddressEquals(deliveryType.getAddress(), addressCreated));
         service.deleteDeliveryType(createdDeliveryType.getId());
     }
 
     @Test
-    void getAddressFromNonExistingDeliveryTypeTest() throws NotFoundException{
+    void getAddressUnactiveDeliveryTypeTest() throws NotFoundException{
         CreateDeliveryTypeDTO deliveryType = ExampleDTOBuilder.buildExampleDeliveryTypeDTO();
         DeliveryTypeDTO createdDeliveryType = service.createDeliveryType(deliveryType);
         service.deleteDeliveryType(createdDeliveryType.getId());
 
-        assertThrows(NotFoundException.class, () -> {
-            serviceAddress.getSingleAddress(createdDeliveryType.getAddressId());
-        });
+        assertTrue(addressService.getAddresses(0, 100)
+        .stream()
+        .filter(address -> address.getId() == createdDeliveryType.getAddressId())
+        .collect(Collectors.toList())
+        .isEmpty());
     }
 
     @Test
     void getExistingDeliveryTypeByIdTest(){
         CreateDeliveryTypeDTO deliveryType = ExampleDTOBuilder.buildExampleDeliveryTypeDTO();
         DeliveryTypeDTO createdDeliveryType = service.createDeliveryType(deliveryType);
-        AddressDTO addressCreated = serviceAddress.getSingleAddress(createdDeliveryType.getAddressId());
+        AddressDTO addressCreated = addressService.getSingleAddress(createdDeliveryType.getAddressId());
         service.deleteDeliveryType(createdDeliveryType.getId());
         assertTrue(EqualDTOChecker.ifDeliveryTypeEqual(deliveryType, createdDeliveryType, addressCreated));
     }
@@ -69,8 +73,8 @@ class DeliveryTypeServiceTests {
         CreateDeliveryTypeDTO deliveryType = ExampleDTOBuilder.buildExampleDeliveryTypeDTO();
         DeliveryTypeDTO createdDeliveryType = service.createDeliveryType(deliveryType);
         DeliveryTypeDTO foundedDeliveryType = DeliveryTypeMapper.INSTANCE.toDTO(service.findDeliveryTypeById(createdDeliveryType.getId()));
-        AddressDTO addressCreated = serviceAddress.getSingleAddress(createdDeliveryType.getAddressId());
-        AddressDTO addressFounded = serviceAddress.getSingleAddress(foundedDeliveryType.getAddressId());
+        AddressDTO addressCreated = addressService.getSingleAddress(createdDeliveryType.getAddressId());
+        AddressDTO addressFounded = addressService.getSingleAddress(foundedDeliveryType.getAddressId());
         service.deleteDeliveryType(createdDeliveryType.getId());
 
         assertTrue(EqualDTOChecker.ifDeliveryTypeEqual(deliveryType, createdDeliveryType, addressCreated));
@@ -78,14 +82,32 @@ class DeliveryTypeServiceTests {
     }
 
     @Test
-    void getDeletedDeliveryTypeTest() throws NotFoundException{
+    void getUnactiveDeliveryTypeTest() throws NotFoundException{
         CreateDeliveryTypeDTO deliveryType = ExampleDTOBuilder.buildExampleDeliveryTypeDTO();
         DeliveryTypeDTO createdDeliveryType = service.createDeliveryType(deliveryType);
         service.deleteDeliveryType(createdDeliveryType.getId());
 
-        assertThrows(NotFoundException.class, () -> {
-            service.findDeliveryTypeById(createdDeliveryType.getId());
-        });
+        assertTrue(service.getActiveDeliveryTypes(0, 100)
+        .getItems()
+        .stream()
+        .filter(delivery -> delivery.getId() == createdDeliveryType.getId())
+        .collect(Collectors.toList())
+        .isEmpty());
+    }
+
+    @Test
+    void getActiveDeliveryTypeTest() throws NotFoundException{
+        CreateDeliveryTypeDTO deliveryType = ExampleDTOBuilder.buildExampleDeliveryTypeDTO();
+        DeliveryTypeDTO createdDeliveryType = service.createDeliveryType(deliveryType);
+
+        assertTrue(!service.getActiveDeliveryTypes(0, 100)
+        .getItems()
+        .stream()
+        .filter(delivery -> delivery.getId() == createdDeliveryType.getId())
+        .collect(Collectors.toList())
+        .isEmpty());
+
+        service.deleteDeliveryType(createdDeliveryType.getId());
     }
 
     @Test
