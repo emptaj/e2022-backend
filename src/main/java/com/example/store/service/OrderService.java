@@ -19,7 +19,6 @@ import com.example.store.entity.OrderEntity;
 import com.example.store.entity.ProductEntity;
 import com.example.store.entity.UserEntity;
 import com.example.store.entity.WarehouseEntity;
-import com.example.store.entity.WarehouseUserEntity;
 import com.example.store.entity.enums.OrderState;
 import com.example.store.exception.NotFoundException;
 import com.example.store.exception.ValidationException;
@@ -27,7 +26,6 @@ import com.example.store.mapper.OrderMapper;
 import com.example.store.repository.OrderDetailsRepository;
 import com.example.store.repository.OrderRepository;
 import com.example.store.repository.ProductRepository;
-import com.example.store.repository.UserRepository;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -57,8 +55,7 @@ public class OrderService {
     private final ProductService productService;
     private final AddressService addressService;
     private final DeliveryTypeService deliveryService;
-
-    private final UserRepository userRepository; // FIXME: remove this
+    private final UserService userService;
 
 
     public OrderEntity findOrderById(Long id) {
@@ -85,8 +82,7 @@ public class OrderService {
     public List<OrderDTO> createOrder(CreateOrderDTO dto) {
         AddressEntity address = addressService.createAddressEntity(dto.getAddress());
         DeliveryTypeEntity deliveryType = deliveryService.findDeliveryTypeById(dto.getDeliveryTypeId());
-        UserEntity user = new UserEntity(); // FIXME: get current user; DO NOT CREATE NEW ONE
-        user = userRepository.save(user);   // FIXME: remove this
+        UserEntity user = userService.getLoggedUserEntity();
 
         List<OrderDTO> ordersDTOList = new ArrayList<>();
 
@@ -183,10 +179,9 @@ public class OrderService {
 
     
     public ListDTO<OrderDTO> getUserOrders(Long userId, int page, int size) {
-        UserEntity user = UserEntity.builder().id(userId).build(); // FIXME: find user
-        userRepository.save(user);                      // FIXME: remove this
+        UserEntity user = userService.getUserById(userId);
         Page<OrderEntity> pageResponse = repository.findAllByUserIdAndStateNotIn(
-                user, List.of(OrderState.CANCELLED, OrderState.DELIVERED, OrderState.REJECTED),
+                user.getId(), List.of(OrderState.CANCELLED, OrderState.DELIVERED, OrderState.REJECTED),
                 PageRequest.of(page, size));
         
         var result = new ArrayList<OrderDTO>();
@@ -220,7 +215,7 @@ public class OrderService {
             }
         }
 
-        WarehouseUserEntity user = new WarehouseUserEntity(); // FIXME: get currently signed in warehouse user; DO NOT CREATE NEW ONE
+        UserEntity user = userService.getLoggedUserEntity();
         mapper.changeState(order, nextState, user, LocalDate.now());
         order = repository.save(order);
 

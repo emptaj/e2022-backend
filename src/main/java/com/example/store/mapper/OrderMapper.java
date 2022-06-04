@@ -17,7 +17,6 @@ import com.example.store.entity.OrderEntity;
 import com.example.store.entity.ProductEntity;
 import com.example.store.entity.UserEntity;
 import com.example.store.entity.WarehouseEntity;
-import com.example.store.entity.WarehouseUserEntity;
 import com.example.store.entity.enums.OrderState;
 
 @Mapper
@@ -40,7 +39,7 @@ public interface OrderMapper {
                        AddressEntity address, DeliveryTypeEntity deliveryType);
     
     OrderEntity changeState(@MappingTarget OrderEntity entity, OrderState state,
-                            WarehouseUserEntity modificationOperator, LocalDate modificationDate);
+                            UserEntity modificationOperator, LocalDate modificationDate);
                        
     @Mapping(target = "productId", source = "product.id")
     OrderDetailsDTO toDTO(OrderDetailsEntity entity);
