@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.store.dto.ListDTO;
-import com.example.store.dto.SingleValueDTO;
 import com.example.store.dto.order.CreateOrderDTO;
 import com.example.store.dto.order.OrderDTO;
 import com.example.store.entity.enums.OrderState;
@@ -48,8 +47,8 @@ public class OrderController {
         return service.getUserOrders(userId, page, size);
     }
     
-    @PutMapping("/orders/{orderId}/change-state")
-    public OrderDTO changeOrderState(@PathVariable Long orderId, @RequestBody SingleValueDTO<OrderState> state) {
-        return service.changeOrderState(orderId, state);
+    @PutMapping("/orders/{orderId}")
+    public OrderDTO changeOrderState(@PathVariable Long orderId, @RequestParam OrderState nextState) {
+        return service.changeOrderState(orderId, nextState);
     }
 }
