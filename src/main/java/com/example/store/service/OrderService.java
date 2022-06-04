@@ -11,7 +11,6 @@ import com.example.store.dto.ListDTO;
 import com.example.store.dto.order.CreateOrderDTO;
 import com.example.store.dto.order.CreateOrderDetailsDTO;
 import com.example.store.dto.order.OrderDTO;
-import com.example.store.dto.order.OrderDetailsDTO;
 import com.example.store.entity.AddressEntity;
 import com.example.store.entity.DeliveryTypeEntity;
 import com.example.store.entity.OrderDetailsEntity;
@@ -71,11 +70,7 @@ public class OrderService {
 
     public OrderDTO getOrder(Long orderId) {
         OrderEntity entity = findOrderById(orderId);
-        List<OrderDetailsDTO> detailsDTO = entity.getOrderDetails().stream()
-                .map(mapper::toDTO)
-                .collect(Collectors.toList());
-
-        return mapper.toDTO(entity, detailsDTO);
+        return mapper.toDTO(entity);
     }
 
 
@@ -99,11 +94,7 @@ public class OrderService {
             List<OrderDetailsEntity> orderDetailsList = prepareOrderDetails(items, order);
             order.setOrderDetails(orderDetailsList);
 
-            List<OrderDetailsDTO> orderDetailsDTOList = orderDetailsList.stream()
-                    .map(mapper::toDTO)
-                    .collect(Collectors.toList());
-            
-            ordersDTOList.add(mapper.toDTO(order, orderDetailsDTOList));
+            ordersDTOList.add(mapper.toDTO(order));
         }
 
         return ordersDTOList;
@@ -184,14 +175,9 @@ public class OrderService {
                 user.getId(), List.of(OrderState.CANCELLED, OrderState.DELIVERED, OrderState.REJECTED),
                 PageRequest.of(page, size));
         
-        var result = new ArrayList<OrderDTO>();
-        for (var entity : pageResponse.getContent()) {
-            List<OrderDetailsDTO> details = entity.getOrderDetails().stream()
-                    .map(mapper::toDTO)
-                    .collect(Collectors.toList());
-
-            result.add(mapper.toDTO(entity, details));
-        }
+        var result = pageResponse.getContent().stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
         
         return new ListDTO<>(pageResponse.getTotalPages(), result);
     }
@@ -217,12 +203,8 @@ public class OrderService {
         UserEntity user = userService.getLoggedUserEntity();
         mapper.changeState(order, nextState, user, LocalDate.now());
         order = repository.save(order);
-
-        List<OrderDetailsDTO> orderDetailsDTO = order.getOrderDetails().stream()
-                .map(mapper::toDTO)
-                .collect(Collectors.toList());
         
-        return mapper.toDTO(order, orderDetailsDTO);
+        return mapper.toDTO(order);
     }
     
     private void validateNextState(OrderState currentState, OrderState nextState) {
@@ -250,15 +232,10 @@ public class OrderService {
         Page<OrderEntity> pageResponse = repository.findAllByStateIn(
                 List.of(NEW, ACCEPTED, SENT), PageRequest.of(page, size));
 
-        var result = new ArrayList<OrderDTO>();
-        for (var entity : pageResponse.getContent()) {
-            List<OrderDetailsDTO> details = entity.getOrderDetails().stream()
-                    .map(mapper::toDTO)
-                    .collect(Collectors.toList());
+        var result = pageResponse.getContent().stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
 
-            result.add(mapper.toDTO(entity, details));
-        }
-                
         return new ListDTO<>(pageResponse.getTotalPages(), result);
     }
 }

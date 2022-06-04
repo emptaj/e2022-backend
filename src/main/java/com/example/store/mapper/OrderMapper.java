@@ -1,7 +1,6 @@
 package com.example.store.mapper;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -48,5 +47,7 @@ public interface OrderMapper {
     @Mapping(target = "warehouseId", source = "entity.warehouse.id")
     @Mapping(target = "addressId", source = "entity.address.id")
     @Mapping(target = "deliveryTypeId", source = "entity.deliveryType.id")
-    OrderDTO toDTO(OrderEntity entity, List<OrderDetailsDTO> orderDetails);
+    @Mapping(target = "orderDetails", 
+            expression = "java(entity.getOrderDetails().stream().map(this::toDTO).collect(java.util.stream.Collectors.toList()))")
+    OrderDTO toDTO(OrderEntity entity);
 }
