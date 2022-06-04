@@ -20,7 +20,6 @@ public class WarehousePermissionEntity {
 
     private String name;
 
-
     @ManyToOne
     private WarehouseEntity warehouse;
 }

@@ -43,7 +43,7 @@ public class WarehouseController {
 
     @GetMapping
     public ListDTO<WarehouseDTO> getWarehouses(
-            @RequestParam(required = false, defaultValue = "0") int page,
+            @RequestParam(required = false, defaultValue = "0")  int page,
             @RequestParam(required = false, defaultValue = "20") int size) {
         return service.getWarehouses(page, size);
     }
@@ -58,6 +58,4 @@ public class WarehouseController {
     public void deleteWarehouse(@PathVariable Long warehouseId) {
         service.deleteWarehouse(warehouseId);
     }
-
-
 }

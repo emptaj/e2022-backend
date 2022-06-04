@@ -2,14 +2,12 @@ package com.example.store.controller;
 
 import com.example.store.entity.WarehousePermissionEntity;
 import com.example.store.entity.enums.WarehousePermission;
-import com.example.store.service.UserService;
 import com.example.store.service.WarehousePermissionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @RestController
