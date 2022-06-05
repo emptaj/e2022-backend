@@ -21,6 +21,9 @@ public interface WarehouseMapper {
     @Mapping(target = "modificationDate", ignore = true)
     WarehouseEntity create(String name, AddressEntity address, LocalDate creationDate);
 
+    @Mapping(target = "id", ignore = true)
+    WarehouseEntity update(@MappingTarget WarehouseEntity entity, String name, LocalDate modificationDate);
+
     @Mapping(target = "addressId", source = "entity.address.id")
     WarehouseDTO toDTO(WarehouseEntity entity);
 

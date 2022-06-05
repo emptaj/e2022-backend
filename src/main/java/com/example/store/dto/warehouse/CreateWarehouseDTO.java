@@ -1,6 +1,6 @@
 package com.example.store.dto.warehouse;
 
-import com.example.store.dto.address.AddressDTO;
+import com.example.store.dto.address.CreateAddressDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CreateWarehouseDTO {
     private String name;
-    private AddressDTO address;
+    private CreateAddressDTO address;
 }

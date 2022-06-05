@@ -82,4 +82,15 @@ public class WarehouseService {
         if (!entity.getActive())
             throw new ValidationException(errorMessage);
     }
+
+
+    public WarehouseDTO updateWarehouse(Long warehouseId, CreateWarehouseDTO dto) {
+        WarehouseEntity warehouse = findWarehouseById(warehouseId);
+        validateActiveState(warehouse, "Cannot edit deleted warehosue");
+        addressService.updateAddress(warehouse.getAddress(), dto.getAddress());
+        warehouse = mapper.update(warehouse, dto.getName(), LocalDate.now());
+        warehouse = repository.save(warehouse);
+        return mapper.toDTO(warehouse);
+    }
+    
 }
