@@ -3,10 +3,7 @@ package com.example.store;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.stream.Collectors;
-
 import javax.transaction.Transactional;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -53,5 +50,18 @@ class AddressServiceTests {
         assertTrue(EqualDTOChecker.ifAddressEquals(address, createdAddress));
         assertTrue(EqualDTOChecker.ifAddressEquals(address, foundedAddress));
     }
+
+    @Test
+    @Transactional
+    void UpdateCreatedAddressTest() throws NotFoundException{
+        AddressDTO address = ExampleDTOBuilder.BuildExampleAddress();
+        AddressDTO createdAddress = service.createAddress(address);
+        
+        AddressDTO updated = service.updateAddress(createdAddress.getId(), ExampleDTOBuilder.BuildExampleUpdateAddress());
+        AddressDTO foundedAddress = service.getAddress(createdAddress.getId());
+
+        assertTrue(EqualDTOChecker.ifAddressEquals(updated, foundedAddress));
+        assertTrue(!EqualDTOChecker.ifAddressEquals(address, foundedAddress));
+    }    
 
 }

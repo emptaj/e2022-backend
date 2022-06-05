@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
-import javax.validation.ValidationException;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +19,7 @@ import com.example.store.dto.address.AddressDTO;
 import com.example.store.dto.warehouse.CreateWarehouseDTO;
 import com.example.store.dto.warehouse.WarehouseDTO;
 import com.example.store.exception.NotFoundException;
+import com.example.store.exception.ValidationException;
 import com.example.store.service.AddressService;
 import com.example.store.service.WarehouseService;
 
@@ -69,7 +69,8 @@ class WarehouseServiceTests {
         CreateWarehouseDTO warehouse = ExampleDTOBuilder.buildExampleWarehouseDTO();
         WarehouseDTO createdWarehouse = service.createWarehouse(warehouse);
         WarehouseDTO foundedWarehouse = service.getWarehouse(createdWarehouse.getId());
-        AddressDTO foundedAddress = addressService.getAddress(createdWarehouse.getAddressId());
+        AddressDTO foundedAddress = addressService.getAddress(foundedWarehouse.getAddressId());
+        AddressDTO createdAddress = addressService.getAddress(createdWarehouse.getAddressId());
 
         assertTrue(EqualDTOChecker.ifWarehouseEqual(warehouse, createdWarehouse, createdAddress));
         assertTrue(EqualDTOChecker.ifWarehouseEqual(warehouse, foundedWarehouse, foundedAddress));
