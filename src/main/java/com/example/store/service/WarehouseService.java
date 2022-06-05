@@ -41,6 +41,7 @@ public class WarehouseService {
 
 
     public WarehouseDTO createWarehouse(CreateWarehouseDTO dto) {
+        Validator.validate(dto);
         Validator.stringNotEmpty(dto.getName(), "Warehouse name cannot be empty");
         AddressEntity address = addressService.createAddressEntity(dto.getAddress());
         WarehouseEntity entity = mapper.create(dto.getName(), address, LocalDate.now());
@@ -78,6 +79,7 @@ public class WarehouseService {
 
     
     public WarehouseDTO updateWarehouse(Long warehouseId, CreateWarehouseDTO dto) {
+        Validator.validate(dto);
         WarehouseEntity warehouse = findWarehouseById(warehouseId);
         Validator.positiveValue(warehouse.getActive(), "Cannot edit deleted warehosue");
         addressService.updateAddress(warehouse.getAddress(), dto.getAddress());
