@@ -117,7 +117,7 @@ class DeliveryTypeServiceTests {
     @Transactional
     void CheckIfOneItemIsAddedTest() throws NotFoundException{
         CreateDeliveryTypeDTO deliveryType = ExampleDTOBuilder.buildExampleDeliveryTypeDTO();
-        DeliveryTypeDTO createdDeliveryType = service.createDeliveryType(deliveryType);
+        service.createDeliveryType(deliveryType);
 
         assertTrue(service.getActiveDeliveryTypes(0, 100).getItems().size()==1);
     }
