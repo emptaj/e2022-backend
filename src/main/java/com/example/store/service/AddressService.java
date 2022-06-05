@@ -41,13 +41,13 @@ public class AddressService {
     }
 
     public AddressDTO updateAddress(Long addressId, CreateAddressDTO updateAddressDTO) {
-        Validator.validate(updateAddressDTO);
         AddressEntity addressEntity = findAddressById(addressId);
         addressEntity = updateAddress(addressEntity, updateAddressDTO);
         return addressMapper.toDTO(addressEntity);
     }
     
     public AddressEntity updateAddress(AddressEntity entity, CreateAddressDTO dto) {
+        Validator.validate(dto);
         entity = addressMapper.update(dto, entity);
         return addressRepository.save(entity);
     }
