@@ -81,6 +81,7 @@ public class ProductService {
 
     public void deleteProduct(Long productId) {
         ProductEntity entity = findProductById(productId);
+        validateActiveState(entity, "Product already deleted");
         entity.setActive(false);
         repository.save(entity);
     }
