@@ -7,7 +7,6 @@ import com.example.store.dto.product.UpdateProductDTO;
 import com.example.store.entity.ProductEntity;
 import com.example.store.entity.WarehouseEntity;
 import com.example.store.exception.NotFoundException;
-import com.example.store.exception.ValidationException;
 import com.example.store.mapper.ProductMapper;
 import com.example.store.repository.ProductRepository;
 import com.example.store.validator.Validator;
@@ -54,6 +53,7 @@ public class ProductService {
 
 
     public ProductDTO createProduct(Long warehouseId, UpdateProductDTO product) {
+        Validator.validate(product);
         validateInput(product);
         WarehouseEntity warehouse = warehouseService.findWarehouseById(warehouseId);
 
@@ -71,8 +71,9 @@ public class ProductService {
 
 
     public ProductDTO updateProduct(Long productId, UpdateProductDTO product) {
+        Validator.validate(product);
         ProductEntity entity = findProductById(productId);
-        validateActiveState(entity, "Cannot update removed product");
+        Validator.positiveValue(entity.getActive(), "Cannot update removed product");
         validateInput(product);
         entity = mapper.update(product, entity);
         return mapper.toDTO(entity);
@@ -81,7 +82,7 @@ public class ProductService {
 
     public void deleteProduct(Long productId) {
         ProductEntity entity = findProductById(productId);
-        validateActiveState(entity, "Product already deleted");
+        Validator.positiveValue(entity.getActive(), "Product already deleted");
         entity.setActive(false);
         repository.save(entity);
     }
@@ -128,7 +129,7 @@ public class ProductService {
 
 
     public void orderProduct(ProductEntity entity, Integer quantity) {
-        validateActiveState(entity, "Cannot order removed product");
+        Validator.positiveValue(entity.getActive(), "Cannot order removed product");
         Validator.positiveValue(quantity, "Nr products to order must be positive");
         entity = mapper.order(entity, quantity);
         repository.save(entity);
@@ -138,11 +139,5 @@ public class ProductService {
     public void removeProductOrder(ProductEntity entity, Integer quantity) {
         entity = mapper.order(entity, -quantity);
         repository.save(entity);
-    }
-
-
-    private void validateActiveState(ProductEntity entity, String errorMessage) {
-        if (!entity.getActive())
-            throw new ValidationException(errorMessage);
     }
 }

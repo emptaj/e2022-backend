@@ -12,7 +12,6 @@ import com.example.store.entity.UserEntity;
 import com.example.store.entity.WarehouseEntity;
 import com.example.store.entity.WarehousePermissionEntity;
 import com.example.store.exception.NotFoundException;
-import com.example.store.exception.ValidationException;
 import com.example.store.mapper.WarehouseMapper;
 import com.example.store.repository.WarehouseRepository;
 import com.example.store.validator.Validator;
@@ -42,6 +41,7 @@ public class WarehouseService {
 
 
     public WarehouseDTO createWarehouse(CreateWarehouseDTO dto) {
+        Validator.validate(dto);
         Validator.stringNotEmpty(dto.getName(), "Warehouse name cannot be empty");
         AddressEntity address = addressService.createAddressEntity(dto.getAddress());
         WarehouseEntity entity = mapper.create(dto.getName(), address, LocalDate.now());
@@ -56,8 +56,8 @@ public class WarehouseService {
 
     public void deleteWarehouse(Long warehouseId) {
         WarehouseEntity entity = findWarehouseById(warehouseId);
-        validateActiveState(entity, "Warehouse already deleted");
-        mapper.delete(entity, LocalDate.now());
+        Validator.positiveValue(entity.getActive(), "Warehouse already deleted");
+        entity = mapper.delete(entity, userService.getLoggedUserEntity(), LocalDate.now());
         repository.save(entity);
     }
 
@@ -77,9 +77,14 @@ public class WarehouseService {
         return mapper.toDTO(findWarehouseById(warehouseId));
     }
 
-
-    private void validateActiveState(WarehouseEntity entity, String errorMessage) {
-        if (!entity.getActive())
-            throw new ValidationException(errorMessage);
+    
+    public WarehouseDTO updateWarehouse(Long warehouseId, CreateWarehouseDTO dto) {
+        Validator.validate(dto);
+        WarehouseEntity warehouse = findWarehouseById(warehouseId);
+        Validator.positiveValue(warehouse.getActive(), "Cannot edit deleted warehosue");
+        addressService.updateAddress(warehouse.getAddress(), dto.getAddress());
+        warehouse = mapper.update(warehouse, dto.getName(), userService.getLoggedUserEntity(), LocalDate.now());
+        warehouse = repository.save(warehouse);
+        return mapper.toDTO(warehouse);
     }
 }

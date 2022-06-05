@@ -31,4 +31,7 @@ public class DeliveryTypeEntity {
     private AddressEntity address;
 
     private LocalDate modificationDate;
+    
+    @ManyToOne
+    private UserEntity modificationOperator;
 }

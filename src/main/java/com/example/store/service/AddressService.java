@@ -1,11 +1,13 @@
 package com.example.store.service;
 
 import com.example.store.dto.address.AddressDTO;
-import com.example.store.dto.address.UpdateAddressDTO;
+import com.example.store.dto.address.CreateAddressDTO;
 import com.example.store.entity.AddressEntity;
 import com.example.store.exception.NotFoundException;
 import com.example.store.mapper.AddressMapper;
 import com.example.store.repository.AddressRepository;
+import com.example.store.validator.Validator;
+
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,23 +29,25 @@ public class AddressService {
         return addressMapper.toDTO(addressEntity);
     }
 
-    public AddressDTO createAddress(AddressDTO addressDTO) {
+    public AddressDTO createAddress(CreateAddressDTO addressDTO) {
         AddressEntity entity = createAddressEntity(addressDTO);
         return addressMapper.toDTO(entity);
     }
 
-    public AddressEntity createAddressEntity(AddressDTO addressDTO) {
+    public AddressEntity createAddressEntity(CreateAddressDTO addressDTO) {
+        Validator.validate(addressDTO);
         AddressEntity entity = addressMapper.create(addressDTO);
         return addressRepository.save(entity);
     }
 
-    public AddressDTO updateAddress(Long addressId, UpdateAddressDTO updateAddressDTO) {
+    public AddressDTO updateAddress(Long addressId, CreateAddressDTO updateAddressDTO) {
+        Validator.validate(updateAddressDTO);
         AddressEntity addressEntity = findAddressById(addressId);
         addressEntity = updateAddress(addressEntity, updateAddressDTO);
         return addressMapper.toDTO(addressEntity);
     }
     
-    public AddressEntity updateAddress(AddressEntity entity, UpdateAddressDTO dto) {
+    public AddressEntity updateAddress(AddressEntity entity, CreateAddressDTO dto) {
         entity = addressMapper.update(dto, entity);
         return addressRepository.save(entity);
     }
