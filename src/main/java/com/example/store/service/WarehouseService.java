@@ -12,7 +12,6 @@ import com.example.store.entity.UserEntity;
 import com.example.store.entity.WarehouseEntity;
 import com.example.store.entity.WarehousePermissionEntity;
 import com.example.store.exception.NotFoundException;
-import com.example.store.exception.ValidationException;
 import com.example.store.mapper.WarehouseMapper;
 import com.example.store.repository.WarehouseRepository;
 import com.example.store.validator.Validator;
@@ -56,7 +55,7 @@ public class WarehouseService {
 
     public void deleteWarehouse(Long warehouseId) {
         WarehouseEntity entity = findWarehouseById(warehouseId);
-        validateActiveState(entity, "Warehouse already deleted");
+        Validator.positiveValue(entity.getActive(), "Warehouse already deleted");
         mapper.delete(entity, LocalDate.now());
         repository.save(entity);
     }
@@ -75,11 +74,5 @@ public class WarehouseService {
 
     public WarehouseDTO getWarehouse(Long warehouseId) {
         return mapper.toDTO(findWarehouseById(warehouseId));
-    }
-
-
-    private void validateActiveState(WarehouseEntity entity, String errorMessage) {
-        if (!entity.getActive())
-            throw new ValidationException(errorMessage);
     }
 }
