@@ -18,4 +18,5 @@ public class WarehouseDTO {
     private Long addressId;
     private Boolean active;
     private LocalDate modificationDate;
+    private Long modificationOperatorId;
 }

@@ -56,7 +56,7 @@ public class WarehouseService {
     public void deleteWarehouse(Long warehouseId) {
         WarehouseEntity entity = findWarehouseById(warehouseId);
         Validator.positiveValue(entity.getActive(), "Warehouse already deleted");
-        mapper.delete(entity, LocalDate.now());
+        entity = mapper.delete(entity, userService.getLoggedUserEntity(), LocalDate.now());
         repository.save(entity);
     }
 
@@ -74,5 +74,15 @@ public class WarehouseService {
 
     public WarehouseDTO getWarehouse(Long warehouseId) {
         return mapper.toDTO(findWarehouseById(warehouseId));
+    }
+
+    
+    public WarehouseDTO updateWarehouse(Long warehouseId, CreateWarehouseDTO dto) {
+        WarehouseEntity warehouse = findWarehouseById(warehouseId);
+        Validator.positiveValue(warehouse.getActive(), "Cannot edit deleted warehosue");
+        addressService.updateAddress(warehouse.getAddress(), dto.getAddress());
+        warehouse = mapper.update(warehouse, dto.getName(), userService.getLoggedUserEntity(), LocalDate.now());
+        warehouse = repository.save(warehouse);
+        return mapper.toDTO(warehouse);
     }
 }

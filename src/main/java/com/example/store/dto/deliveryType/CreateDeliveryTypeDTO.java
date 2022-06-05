@@ -1,6 +1,6 @@
 package com.example.store.dto.deliveryType;
 
-import com.example.store.dto.address.AddressDTO;
+import com.example.store.dto.address.CreateAddressDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,5 +14,5 @@ import lombok.NoArgsConstructor;
 public class CreateDeliveryTypeDTO {
     private String name;
     private String email;
-    private AddressDTO address;
+    private CreateAddressDTO address;
 }

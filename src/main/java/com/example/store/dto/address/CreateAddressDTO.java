@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class UpdateAddressDTO {
+public class CreateAddressDTO {
     private String country;
     private String city;
     private String postalCode;
