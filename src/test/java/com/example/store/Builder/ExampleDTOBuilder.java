@@ -2,7 +2,7 @@ package com.example.store.Builder;
 
 import com.example.store.dto.address.AddressDTO;
 import com.example.store.dto.deliveryType.CreateDeliveryTypeDTO;
-import com.example.store.dto.product.ProductDTO;
+import com.example.store.dto.product.UpdateProductDTO;
 import com.example.store.dto.user.CreateUserDTO;
 import com.example.store.dto.warehouse.CreateWarehouseDTO;
 
@@ -36,44 +36,40 @@ public class ExampleDTOBuilder {
         return new CreateUserDTO("ExampleName", "ExamplePassword", "Example@email.com");
     }
 
-    public static ProductDTO buildExampleProductDTO(){
-        return ProductDTO.builder()
+    public static UpdateProductDTO buildExampleProductDTO(){
+        return UpdateProductDTO.builder()
                 .name("Produkt")
                 .description("Produkt testowy")
                 .price(1.11)
                 .unitsInStock(1)
                 .build();
     }
-    public static ProductDTO buildNoNameProductDTO(){
-        return ProductDTO.builder()
+    public static UpdateProductDTO buildNoNameProductDTO(){
+        return UpdateProductDTO.builder()
                 .name("")
                 .description("Produkt testowy")
-                .price(1.11)
-                .unitsInStock(1)
+                .price(1F)
                 .build();
     }
-    public static ProductDTO buildNoDescriptionProductDTO(){
-        return ProductDTO.builder()
+    public static UpdateProductDTO buildNoDescriptionProductDTO(){
+        return UpdateProductDTO.builder()
                 .name("Produkt")
                 .description("")
-                .price(1.11)
-                .unitsInStock(1)
+                .price(1F)
                 .build();
     }
-    public static ProductDTO buildNoPriceProductDTO(){
-        return ProductDTO.builder()
+    public static UpdateProductDTO buildNoPriceProductDTO(){
+        return UpdateProductDTO.builder()
                 .name("")
                 .description("Produkt testowy")
-                .unitsInStock(1)
                 .price(null)
                 .build();
     }
-    public static ProductDTO buildNegativeStockProductDTO(){
-        return ProductDTO.builder()
+    public static UpdateProductDTO buildNegativeStockProductDTO(){
+        return UpdateProductDTO.builder()
                 .name("Produkt")
                 .description("Produkt testowy")
-                .unitsInStock(-1)
-                .price(1)
+                .price(1F)
                 .build()
     }
 

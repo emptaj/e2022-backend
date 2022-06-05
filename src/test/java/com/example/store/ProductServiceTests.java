@@ -49,7 +49,7 @@ public class ProductServiceTests {
     @Test
     @Transactional
     void CreateProductTest(){
-        ProductDTO test = ExampleDTOBuilder.buildExampleProductDTO();
+        UpdateProductDTO test = ExampleDTOBuilder.buildExampleProductDTO();
         CreateWarehouseDTO warehouseTest = ExampleDTOBuilder.buildExampleWarehouseDTO();
         WarehouseDTO warehouseDTOTest = wareserv.createWarehouse(warehouseTest);
         ProductDTO generatedProduct = prodserv.createProduct(warehouseDTOTest.getId(), test);
@@ -59,7 +59,7 @@ public class ProductServiceTests {
     @Test
     @Transactional
     void ValidateProductNameTest() throws ValidationException{
-        ProductDTO noNameProduct = ExampleDTOBuilder.buildNoNameProductDTO();
+        UpdateProductDTO noNameProduct = ExampleDTOBuilder.buildNoNameProductDTO();
         CreateWarehouseDTO warehouseTest = ExampleDTOBuilder.buildExampleWarehouseDTO();
         WarehouseDTO warehouseDTOTest = wareserv.createWarehouse(warehouseTest);
         assertThrows(ValidationException.class, () -> {
@@ -70,7 +70,7 @@ public class ProductServiceTests {
     @Test
     @Transactional
     void ValidateProductDescriptionTest() throws ValidationException{
-        ProductDTO NoDescriptionProduct = ExampleDTOBuilder.buildNoDescriptionProductDTO();
+        UpdateProductDTO NoDescriptionProduct = ExampleDTOBuilder.buildNoDescriptionProductDTO();
         CreateWarehouseDTO warehouseTest = ExampleDTOBuilder.buildExampleWarehouseDTO();
         WarehouseDTO warehouseDTOTest = wareserv.createWarehouse(warehouseTest);
         assertThrows(ValidationException.class, () -> {
@@ -80,8 +80,8 @@ public class ProductServiceTests {
 
     @Test
     @Transactional
-    void ValidateProductPriceTest() throws ValidationException{
-        ProductDTO NoPriceProduct = ExampleDTOBuilder.buildNoPriceProductDTO();
+    void ValidateProductPriceNotNullTest() throws ValidationException{
+        UpdateProductDTO NoPriceProduct = ExampleDTOBuilder.buildNoPriceProductDTO();
         CreateWarehouseDTO warehouseTest = ExampleDTOBuilder.buildExampleWarehouseDTO();
         WarehouseDTO warehouseDTOTest = wareserv.createWarehouse(warehouseTest);
         assertThrows(ValidationException.class, () -> {
@@ -92,7 +92,7 @@ public class ProductServiceTests {
     @Test
     @Transactional
     void ValidateProductPriceTest() throws ValidationException{
-        ProductDTO NegativeStockProduct = ExampleDTOBuilder.buildNegativeStockProductDTO();
+        UpdateProductDTO NegativeStockProduct = ExampleDTOBuilder.buildNegativeStockProductDTO();
         CreateWarehouseDTO warehouseTest = ExampleDTOBuilder.buildExampleWarehouseDTO();
         WarehouseDTO warehouseDTOTest = wareserv.createWarehouse(warehouseTest);
         assertThrows(ValidationException.class, () -> {
@@ -102,7 +102,7 @@ public class ProductServiceTests {
     @Test
     @Transactional
     void UpdateRemovedProductTest() throws ValidationException{
-        ProductDTO test = ExampleDTOBuilder.buildExampleProductDTO();
+        UpdateProductDTO test = ExampleDTOBuilder.buildExampleProductDTO();
         CreateWarehouseDTO warehouseTest = ExampleDTOBuilder.buildExampleWarehouseDTO();
         WarehouseDTO warehouseDTOTest = wareserv.createWarehouse(warehouseTest);
         ProductDTO generatedProduct = prodserv.createProduct(warehouseDTOTest.getId(), test);
@@ -114,7 +114,7 @@ public class ProductServiceTests {
     @Test
     @Transactional
     void DeleteDeletedProductTest() throws ValidationException{
-        ProductDTO test = ExampleDTOBuilder.buildExampleProductDTO();
+        UpdateProductDTO test = ExampleDTOBuilder.buildExampleProductDTO();
         CreateWarehouseDTO warehouseTest = ExampleDTOBuilder.buildExampleWarehouseDTO();
         WarehouseDTO warehouseDTOTest = wareserv.createWarehouse(warehouseTest);
         ProductDTO generatedProduct = prodserv.createProduct(warehouseDTOTest.getId(), test);
