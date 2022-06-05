@@ -1,13 +1,10 @@
 package com.example.store.controller;
 
 import com.example.store.dto.address.AddressDTO;
-import com.example.store.dto.address.UpdateAddressDTO;
 import com.example.store.service.AddressService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/addresses")
@@ -16,32 +13,9 @@ public class AddressController {
 
     private final AddressService addressService;
 
-    @GetMapping("/")
-    public List<AddressDTO> getAddresses(@RequestParam(required = false, defaultValue = "0") int page,
-                                         @RequestParam(required = false, defaultValue = "20") int size) {
-        return addressService.getAddresses(page, size);
-    }
-
     @GetMapping("/{addressId}")
     public AddressDTO getSingleAddress(@PathVariable Long addressId) {
-        return addressService.getSingleAddress(addressId);
-    }
-
-    @PostMapping("/")
-    @ResponseStatus(HttpStatus.CREATED)
-    public AddressDTO createAddress(@RequestBody AddressDTO addressDTO) {
-        return addressService.createAddress(addressDTO);
-    }
-
-    @DeleteMapping("/{addressId}")
-    public void deleteAddress(@PathVariable Long addressId) {
-        addressService.deleteAddress(addressId);
-    }
-
-    @PutMapping("/{addressId}")
-    public AddressDTO updateAddress(@PathVariable Long addressId,
-                                    @RequestBody UpdateAddressDTO updateAddressDTO) {
-        return addressService.updateAddress(addressId, updateAddressDTO);
+        return addressService.getAddress(addressId);
     }
 
 }

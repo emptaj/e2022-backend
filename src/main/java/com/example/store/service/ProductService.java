@@ -7,6 +7,7 @@ import com.example.store.dto.product.UpdateProductDTO;
 import com.example.store.entity.ProductEntity;
 import com.example.store.entity.WarehouseEntity;
 import com.example.store.exception.NotFoundException;
+import com.example.store.exception.ValidationException;
 import com.example.store.mapper.ProductMapper;
 import com.example.store.repository.ProductRepository;
 import com.example.store.validator.Validator;
@@ -56,7 +57,7 @@ public class ProductService {
         validateInput(product);
         WarehouseEntity warehouse = warehouseService.findWarehouseById(warehouseId);
 
-        ProductEntity entity = mapper.createEntity(product, warehouse);
+        ProductEntity entity = mapper.create(product, warehouse);
         entity = repository.save(entity);
         return mapper.toDTO(entity);
     }
@@ -71,14 +72,16 @@ public class ProductService {
 
     public ProductDTO updateProduct(Long productId, UpdateProductDTO product) {
         ProductEntity entity = findProductById(productId);
+        validateActiveState(entity, "Cannot update removed product");
         validateInput(product);
-        entity = mapper.updateEntity(product, entity);
+        entity = mapper.update(product, entity);
         return mapper.toDTO(entity);
     }
 
 
     public void deleteProduct(Long productId) {
         ProductEntity entity = findProductById(productId);
+        validateActiveState(entity, "Product already deleted");
         entity.setActive(false);
         repository.save(entity);
     }
@@ -110,8 +113,36 @@ public class ProductService {
     public ProductExDTO restockProduct(Long productId, Integer stock) {
         ProductEntity entity = findProductById(productId);
         Validator.notNegative(stock, "Nr products in stock cannot be negative");
-        entity.setUnitsInStock(stock);
+        entity = mapper.restock(entity, stock);
         entity = repository.save(entity);
         return mapper.toExDTO(entity);
+    }
+
+    
+    public void sendProduct(ProductEntity entity, Integer quantity) {
+        Validator.positiveValue(quantity, "Nr products to send must be positive");
+        Validator.notNegative(entity.getUnitsInStock() - quantity, "There are not enough items in stock to send");
+        entity = mapper.send(entity, quantity);
+        repository.save(entity);
+    }
+
+
+    public void orderProduct(ProductEntity entity, Integer quantity) {
+        validateActiveState(entity, "Cannot order removed product");
+        Validator.positiveValue(quantity, "Nr products to order must be positive");
+        entity = mapper.order(entity, quantity);
+        repository.save(entity);
+    }
+
+    
+    public void removeProductOrder(ProductEntity entity, Integer quantity) {
+        entity = mapper.order(entity, -quantity);
+        repository.save(entity);
+    }
+
+
+    private void validateActiveState(ProductEntity entity, String errorMessage) {
+        if (!entity.getActive())
+            throw new ValidationException(errorMessage);
     }
 }

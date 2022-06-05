@@ -24,15 +24,15 @@ import com.example.store.exception.ValidationException;
 import com.example.store.mapper.OrderMapper;
 import com.example.store.repository.OrderDetailsRepository;
 import com.example.store.repository.OrderRepository;
-import com.example.store.repository.ProductRepository;
 import com.example.store.validator.Validator;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -50,7 +50,6 @@ public class OrderService {
 
     private final OrderRepository repository;
     private final OrderDetailsRepository detailsRepository;
-    private final ProductRepository productRepository;
 
     private final ProductService productService;
     private final AddressService addressService;
@@ -80,12 +79,11 @@ public class OrderService {
         DeliveryTypeEntity deliveryType = deliveryService.findDeliveryTypeById(dto.getDeliveryTypeId());
         UserEntity user = userService.getLoggedUserEntity();
 
-        List<OrderDTO> ordersDTOList = new ArrayList<>();
-
         Map<WarehouseEntity, List<Pair<ProductEntity, Integer>>> ordersMap = splitOrder(dto.getOrderDetails());
         mergeDuplicatedProducts(ordersMap);
 
-        for (Entry<WarehouseEntity, List<Pair<ProductEntity, Integer>>> entry : ordersMap.entrySet()) {
+        var ordersDTOList = new ArrayList<OrderDTO>();
+        for (var entry : ordersMap.entrySet()) {
             WarehouseEntity warehouse = entry.getKey();
             List<Pair<ProductEntity, Integer>> items = entry.getValue();
 
@@ -149,14 +147,8 @@ public class OrderService {
     private List<OrderDetailsEntity> prepareOrderDetails(List<Pair<ProductEntity, Integer>> items, OrderEntity order) {
         var orderDetailsList = new ArrayList<OrderDetailsEntity>();
 
-        for (var item : items) {
-            ProductEntity product = item.getFirst();
-            Integer quantity = item.getSecond();
-            
-            product.setUnitsInOrder(product.getUnitsInOrder() + quantity);
-            product = productRepository.save(product);
-
-            OrderDetailsEntity orderDetails = mapper.create(order, product, quantity);
+        for (Pair<ProductEntity, Integer> item : items) {
+            OrderDetailsEntity orderDetails = mapper.create(order, item.getFirst(), item.getSecond());
             orderDetails = detailsRepository.save(orderDetails);
             orderDetailsList.add(orderDetails);
         }
@@ -183,22 +175,9 @@ public class OrderService {
         OrderState currentState = order.getState();
 
         validateNextState(currentState, nextState);
-        if (nextState == SENT) {
-            for (OrderDetailsEntity details : order.getOrderDetails()) {
-                ProductEntity product = details.getProduct();
-                Integer quantity = details.getQuantity();
-                Integer stock = product.getUnitsInStock();
-
-                Validator.positiveValue(stock - quantity, "There are not enough items in stock to send");
-                product.setUnitsInStock(stock - quantity);
-                product.setUnitsInOrder(product.getUnitsInOrder() - quantity);
-                productRepository.save(product);
-            }
-        }
 
         UserEntity user = userService.getLoggedUserEntity();
-        mapper.changeState(order, nextState, user, LocalDate.now());
-        order = repository.save(order);
+        order = goNextState(order, nextState, user);
         
         return mapper.toDTO(order);
     }
@@ -215,7 +194,7 @@ public class OrderService {
                 validateStateIn(nextState, List.of(DELIVERED));
                 break;
             default:
-                validateStateIn(nextState, new ArrayList<>());
+                validateStateIn(nextState, Collections.emptyList());
         }
     }
     
@@ -224,6 +203,24 @@ public class OrderService {
             throw new ValidationException("Cannot change order state to " + state.name());
     }
 
+    private OrderEntity goNextState(OrderEntity order, OrderState nextState, UserEntity user) {
+        BiConsumer<ProductEntity, Integer> consumer;
+
+        switch (nextState) {
+            case ACCEPTED:  consumer = productService::orderProduct;       break;
+            case SENT:      consumer = productService::sendProduct;        break;
+            case CANCELLED: consumer = productService::removeProductOrder; break;
+            default:        consumer = (product, quantity) -> {};
+        }
+        
+        for (OrderDetailsEntity details : order.getOrderDetails())
+            consumer.accept(details.getProduct(), details.getQuantity());
+
+        order = mapper.changeState(order, nextState, user, LocalDate.now());
+        order = repository.save(order);
+
+        return order;
+    }
 
     public ListDTO<OrderDTO> getPendingOrders(int page, int size) {
         Page<OrderEntity> pageResponse = repository.findAllByStateIn(
