@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import com.example.store.dto.address.AddressDTO;
 import com.example.store.dto.deliveryType.CreateDeliveryTypeDTO;
 import com.example.store.dto.deliveryType.DeliveryTypeDTO;
+import com.example.store.dto.product.ProductDTO;
 import com.example.store.dto.warehouse.CreateWarehouseDTO;
 import com.example.store.dto.warehouse.WarehouseDTO;
 
@@ -32,6 +33,14 @@ public class EqualDTOChecker {
         if(!warehouse1.getName().equals(warehouse2.getName())) return false;
         if(!LocalDate.now().equals(warehouse2.getCreationDate())) return false;
         if(!ifAddressEquals(warehouse1.getAddress(), address)) return false;
+        return true;
+    }
+
+    public static boolean ifProductEqual(ProductDTO product1, ProductDTO product2){
+        if(!product1.getName().equals(product2.getName())) return false;
+        if(!product1.getDescription().equals(product2.getDescription())) return false;
+        if(!product1.getUnitsInStock().equals(product2.getUnitsInStock())) return false;
+        if(!product1.getPrice().equals(product2.getPrice())) return false;
         return true;
     }
 }
