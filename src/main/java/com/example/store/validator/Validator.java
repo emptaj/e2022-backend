@@ -29,4 +29,9 @@ public class Validator {
         if (value < 0)
             throw new ValidationException(errorMessage);
     }
+
+    public static void positiveValue(boolean value, String errorMessage) {
+        if (value != true)
+            throw new ValidationException(errorMessage);
+    }
 }
