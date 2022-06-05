@@ -37,8 +37,12 @@ public interface OrderMapper {
     OrderEntity create(UserEntity user, LocalDate orderDate, WarehouseEntity warehouse,
                        AddressEntity address, DeliveryTypeEntity deliveryType);
     
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "address", ignore = true)
+    @Mapping(target = "modificationOperator", source = "operator")
+    @Mapping(target = "modificationDate", source = "date")
     OrderEntity changeState(@MappingTarget OrderEntity entity, OrderState state,
-                            UserEntity modificationOperator, LocalDate modificationDate);
+                            UserEntity operator, LocalDate date);
                        
     @Mapping(target = "productId", source = "product.id")
     OrderDetailsDTO toDTO(OrderDetailsEntity entity);
@@ -47,7 +51,8 @@ public interface OrderMapper {
     @Mapping(target = "warehouseId", source = "entity.warehouse.id")
     @Mapping(target = "addressId", source = "entity.address.id")
     @Mapping(target = "deliveryTypeId", source = "entity.deliveryType.id")
+    @Mapping(target = "operatorId", source = "entity.modificationOperator.id")
     @Mapping(target = "orderDetails", 
-            expression = "java(entity.getOrderDetails().stream().map(this::toDTO).collect(java.util.stream.Collectors.toList()))")
+             expression = "java(entity.getOrderDetails().stream().map(this::toDTO).collect(java.util.stream.Collectors.toList()))")
     OrderDTO toDTO(OrderEntity entity);
 }

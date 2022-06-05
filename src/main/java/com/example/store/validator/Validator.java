@@ -1,8 +1,8 @@
 package com.example.store.validator;
 
-import javax.validation.ValidationException;
-
 import org.springframework.util.StringUtils;
+
+import com.example.store.exception.ValidationException;
 
 public class Validator {
     public static void stringNotEmpty(String string, String errorMessage) {
