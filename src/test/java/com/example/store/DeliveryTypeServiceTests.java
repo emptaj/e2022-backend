@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.example.store.Builder.ExampleDTOBuilder;
 import com.example.store.EqualChecker.EqualDTOChecker;
 import com.example.store.dto.address.AddressDTO;
+import com.example.store.dto.address.CreateAddressDTO;
 import com.example.store.dto.deliveryType.CreateDeliveryTypeDTO;
 import com.example.store.dto.deliveryType.DeliveryTypeDTO;
 import com.example.store.exception.NotFoundException;
@@ -120,6 +121,65 @@ class DeliveryTypeServiceTests {
         service.createDeliveryType(deliveryType);
 
         assertTrue(service.getActiveDeliveryTypes(0, 100).getItems().size()==1);
+    }
+
+    @Test
+    @Transactional
+    void CreateInvalidEmailTest() throws ValidationException{
+        CreateDeliveryTypeDTO deliveryType = CreateDeliveryTypeDTO.builder()
+        .name("exampleName")
+        .email("email")
+        .address(ExampleDTOBuilder.BuildExampleAddress())
+        .build();
+
+
+       
+
+        assertThrows(ValidationException.class, () -> {
+            service.createDeliveryType(deliveryType);
+        });
+
+    }
+
+    @Test
+    @Transactional
+    void CreateInvalidNullNameTest() throws ValidationException{
+        CreateDeliveryTypeDTO deliveryType = CreateDeliveryTypeDTO.builder()
+        .email("email")
+        .address(ExampleDTOBuilder.BuildExampleAddress())
+        .build();
+
+
+       
+
+        assertThrows(ValidationException.class, () -> {
+            service.createDeliveryType(deliveryType);
+        });
+
+    }
+
+    @Test
+    @Transactional
+    void CreateInvalidBadAddressTest() throws ValidationException{
+        CreateDeliveryTypeDTO deliveryType = CreateDeliveryTypeDTO.builder()
+        .email("email")
+        .address(CreateAddressDTO.builder()
+        .country("Polska")
+        .postalCode("20-802")
+        .street("Niebieska")
+        .houseNum("11")
+        .flatNum("12")
+        .phone("123456789")
+        .build())
+        .build();
+
+
+       
+
+        assertThrows(ValidationException.class, () -> {
+            service.createDeliveryType(deliveryType);
+        });
+
     }
 
 }

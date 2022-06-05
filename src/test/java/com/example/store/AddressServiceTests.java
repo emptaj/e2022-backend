@@ -11,7 +11,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.example.store.Builder.ExampleDTOBuilder;
 import com.example.store.EqualChecker.EqualDTOChecker;
 import com.example.store.dto.address.AddressDTO;
+import com.example.store.dto.address.CreateAddressDTO;
 import com.example.store.exception.NotFoundException;
+import com.example.store.exception.ValidationException;
 import com.example.store.service.AddressService;
 
 @SpringBootTest
@@ -34,7 +36,7 @@ class AddressServiceTests {
     @Test
     @Transactional
     void getExistingAddressByIdTest() throws NotFoundException{
-        AddressDTO address = ExampleDTOBuilder.BuildExampleAddress();
+        CreateAddressDTO address = ExampleDTOBuilder.BuildExampleAddress();
         AddressDTO createdAdress = service.createAddress(address);
 
         assertTrue(EqualDTOChecker.ifAddressEquals(address, createdAdress));
@@ -43,7 +45,7 @@ class AddressServiceTests {
     @Test
     @Transactional
     void CreateFindAndDeleteAddressTest() throws NotFoundException{
-        AddressDTO address = ExampleDTOBuilder.BuildExampleAddress();
+        CreateAddressDTO address = ExampleDTOBuilder.BuildExampleAddress();
         AddressDTO createdAddress = service.createAddress(address);
         AddressDTO foundedAddress = service.getAddress(createdAddress.getId());
 
@@ -54,14 +56,43 @@ class AddressServiceTests {
     @Test
     @Transactional
     void UpdateCreatedAddressTest() throws NotFoundException{
-        AddressDTO address = ExampleDTOBuilder.BuildExampleAddress();
+        CreateAddressDTO address = ExampleDTOBuilder.BuildExampleAddress();
         AddressDTO createdAddress = service.createAddress(address);
         
-        AddressDTO updated = service.updateAddress(createdAddress.getId(), ExampleDTOBuilder.BuildExampleUpdateAddress());
+        AddressDTO updated = service.updateAddress(createdAddress.getId(), CreateAddressDTO.builder()
+        .country("Polska")
+        .city("Lublin")
+        .postalCode("20-802")
+        .street("Niebieska")
+        .houseNum("10")
+        .flatNum("12")
+        .phone("123456789")
+        .build());
         AddressDTO foundedAddress = service.getAddress(createdAddress.getId());
 
         assertTrue(EqualDTOChecker.ifAddressEquals(updated, foundedAddress));
         assertTrue(!EqualDTOChecker.ifAddressEquals(address, foundedAddress));
-    }    
+    }
+
+    @Test
+    @Transactional
+    void CreateInvalidAddressTest() throws ValidationException{
+        CreateAddressDTO address = CreateAddressDTO.builder()
+        .country("Polska")
+        .postalCode("20-802")
+        .street("Niebieska")
+        .houseNum("11")
+        .flatNum("12")
+        .phone("123456789")
+        .build();
+
+
+       
+
+        assertThrows(ValidationException.class, () -> {
+            service.createAddress(address);
+        });
+
+    }
 
 }

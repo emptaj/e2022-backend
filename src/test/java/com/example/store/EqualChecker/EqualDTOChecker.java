@@ -3,13 +3,25 @@ package com.example.store.EqualChecker;
 import java.time.LocalDate;
 
 import com.example.store.dto.address.AddressDTO;
+import com.example.store.dto.address.CreateAddressDTO;
 import com.example.store.dto.deliveryType.CreateDeliveryTypeDTO;
 import com.example.store.dto.deliveryType.DeliveryTypeDTO;
 import com.example.store.dto.warehouse.CreateWarehouseDTO;
 import com.example.store.dto.warehouse.WarehouseDTO;
 
 public class EqualDTOChecker {
-    
+
+    public static boolean ifAddressEquals(CreateAddressDTO address1, AddressDTO address2){
+        if(!address1.getCountry().equals(address2.getCountry())) return false;
+        if(!address1.getCity().equals(address2.getCity())) return false;
+        if(!address1.getPostalCode().equals(address2.getPostalCode())) return false;
+        if(!address1.getStreet().equals(address2.getStreet())) return false;
+        if(!address1.getHouseNum().equals(address2.getHouseNum())) return false;
+        if(!address1.getFlatNum().equals(address2.getFlatNum())) return false;
+        if(!address1.getPhone().equals(address2.getPhone())) return false;
+        return true;
+    }
+
     public static boolean ifAddressEquals(AddressDTO address1, AddressDTO address2){
         if(!address1.getCountry().equals(address2.getCountry())) return false;
         if(!address1.getCity().equals(address2.getCity())) return false;
