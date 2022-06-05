@@ -23,7 +23,7 @@ public class WarehouseEntity {
 
     private LocalDate creationDate;
 
-    @OneToOne
+    @ManyToOne
     private AddressEntity address;
 
     private Boolean active;
