@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,6 +16,7 @@ import com.example.store.dto.ListDTO;
 import com.example.store.dto.deliveryType.CreateDeliveryTypeDTO;
 import com.example.store.dto.deliveryType.DeliveryTypeDTO;
 import com.example.store.dto.deliveryType.DeliveryTypeExDTO;
+import com.example.store.dto.deliveryType.UpdateDeliveryTypeDTO;
 import com.example.store.service.DeliveryTypeService;
 
 import lombok.RequiredArgsConstructor;
@@ -52,6 +54,12 @@ public class DeliveryTypeController {
     @DeleteMapping("/{deliveryTypeId}")
     public void deleteDeliveryType(@PathVariable Long deliveryTypeId) {
         service.deleteDeliveryType(deliveryTypeId);
+    }
+
+    @PutMapping("/{deliveryTypeId}")
+    public DeliveryTypeDTO updateDeliveryType(@PathVariable Long deliveryTypeId,
+                                              @RequestBody UpdateDeliveryTypeDTO dto) {
+        return service.updateDeliveryType(deliveryTypeId, dto);
     }
 
 }

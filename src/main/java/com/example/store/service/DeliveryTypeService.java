@@ -12,9 +12,11 @@ import com.example.store.dto.ListDTO;
 import com.example.store.dto.deliveryType.CreateDeliveryTypeDTO;
 import com.example.store.dto.deliveryType.DeliveryTypeDTO;
 import com.example.store.dto.deliveryType.DeliveryTypeExDTO;
+import com.example.store.dto.deliveryType.UpdateDeliveryTypeDTO;
 import com.example.store.entity.AddressEntity;
 import com.example.store.entity.DeliveryTypeEntity;
 import com.example.store.exception.NotFoundException;
+import com.example.store.exception.ValidationException;
 import com.example.store.mapper.DeliveryTypeMapper;
 import com.example.store.repository.DeliveryTypeRepository;
 import com.example.store.validator.Validator;
@@ -75,7 +77,23 @@ public class DeliveryTypeService {
 
     public void deleteDeliveryType(Long deliveryTypeId) {
         DeliveryTypeEntity entity = findDeliveryTypeById(deliveryTypeId);
+        validateActiveState(entity, "Delivery type already deleted");
         entity = mapper.delete(entity, LocalDate.now());
         repository.save(entity);
+    }
+
+
+    public DeliveryTypeDTO updateDeliveryType(Long deliveryTypeId, UpdateDeliveryTypeDTO dto) {
+        DeliveryTypeEntity deliveryType = findDeliveryTypeById(deliveryTypeId);
+        validateActiveState(deliveryType, "Cannot edit deleted delivery type");
+        addressService.updateAddress(deliveryType.getAddress(), dto.getAddress());
+        deliveryType = mapper.update(deliveryType, dto);
+        deliveryType = repository.save(deliveryType);
+        return mapper.toDTO(deliveryType);
+    }
+
+    private void validateActiveState(DeliveryTypeEntity entity, String errorMessage) {
+        if (!entity.getActive())
+            throw new ValidationException(errorMessage);
     }
 }

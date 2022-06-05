@@ -20,9 +20,19 @@ public interface ProductMapper {
     @Mapping(target = "unitsInStock", constant = "0")
     @Mapping(target = "unitsInOrder", constant = "0")
     @Mapping(target = "name", source = "dto.name")
-    ProductEntity createEntity(UpdateProductDTO dto, WarehouseEntity warehouse);
+    ProductEntity create(UpdateProductDTO dto, WarehouseEntity warehouse);
 
-    ProductEntity updateEntity(UpdateProductDTO dto, @MappingTarget ProductEntity productEntity);
+    ProductEntity update(UpdateProductDTO dto, @MappingTarget ProductEntity productEntity);
+
+    @Mapping(target = "unitsInStock", source = "stock")
+    ProductEntity restock(@MappingTarget ProductEntity entity, Integer stock);
+
+    @Mapping(target = "unitsInStock", expression = "java(entity.getUnitsInStock() - quantity)")
+    @Mapping(target = "unitsInOrder", expression = "java(entity.getUnitsInOrder() - quantity)")
+    ProductEntity send(@MappingTarget ProductEntity entity, Integer quantity);
+
+    @Mapping(target = "unitsInOrder", expression = "java(entity.getUnitsInOrder() + quantity)")
+    ProductEntity order(@MappingTarget ProductEntity entity, Integer quantity);
 
     ProductDTO toDTO(ProductEntity entity);
 

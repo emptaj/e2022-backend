@@ -6,6 +6,8 @@ import com.example.store.entity.WarehousePermissionEntity;
 import com.example.store.entity.enums.WarehousePermission;
 import com.example.store.exception.NotFoundException;
 import com.example.store.repository.WarehousePermissionRepository;
+import com.example.store.repository.WarehouseRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,8 +20,17 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class WarehousePermissionService {
+    
     private final WarehousePermissionRepository warehousePermissionRepository;
     private final UserService userService;
+    private final WarehouseRepository warehouseRepository;
+
+    
+    private WarehouseEntity findWarehouseById(Long id) {
+        return warehouseRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(WarehouseEntity.class, id));
+    }
+
 
     @Transactional
     public List<WarehousePermissionEntity> createPermissions(WarehouseEntity warehouseEntity) {
@@ -37,6 +48,7 @@ public class WarehousePermissionService {
 
     @Transactional
     public void assignPermissionToWarehouse(Long warehouseId, Long userId, WarehousePermission permission) {
+        findWarehouseById(warehouseId);
         UserEntity user = userService.getUserById(userId);
         String permissionName = String.format("%d:%s", warehouseId, permission.name());
         WarehousePermissionEntity permissionEntity = getPermissionEntityByName(permissionName);
@@ -66,6 +78,7 @@ public class WarehousePermissionService {
 
     @Transactional
     public void removePermissionToWarehouse(Long warehouseId, Long userId, WarehousePermission warehousePermission) {
+        findWarehouseById(warehouseId);
         UserEntity user = userService.getUserById(userId);
         String permissionName = String.format("%d:%s", warehouseId, warehousePermission.name());
         WarehousePermissionEntity permissionEntity = getPermissionEntityByName(permissionName);
@@ -77,6 +90,7 @@ public class WarehousePermissionService {
     }
 
     public List<WarehousePermissionEntity> getForWarehouse(Long warehouseId) {
+        findWarehouseById(warehouseId);
         return warehousePermissionRepository.findAllByWarehouseId(warehouseId);
     }
 }

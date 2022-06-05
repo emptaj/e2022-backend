@@ -9,6 +9,7 @@ import org.mapstruct.factory.Mappers;
 
 import com.example.store.dto.deliveryType.DeliveryTypeDTO;
 import com.example.store.dto.deliveryType.DeliveryTypeExDTO;
+import com.example.store.dto.deliveryType.UpdateDeliveryTypeDTO;
 import com.example.store.dto.deliveryType.CreateDeliveryTypeDTO;
 import com.example.store.entity.AddressEntity;
 import com.example.store.entity.DeliveryTypeEntity;
@@ -32,4 +33,7 @@ public interface DeliveryTypeMapper {
 
     @Mapping(target = "active", constant = "false")
     DeliveryTypeEntity delete(@MappingTarget DeliveryTypeEntity entity, LocalDate modificationDate);
+
+    @Mapping(target = "address", ignore = true)
+    DeliveryTypeEntity update(@MappingTarget DeliveryTypeEntity entity, UpdateDeliveryTypeDTO dto);
 }
