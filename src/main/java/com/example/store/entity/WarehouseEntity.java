@@ -28,4 +28,7 @@ public class WarehouseEntity {
 
     private Boolean active;
     private LocalDate modificationDate;
+    
+    @ManyToOne
+    private UserEntity modificationOperator;
 }
