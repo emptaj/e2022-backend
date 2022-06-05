@@ -30,7 +30,7 @@ class AddressServiceTests {
         Long id = -1L;
 
         assertThrows(NotFoundException.class, () -> {
-            service.getSingleAddress(id);
+            service.getAddress(id);
         });
     }
 
@@ -48,38 +48,10 @@ class AddressServiceTests {
     void CreateFindAndDeleteAddressTest() throws NotFoundException{
         AddressDTO address = ExampleDTOBuilder.BuildExampleAddress();
         AddressDTO createdAddress = service.createAddress(address);
-        AddressDTO foundedAddress = service.getSingleAddress(createdAddress.getId());
-        service.deleteAddress(createdAddress.getId());
+        AddressDTO foundedAddress = service.getAddress(createdAddress.getId());
 
         assertTrue(EqualDTOChecker.ifAddressEquals(address, createdAddress));
         assertTrue(EqualDTOChecker.ifAddressEquals(address, foundedAddress));
-    }
-
-    @Test
-    @Transactional
-    void getDeletedAddressTest() throws NotFoundException{
-        AddressDTO address = ExampleDTOBuilder.BuildExampleAddress();
-        AddressDTO createdAddress = service.createAddress(address);
-        service.deleteAddress(createdAddress.getId());
-
-        assertThrows(NotFoundException.class, () -> {
-            service.getSingleAddress(createdAddress.getId());
-        });
-    }
-
-    @Test
-    @Transactional
-    void getActiveAddressFromListTest() throws NotFoundException{
-        AddressDTO address = ExampleDTOBuilder.BuildExampleAddress();
-        AddressDTO createdAddress = service.createAddress(address);
-        
-        assertTrue(!service.getAddresses(0, 100)
-        .stream()
-        .filter(addressfound -> addressfound.getId() == createdAddress.getId())
-        .collect(Collectors.toList())
-        .isEmpty());
-
-        service.deleteAddress(createdAddress.getId());
     }
 
 }

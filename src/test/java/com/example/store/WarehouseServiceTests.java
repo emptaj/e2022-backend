@@ -12,7 +12,7 @@ import javax.validation.ValidationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
+
 
 import com.example.store.Builder.ExampleDTOBuilder;
 import com.example.store.EqualChecker.EqualDTOChecker;
@@ -48,7 +48,7 @@ class WarehouseServiceTests {
     void createdWarehouseTest(){
         CreateWarehouseDTO warehouse = ExampleDTOBuilder.buildExampleWarehouseDTO();
         WarehouseDTO createdWarehouse = service.createWarehouse(warehouse);
-        AddressDTO address = addressService.getSingleAddress(createdWarehouse.getAddressId());
+        AddressDTO address = addressService.getAddress(createdWarehouse.getAddressId());
         
         assertTrue(EqualDTOChecker.ifWarehouseEqual(warehouse, createdWarehouse, address));
     }
@@ -58,7 +58,7 @@ class WarehouseServiceTests {
     void findAddressFromCreatedWarehouseTest(){
         CreateWarehouseDTO warehouse = ExampleDTOBuilder.buildExampleWarehouseDTO();
         WarehouseDTO createdWarehouse = service.createWarehouse(warehouse);
-        AddressDTO address = addressService.getSingleAddress(createdWarehouse.getAddressId());
+        AddressDTO address = addressService.getAddress(createdWarehouse.getAddressId());
 
         assertTrue(EqualDTOChecker.ifAddressEquals(warehouse.getAddress(), address));
     }
@@ -69,8 +69,7 @@ class WarehouseServiceTests {
         CreateWarehouseDTO warehouse = ExampleDTOBuilder.buildExampleWarehouseDTO();
         WarehouseDTO createdWarehouse = service.createWarehouse(warehouse);
         WarehouseDTO foundedWarehouse = service.getWarehouse(createdWarehouse.getId());
-        AddressDTO createdAddress = addressService.getSingleAddress(createdWarehouse.getAddressId());
-        AddressDTO foundedAddress = addressService.getSingleAddress(createdWarehouse.getAddressId());
+        AddressDTO foundedAddress = addressService.getAddress(createdWarehouse.getAddressId());
 
         assertTrue(EqualDTOChecker.ifWarehouseEqual(warehouse, createdWarehouse, createdAddress));
         assertTrue(EqualDTOChecker.ifWarehouseEqual(warehouse, foundedWarehouse, foundedAddress));

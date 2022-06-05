@@ -45,30 +45,17 @@ class DeliveryTypeServiceTests {
     void getAddressFromExistingDeliveryTypeTest(){
         CreateDeliveryTypeDTO deliveryType = ExampleDTOBuilder.buildExampleDeliveryTypeDTO();
         DeliveryTypeDTO createdDeliveryType = service.createDeliveryType(deliveryType);
-        AddressDTO addressCreated = addressService.getSingleAddress(createdDeliveryType.getAddressId());
+        AddressDTO addressCreated = addressService.getAddress(createdDeliveryType.getAddressId());
         assertTrue(EqualDTOChecker.ifAddressEquals(deliveryType.getAddress(), addressCreated));
     }
 
-    @Test
-    @Transactional
-    void getAddressUnactiveDeliveryTypeTest() throws NotFoundException{
-        CreateDeliveryTypeDTO deliveryType = ExampleDTOBuilder.buildExampleDeliveryTypeDTO();
-        DeliveryTypeDTO createdDeliveryType = service.createDeliveryType(deliveryType);
-        service.deleteDeliveryType(createdDeliveryType.getId());
-
-        assertTrue(addressService.getAddresses(0, 100)
-        .stream()
-        .filter(address -> address.getId() == createdDeliveryType.getAddressId())
-        .collect(Collectors.toList())
-        .isEmpty());
-    }
 
     @Test
     @Transactional
     void getExistingDeliveryTypeByIdTest(){
         CreateDeliveryTypeDTO deliveryType = ExampleDTOBuilder.buildExampleDeliveryTypeDTO();
         DeliveryTypeDTO createdDeliveryType = service.createDeliveryType(deliveryType);
-        AddressDTO addressCreated = addressService.getSingleAddress(createdDeliveryType.getAddressId());
+        AddressDTO addressCreated = addressService.getAddress(createdDeliveryType.getAddressId());
         assertTrue(EqualDTOChecker.ifDeliveryTypeEqual(deliveryType, createdDeliveryType, addressCreated));
     }
 
@@ -78,8 +65,8 @@ class DeliveryTypeServiceTests {
         CreateDeliveryTypeDTO deliveryType = ExampleDTOBuilder.buildExampleDeliveryTypeDTO();
         DeliveryTypeDTO createdDeliveryType = service.createDeliveryType(deliveryType);
         DeliveryTypeDTO foundedDeliveryType = DeliveryTypeMapper.INSTANCE.toDTO(service.findDeliveryTypeById(createdDeliveryType.getId()));
-        AddressDTO addressCreated = addressService.getSingleAddress(createdDeliveryType.getAddressId());
-        AddressDTO addressFounded = addressService.getSingleAddress(foundedDeliveryType.getAddressId());
+        AddressDTO addressCreated = addressService.getAddress(createdDeliveryType.getAddressId());
+        AddressDTO addressFounded = addressService.getAddress(foundedDeliveryType.getAddressId());
         service.deleteDeliveryType(createdDeliveryType.getId());
 
         assertTrue(EqualDTOChecker.ifDeliveryTypeEqual(deliveryType, createdDeliveryType, addressCreated));
