@@ -1,5 +1,8 @@
 package com.example.store.validator;
 
+import java.util.Set;
+
+import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 
 import org.springframework.util.StringUtils;
@@ -39,8 +42,8 @@ public class Validator {
 
     public static <T> void validate(T dataToValidate){
         javax.validation.Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        validator.validate(dataToValidate).stream().forEach(
-            data -> {throw new javax.validation.ValidationException(data.getMessage());}
-        );;
+        Set<ConstraintViolation<T>> validationErrors = validator.validate(dataToValidate);
+        if(!validationErrors.isEmpty())
+            throw new ValidationException(validationErrors.iterator().next().getMessage());
     }
 }
