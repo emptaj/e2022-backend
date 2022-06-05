@@ -31,6 +31,7 @@ public class DeliveryTypeService {
     private final DeliveryTypeMapper mapper = DeliveryTypeMapper.INSTANCE;
 
     private final AddressService addressService;
+    private final UserService userService;
 
 
     public DeliveryTypeEntity findDeliveryTypeById(Long id) {
@@ -78,7 +79,7 @@ public class DeliveryTypeService {
     public void deleteDeliveryType(Long deliveryTypeId) {
         DeliveryTypeEntity entity = findDeliveryTypeById(deliveryTypeId);
         validateActiveState(entity, "Delivery type already deleted");
-        entity = mapper.delete(entity, LocalDate.now());
+        entity = mapper.delete(entity, userService.getLoggedUserEntity(), LocalDate.now());
         repository.save(entity);
     }
 
@@ -87,7 +88,7 @@ public class DeliveryTypeService {
         DeliveryTypeEntity deliveryType = findDeliveryTypeById(deliveryTypeId);
         validateActiveState(deliveryType, "Cannot edit deleted delivery type");
         addressService.updateAddress(deliveryType.getAddress(), dto.getAddress());
-        deliveryType = mapper.update(deliveryType, dto);
+        deliveryType = mapper.update(deliveryType, dto, userService.getLoggedUserEntity(), LocalDate.now());
         deliveryType = repository.save(deliveryType);
         return mapper.toDTO(deliveryType);
     }
