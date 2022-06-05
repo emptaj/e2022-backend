@@ -13,4 +13,5 @@ public class UpdateAddressDTO {
     private String street;
     private String houseNum;
     private String flatNum;
+    private String phone;
 }

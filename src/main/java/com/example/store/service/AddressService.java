@@ -7,12 +7,8 @@ import com.example.store.exception.NotFoundException;
 import com.example.store.mapper.AddressMapper;
 import com.example.store.repository.AddressRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -26,14 +22,7 @@ public class AddressService {
                 orElseThrow(() -> new NotFoundException(AddressEntity.class, addressId));
     }
 
-    public List<AddressDTO> getAddresses(int pageNum, int pageSize) {
-        return addressRepository.findAll(PageRequest.of(pageNum, pageSize)).
-                stream()
-                .map(addressMapper::toDTO)
-                .collect(Collectors.toList());
-    }
-
-    public AddressDTO getSingleAddress(Long addressId) {
+    public AddressDTO getAddress(Long addressId) {
         AddressEntity addressEntity = findAddressById(addressId);
         return addressMapper.toDTO(addressEntity);
     }
@@ -48,19 +37,14 @@ public class AddressService {
         return addressRepository.save(entity);
     }
 
-    @Transactional
-    public void deleteAddress(Long addressId) {
-        AddressEntity addressEntity = findAddressById(addressId);
-        addressRepository.delete(addressEntity);
-    }
-
-    @Transactional
     public AddressDTO updateAddress(Long addressId, UpdateAddressDTO updateAddressDTO) {
-        AddressEntity addressEntity = addressRepository.findById(addressId).
-                orElseThrow(() -> new NotFoundException(AddressEntity.class, addressId));
-
-        addressEntity = addressMapper.update(updateAddressDTO, addressEntity);
+        AddressEntity addressEntity = findAddressById(addressId);
+        addressEntity = updateAddress(addressEntity, updateAddressDTO);
         return addressMapper.toDTO(addressEntity);
-
+    }
+    
+    public AddressEntity updateAddress(AddressEntity entity, UpdateAddressDTO dto) {
+        entity = addressMapper.update(dto, entity);
+        return addressRepository.save(entity);
     }
 }

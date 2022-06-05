@@ -12,6 +12,7 @@ import com.example.store.dto.ListDTO;
 import com.example.store.dto.deliveryType.CreateDeliveryTypeDTO;
 import com.example.store.dto.deliveryType.DeliveryTypeDTO;
 import com.example.store.dto.deliveryType.DeliveryTypeExDTO;
+import com.example.store.dto.deliveryType.UpdateDeliveryTypeDTO;
 import com.example.store.entity.AddressEntity;
 import com.example.store.entity.DeliveryTypeEntity;
 import com.example.store.exception.NotFoundException;
@@ -77,5 +78,14 @@ public class DeliveryTypeService {
         DeliveryTypeEntity entity = findDeliveryTypeById(deliveryTypeId);
         entity = mapper.delete(entity, LocalDate.now());
         repository.save(entity);
+    }
+
+
+    public DeliveryTypeDTO updateDeliveryType(Long deliveryTypeId, UpdateDeliveryTypeDTO dto) {
+        DeliveryTypeEntity deliveryType = findDeliveryTypeById(deliveryTypeId);
+        addressService.updateAddress(deliveryType.getAddress(), dto.getAddress());
+        deliveryType = mapper.update(deliveryType, dto);
+        deliveryType = repository.save(deliveryType);
+        return mapper.toDTO(deliveryType);
     }
 }
