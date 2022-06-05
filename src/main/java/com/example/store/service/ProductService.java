@@ -53,6 +53,7 @@ public class ProductService {
 
 
     public ProductDTO createProduct(Long warehouseId, UpdateProductDTO product) {
+        Validator.validate(product);
         validateInput(product);
         WarehouseEntity warehouse = warehouseService.findWarehouseById(warehouseId);
 
@@ -70,6 +71,7 @@ public class ProductService {
 
 
     public ProductDTO updateProduct(Long productId, UpdateProductDTO product) {
+        Validator.validate(product);
         ProductEntity entity = findProductById(productId);
         Validator.positiveValue(entity.getActive(), "Cannot update removed product");
         validateInput(product);

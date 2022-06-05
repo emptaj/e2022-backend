@@ -67,6 +67,7 @@ public class DeliveryTypeService {
 
 
     public DeliveryTypeDTO createDeliveryType(CreateDeliveryTypeDTO dto) {
+        Validator.validate(dto);
         Validator.stringNotEmpty(dto.getName(), "Delivery type name cannot be empty");
         AddressEntity address = addressService.createAddressEntity(dto.getAddress());
         DeliveryTypeEntity entity = mapper.create(dto, address);
@@ -84,6 +85,7 @@ public class DeliveryTypeService {
 
 
     public DeliveryTypeDTO updateDeliveryType(Long deliveryTypeId, UpdateDeliveryTypeDTO dto) {
+        Validator.validate(dto);
         DeliveryTypeEntity deliveryType = findDeliveryTypeById(deliveryTypeId);
         Validator.positiveValue(deliveryType.getActive(), "Cannot edit deleted delivery type");
         addressService.updateAddress(deliveryType.getAddress(), dto.getAddress());
