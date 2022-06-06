@@ -55,6 +55,7 @@ public class OrderService {
     private final AddressService addressService;
     private final DeliveryTypeService deliveryService;
     private final UserService userService;
+    private final WarehouseService warehouseService;
 
 
     public OrderEntity findOrderById(Long id) {
@@ -222,9 +223,10 @@ public class OrderService {
         return order;
     }
 
-    public ListDTO<OrderDTO> getPendingOrders(int page, int size) {
-        Page<OrderEntity> pageResponse = repository.findAllByStateIn(
-                List.of(NEW, ACCEPTED, SENT), PageRequest.of(page, size));
+    public ListDTO<OrderDTO> getPendingOrders(Long warehouseId, int page, int size) {
+        warehouseService.findWarehouseById(warehouseId);
+        Page<OrderEntity> pageResponse = repository.findAllByWarehouseIdAndStateIn(
+                warehouseId, List.of(NEW, ACCEPTED, SENT), PageRequest.of(page, size));
 
         var result = pageResponse.getContent().stream()
                 .map(mapper::toDTO)

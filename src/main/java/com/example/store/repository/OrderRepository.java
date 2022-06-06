@@ -15,5 +15,5 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long>{
     
     Page<OrderEntity> findAllByUserIdAndStateNotIn(Long userId, List<OrderState> states, Pageable p);
 
-    Page<OrderEntity> findAllByStateIn(List<OrderState> states, Pageable p);
+    Page<OrderEntity> findAllByWarehouseIdAndStateIn(Long warehouseId, List<OrderState> states, Pageable p);
 }

@@ -57,11 +57,11 @@ public class OrderController {
         return service.changeOrderState(orderId, nextState);
     }
 
-    @GetMapping("/orders/")
-    public ListDTO<OrderDTO> getPendingOrders(
-            @RequestParam(required = false, defaultValue = "0")  int page,
-            @RequestParam(required = false, defaultValue = "20") int size
+    @GetMapping("/warehouses/{warehouseId}/orders/")
+    public ListDTO<OrderDTO> getPendingOrders(@PathVariable Long warehouseId,
+                                              @RequestParam(required = false, defaultValue = "0")  int page,
+                                              @RequestParam(required = false, defaultValue = "20") int size
     ) {
-        return service.getPendingOrders(page, size);
+        return service.getPendingOrders(warehouseId, page, size);
     }
 }
