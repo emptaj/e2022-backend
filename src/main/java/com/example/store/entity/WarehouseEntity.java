@@ -4,17 +4,15 @@ import java.time.LocalDate;
 
 import javax.persistence.*;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "Warehouses")
-@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class WarehouseEntity {
     @Id
     @GeneratedValue
@@ -28,7 +26,7 @@ public class WarehouseEntity {
 
     private Boolean active;
     private LocalDate modificationDate;
-    
+
     @ManyToOne
     private UserEntity modificationOperator;
 }

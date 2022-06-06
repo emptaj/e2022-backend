@@ -43,7 +43,7 @@ public class AddressService {
         addressEntity = updateAddress(addressEntity, updateAddressDTO);
         return addressMapper.toDTO(addressEntity);
     }
-    
+
     public AddressEntity updateAddress(AddressEntity entity, CreateAddressDTO dto) {
         entity = addressMapper.update(dto, entity);
         return addressRepository.save(entity);

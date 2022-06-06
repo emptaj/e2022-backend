@@ -1,5 +1,6 @@
 package com.example.store.dto.warehouse;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import com.example.store.dto.address.CreateAddressDTO;
@@ -14,6 +15,7 @@ import lombok.NoArgsConstructor;
 public class CreateWarehouseDTO {
     @NotNull(message = "Name should not be empty")
     private String name;
-    @NotNull(message = "Address should not be empty")
+    @Valid
+    @NotNull
     private CreateAddressDTO address;
 }

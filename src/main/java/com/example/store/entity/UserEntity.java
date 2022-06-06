@@ -7,20 +7,18 @@ import java.util.stream.Collectors;
 import javax.persistence.*;
 
 import com.example.store.entity.enums.UserRole;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
-@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @Table(name = "Users")
 public class UserEntity implements UserDetails {
     @Id
@@ -44,7 +42,7 @@ public class UserEntity implements UserDetails {
     private UserRole userRole;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    private Set<WarehousePermissionEntity> warehousePermissions;
+    private List<WarehousePermissionEntity> warehousePermissions;
 
     @OneToOne
     private AddressEntity address;
