@@ -18,9 +18,12 @@ import com.example.store.validator.Validator;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+
+import javax.transaction.Transactional;
 
 
 @Service
@@ -41,8 +44,6 @@ public class WarehouseService {
 
 
     public WarehouseDTO createWarehouse(CreateWarehouseDTO dto) {
-//        Validator.validate(dto);
-//        Validator.stringNotEmpty(dto.getName(), "Warehouse name cannot be empty");
         AddressEntity address = addressService.createAddressEntity(dto.getAddress());
         WarehouseEntity entity = mapper.create(dto.getName(), address, LocalDate.now());
         UserEntity userEntity = userService.getLoggedUserEntity();
@@ -53,11 +54,11 @@ public class WarehouseService {
         return mapper.toDTO(entity);
     }
 
-
+    @Transactional
     public void deleteWarehouse(Long warehouseId) {
         WarehouseEntity entity = findWarehouseById(warehouseId);
-        Validator.positiveValue(entity.getActive(), "Warehouse already deleted");
         entity = mapper.delete(entity, userService.getLoggedUserEntity(), LocalDate.now());
+        permissionService.deletePermissionForWarehouse(warehouseId);
         repository.save(entity);
     }
 
@@ -87,4 +88,6 @@ public class WarehouseService {
         warehouse = repository.save(warehouse);
         return mapper.toDTO(warehouse);
     }
+
+
 }

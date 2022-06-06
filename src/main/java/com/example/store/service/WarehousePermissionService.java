@@ -20,12 +20,12 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class WarehousePermissionService {
-    
+
     private final WarehousePermissionRepository warehousePermissionRepository;
     private final UserService userService;
     private final WarehouseRepository warehouseRepository;
 
-    
+
     private WarehouseEntity findWarehouseById(Long id) {
         return warehouseRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(WarehouseEntity.class, id));
@@ -77,6 +77,11 @@ public class WarehousePermissionService {
     }
 
     @Transactional
+    public void removeAllPermissions(UserEntity user, Collection<WarehousePermissionEntity> permissionEntities) {
+        user.getWarehousePermissions().removeAll(permissionEntities);
+    }
+
+    @Transactional
     public void removePermissionToWarehouse(Long warehouseId, Long userId, WarehousePermission warehousePermission) {
         findWarehouseById(warehouseId);
         UserEntity user = userService.getUserById(userId);
@@ -92,5 +97,17 @@ public class WarehousePermissionService {
     public List<WarehousePermissionEntity> getForWarehouse(Long warehouseId) {
         findWarehouseById(warehouseId);
         return warehousePermissionRepository.findAllByWarehouseId(warehouseId);
+    }
+
+    @Transactional
+    public void deletePermissionForWarehouse(Long warehouseId) {
+        List<WarehousePermissionEntity> forWarehousePermissions = getForWarehouse(warehouseId);
+
+        forWarehousePermissions.forEach(permissionEntity -> {
+            List<UserEntity> users = permissionEntity.getUsers();
+            users.forEach(userEntity -> removeAllPermissions(userEntity, forWarehousePermissions));
+        });
+
+        warehousePermissionRepository.deleteAll(forWarehousePermissions);
     }
 }

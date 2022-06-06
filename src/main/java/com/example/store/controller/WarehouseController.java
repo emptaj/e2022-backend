@@ -35,7 +35,7 @@ public class WarehouseController {
     private final WarehouseService service;
 
     @GetMapping("/{warehouseId}")
-    public WarehouseDTO getWarehouse(@PathVariable Long warehouseId, Principal principal) {
+    public WarehouseDTO getWarehouse(@PathVariable Long warehouseId) {
         return service.getWarehouse(warehouseId);
     }
 
