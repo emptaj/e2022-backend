@@ -35,7 +35,6 @@ public class AddressService {
     }
 
     public AddressEntity createAddressEntity(CreateAddressDTO addressDTO) {
-        Validator.validate(addressDTO);
         AddressEntity entity = addressMapper.create(addressDTO);
         return addressRepository.save(entity);
     }
@@ -45,7 +44,7 @@ public class AddressService {
         addressEntity = updateAddress(addressEntity, updateAddressDTO);
         return addressMapper.toDTO(addressEntity);
     }
-    
+
     public AddressEntity updateAddress(AddressEntity entity, CreateAddressDTO dto) {
         Validator.validate(dto);
         entity = addressMapper.update(dto, entity);

@@ -2,17 +2,18 @@ package com.example.store.entity;
 
 import javax.persistence.*;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "WarehousePermissions")
-@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public class WarehousePermissionEntity {
     @Id
     @GeneratedValue
@@ -22,4 +23,7 @@ public class WarehousePermissionEntity {
 
     @ManyToOne
     private WarehouseEntity warehouse;
+
+    @ManyToMany(mappedBy = "warehousePermissions")
+    private List<UserEntity> users;
 }
