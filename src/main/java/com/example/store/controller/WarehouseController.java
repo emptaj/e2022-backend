@@ -1,6 +1,7 @@
 package com.example.store.controller;
 
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 
 import com.example.store.dto.ListDTO;
 import com.example.store.dto.warehouse.CreateWarehouseDTO;
@@ -34,19 +35,19 @@ public class WarehouseController {
     private final WarehouseService service;
 
     @GetMapping("/{warehouseId}")
-    public WarehouseDTO getWarehouse(@PathVariable Long warehouseId, Principal principal) {
+    public WarehouseDTO getWarehouse(@PathVariable Long warehouseId) {
         return service.getWarehouse(warehouseId);
     }
 
     @GetMapping
     public ListDTO<WarehouseDTO> getWarehouses(
-            @RequestParam(required = false, defaultValue = "0")  int page,
+            @RequestParam(required = false, defaultValue = "0") int page,
             @RequestParam(required = false, defaultValue = "20") int size) {
         return service.getWarehouses(page, size);
     }
 
     @PostMapping("")
-    public WarehouseDTO createWarehouse(@RequestBody CreateWarehouseDTO dto) {
+    public WarehouseDTO createWarehouse(@Valid @RequestBody CreateWarehouseDTO dto) {
         return service.createWarehouse(dto);
     }
 

@@ -9,6 +9,8 @@ import com.example.store.repository.WarehousePermissionRepository;
 import com.example.store.repository.WarehouseRepository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -20,12 +22,12 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class WarehousePermissionService {
-    
+
     private final WarehousePermissionRepository warehousePermissionRepository;
     private final UserService userService;
     private final WarehouseRepository warehouseRepository;
 
-    
+
     private WarehouseEntity findWarehouseById(Long id) {
         return warehouseRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(WarehouseEntity.class, id));
@@ -63,6 +65,7 @@ public class WarehousePermissionService {
     @Transactional
     public void assignPermission(UserEntity user, WarehousePermissionEntity permissionEntity) {
         user.getWarehousePermissions().add(permissionEntity);
+        UserDetails userDetails = (UserDetails) user;
     }
 
     public WarehousePermissionEntity getPermissionEntityByName(String permissionName) {
@@ -74,6 +77,11 @@ public class WarehousePermissionService {
     @Transactional
     public void removePermission(UserEntity user, WarehousePermissionEntity permission) {
         user.getWarehousePermissions().remove(permission);
+    }
+
+    @Transactional
+    public void removeAllPermissions(UserEntity user, Collection<WarehousePermissionEntity> permissionEntities) {
+        user.getWarehousePermissions().removeAll(permissionEntities);
     }
 
     @Transactional
@@ -92,5 +100,28 @@ public class WarehousePermissionService {
     public List<WarehousePermissionEntity> getForWarehouse(Long warehouseId) {
         findWarehouseById(warehouseId);
         return warehousePermissionRepository.findAllByWarehouseId(warehouseId);
+    }
+
+    @Transactional
+    public void deletePermissionForWarehouse(Long warehouseId) {
+        List<WarehousePermissionEntity> forWarehousePermissions = getForWarehouse(warehouseId);
+
+        forWarehousePermissions.forEach(permissionEntity -> {
+            List<UserEntity> users = permissionEntity.getUsers();
+            users.forEach(userEntity -> removeAllPermissions(userEntity, forWarehousePermissions));
+        });
+
+        warehousePermissionRepository.deleteAll(forWarehousePermissions);
+    }
+
+    public SimpleGrantedAuthority createAuthority(WarehousePermissionEntity permissionEntity) {
+        return new SimpleGrantedAuthority(permissionEntity.getName());
+    }
+
+    public List<SimpleGrantedAuthority> createAuthorities(List<WarehousePermissionEntity> permissionEntities) {
+        return permissionEntities.stream().
+                map(permissionEntity -> new SimpleGrantedAuthority(permissionEntity.getName()
+                ))
+                .collect(Collectors.toList());
     }
 }
