@@ -6,7 +6,6 @@ import com.example.store.entity.AddressEntity;
 import com.example.store.exception.NotFoundException;
 import com.example.store.mapper.AddressMapper;
 import com.example.store.repository.AddressRepository;
-import com.example.store.validator.Validator;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,13 +34,11 @@ public class AddressService {
     }
 
     public AddressEntity createAddressEntity(CreateAddressDTO addressDTO) {
-        Validator.validate(addressDTO);
         AddressEntity entity = addressMapper.create(addressDTO);
         return addressRepository.save(entity);
     }
 
     public AddressDTO updateAddress(Long addressId, CreateAddressDTO updateAddressDTO) {
-        Validator.validate(updateAddressDTO);
         AddressEntity addressEntity = findAddressById(addressId);
         addressEntity = updateAddress(addressEntity, updateAddressDTO);
         return addressMapper.toDTO(addressEntity);

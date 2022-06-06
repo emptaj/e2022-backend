@@ -3,6 +3,7 @@ package com.example.store.controller;
 import java.util.List;
 
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +24,7 @@ import com.example.store.service.OrderService;
 
 import lombok.RequiredArgsConstructor;
 
+@Valid
 @RestController
 @RequestMapping("/api")
 @Transactional
@@ -39,7 +41,7 @@ public class OrderController {
 
     @PostMapping("/orders")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public List<OrderDTO> createOrder(@RequestBody CreateOrderDTO dto) {
+    public List<OrderDTO> createOrder(@Valid @RequestBody CreateOrderDTO dto) {
         return service.createOrder(dto);
     }
 
