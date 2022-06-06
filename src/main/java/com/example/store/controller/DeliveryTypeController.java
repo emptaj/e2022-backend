@@ -1,5 +1,7 @@
 package com.example.store.controller;
 
+import javax.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,7 +49,7 @@ public class DeliveryTypeController {
 
     @PostMapping("")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public DeliveryTypeDTO createDeliveryType(@RequestBody CreateDeliveryTypeDTO dto) {
+    public DeliveryTypeDTO createDeliveryType(@Valid @RequestBody CreateDeliveryTypeDTO dto) {
         return service.createDeliveryType(dto);
     }
 
@@ -58,7 +60,7 @@ public class DeliveryTypeController {
 
     @PutMapping("/{deliveryTypeId}")
     public DeliveryTypeDTO updateDeliveryType(@PathVariable Long deliveryTypeId,
-                                              @RequestBody UpdateDeliveryTypeDTO dto) {
+    @Valid @RequestBody UpdateDeliveryTypeDTO dto) {
         return service.updateDeliveryType(deliveryTypeId, dto);
     }
 

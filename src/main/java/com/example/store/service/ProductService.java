@@ -53,8 +53,6 @@ public class ProductService {
 
 
     public ProductDTO createProduct(Long warehouseId, UpdateProductDTO product) {
-        Validator.validate(product);
-        validateInput(product);
         WarehouseEntity warehouse = warehouseService.findWarehouseById(warehouseId);
 
         ProductEntity entity = mapper.create(product, warehouse);
@@ -62,19 +60,10 @@ public class ProductService {
         return mapper.toDTO(entity);
     }
 
-    private void validateInput(UpdateProductDTO product) {
-        Validator.stringNotEmpty(product.getName(), "Product name cannot be empty");
-        Validator.stringNotEmpty(product.getDescription(), "Product description cannot be empty");
-        Validator.notNull(product.getPrice(), "Product price cannot be empty");
-        Validator.positiveValue(product.getPrice(), "Product price cannot be negative");
-    }
-
-
     public ProductDTO updateProduct(Long productId, UpdateProductDTO product) {
         Validator.validate(product);
         ProductEntity entity = findProductById(productId);
         Validator.positiveValue(entity.getActive(), "Cannot update removed product");
-        validateInput(product);
         entity = mapper.update(product, entity);
         return mapper.toDTO(entity);
     }

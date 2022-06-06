@@ -75,7 +75,6 @@ public class OrderService {
 
 
     public List<OrderDTO> createOrder(CreateOrderDTO dto) {
-        Validator.validate(dto);
         AddressEntity address = addressService.createAddressEntity(dto.getAddress());
         DeliveryTypeEntity deliveryType = deliveryService.findDeliveryTypeById(dto.getDeliveryTypeId());
         UserEntity user = userService.getLoggedUserEntity();
