@@ -41,8 +41,8 @@ public class WarehouseService {
 
 
     public WarehouseDTO createWarehouse(CreateWarehouseDTO dto) {
-        Validator.validate(dto);
-        Validator.stringNotEmpty(dto.getName(), "Warehouse name cannot be empty");
+//        Validator.validate(dto);
+//        Validator.stringNotEmpty(dto.getName(), "Warehouse name cannot be empty");
         AddressEntity address = addressService.createAddressEntity(dto.getAddress());
         WarehouseEntity entity = mapper.create(dto.getName(), address, LocalDate.now());
         UserEntity userEntity = userService.getLoggedUserEntity();
@@ -77,7 +77,7 @@ public class WarehouseService {
         return mapper.toDTO(findWarehouseById(warehouseId));
     }
 
-    
+
     public WarehouseDTO updateWarehouse(Long warehouseId, CreateWarehouseDTO dto) {
         Validator.validate(dto);
         WarehouseEntity warehouse = findWarehouseById(warehouseId);
