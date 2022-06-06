@@ -1,0 +1,43 @@
+@startuml
+skinparam dpi 300
+left to right direction
+actor Klient as AK << Human >>
+together {
+        actor "Hurtownia" as AH << Application >>
+        actor "Sklep" as AS << Application >>
+        actor "Operator Płatności" as AO << Application >>
+}
+package Sklep {
+        together {
+                usecase "Przeglądaj produkty" as UC1
+                usecase "Pobierz więcej informacji o produkcie" as UC6
+                usecase "Dodaj produkty do koszyka" as UC2
+        }
+        usecase "Zakup produkty z koszyka" as UC3
+        usecase "Wybierz opcje dostawy" as UC4
+        usecase "Dokonaj płatności" as UC5
+}
+
+AK --- UC1
+AK --- UC2
+AK --- UC3
+AK --- UC4
+AK --- UC5
+AK --- UC6
+
+UC1 --- AH
+UC6 --- AH
+
+UC2 --- AS
+UC3 --- AS
+UC4 --- AS
+UC5 --- AS
+
+UC5 --- AO
+
+
+UC6 .> UC1 : <<extends>>
+UC2 .> UC6 : <<extends>>
+UC3 .> UC4 : <<include>>
+UC4 .> UC5 : <<include>>
+@enduml

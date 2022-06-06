@@ -1,0 +1,39 @@
+@startuml
+skinparam dpi 300
+left to right direction
+
+actor "Uzytkownik" as AU << Human >>
+together {
+        actor "Operator Email" as AE << Application >>
+        actor "Baza Danych" as AB << Application >>
+}
+
+package "Logowanie - Rejestracja" {
+        together {
+                usecase "Zresetuj hasło" as UC3
+                usecase "Zaloguj się" as UC1
+        }
+        together {
+                usecase "Zarejestruj się" as UC2
+                usecase "Wyślij link aktywacyjny" as UC4
+                usecase "Aktywuj konto" as UC5
+        }
+}
+
+AU --- UC1
+AU --- UC2
+AU --- UC3
+AU --- UC4
+AU --- UC5
+
+UC3 --- AE
+UC4 --- AE
+
+UC1 --- AB
+UC2 --- AB
+UC3 --- AB
+UC4 --- AB
+UC5 --- AB
+
+UC2 <. UC4: <<extends>>
+@enduml

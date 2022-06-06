@@ -1,0 +1,40 @@
+@startuml
+skinparam dpi 300
+left to right direction
+
+together {
+        actor "Użytkownik" as AU << Human >>
+        actor "Operator" as AO << Human >>
+        actor "Administrator" as AA << Human >>
+}
+actor "System" as AB << Application >>
+
+package Hurtownie {
+        usecase "Sprawdź listę hurtowni" as UC1
+        usecase "Utwórz hurtownię" as UC2
+        usecase "Nadaj uprawnienia w hurtowni" as UC3
+        usecase "Odbierz uprawnienia w hurtowni" as UC4
+        usecase "Dodaj produkt do hurtowni" as UC5
+        usecase "Edytuj dane o produkcie" as UC6
+}
+
+AU -- UC1
+AU -- UC2
+AA -- UC3
+AA -- UC4
+AO -- UC5
+AO -- UC6
+
+AA .> AO : <<extends>>
+AO .> AU : <<extends>> 
+
+UC1 -- AB
+UC2 -- AB
+UC3 -- AB
+UC4 -- AB
+UC5 -- AB
+UC6 -- AB
+
+UC6 .> UC5 : <<extends>>
+
+@enduml
