@@ -32,7 +32,7 @@ public class ExampleDTOBuilder {
     }
 
     public static CreateUserDTO buildExampleUserDTO(){
-        return new CreateUserDTO("ExampleName", "ExamplePassword", "Example@email.com");
+        return new CreateUserDTO("ExampleUser", "ExamplePassword", "Example@email.com");
     }
 
 }

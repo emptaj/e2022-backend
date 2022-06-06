@@ -1,5 +1,6 @@
 package com.example.store.dto.product;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 
@@ -14,6 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UpdateProductDTO {
     @NotNull(message = "Name id should not be empty")
+    @NotEmpty(message = "Postal cod should not be empty")
     private String name;
     @NotNull(message = "Description should not be empty")
     private String description;

@@ -40,6 +40,7 @@ class WarehouseServiceTests {
     @Autowired
     private UserRegistrationService registerService;
 
+
     void registerUser(){
         ResponseEntity<RegistrationTokenDTO> token = registerService.registerUser(ExampleDTOBuilder.buildExampleUserDTO());
         registerService.activateUser(token.getBody().getToken());
@@ -59,12 +60,20 @@ class WarehouseServiceTests {
     @Transactional
     @WithMockUser(username="admin")
     void createdWarehouseTest(){
-        registerUser();
         CreateWarehouseDTO warehouse = ExampleDTOBuilder.buildExampleWarehouseDTO();
         WarehouseDTO createdWarehouse = service.createWarehouse(warehouse);
         AddressDTO address = addressService.getAddress(createdWarehouse.getAddressId());
         
         assertTrue(EqualDTOChecker.ifWarehouseEqual(warehouse, createdWarehouse, address));
+    }
+
+    @Test
+    @Transactional
+    void createdWarehouseWithoutLoginTest(){
+        assertThrows(ValidationException.class, () -> {
+            CreateWarehouseDTO warehouse = ExampleDTOBuilder.buildExampleWarehouseDTO();
+            service.createWarehouse(warehouse);
+        });
     }
 
     @Test

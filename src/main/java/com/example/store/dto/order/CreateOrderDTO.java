@@ -2,6 +2,7 @@ package com.example.store.dto.order;
 
 import java.util.List;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -18,11 +19,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CreateOrderDTO {
     @NotNull(message = "Address should not be empty")
-    @NotEmpty(message = "Address should not be empty")
+    @Valid
     private CreateAddressDTO address;
     @NotNull(message = "DeliveryType id should not be empty")
     private Long deliveryTypeId;
     @NotNull(message = "List should not be null")
     @NotEmpty(message = "List with orderDetails should not be empty")
+    @Valid
     private List<CreateOrderDetailsDTO> orderDetails;
 }

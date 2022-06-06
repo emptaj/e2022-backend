@@ -95,6 +95,16 @@ class DeliveryTypeServiceTests {
 
     @Test
     @Transactional
+    void DeleteDeliveryTypeWithoutLoginTest() throws NotFoundException{
+        CreateDeliveryTypeDTO deliveryType = ExampleDTOBuilder.buildExampleDeliveryTypeDTO();
+        DeliveryTypeDTO createdDeliveryType = service.createDeliveryType(deliveryType);
+        assertThrows(ValidationException.class, () -> {
+            service.deleteDeliveryType(createdDeliveryType.getId());
+        });
+    }
+
+    @Test
+    @Transactional
     void getActiveDeliveryTypeTest() throws NotFoundException{
         CreateDeliveryTypeDTO deliveryType = ExampleDTOBuilder.buildExampleDeliveryTypeDTO();
         DeliveryTypeDTO createdDeliveryType = service.createDeliveryType(deliveryType);

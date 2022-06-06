@@ -36,7 +36,7 @@ public class UserRegistrationServiceTests {
         service.registerUser(ExampleDTOBuilder.buildExampleUserDTO());
 
         assertThrows(ValidationException.class, () -> {
-            service.registerUser(new CreateUserDTO("ExampleName", "Examplepassword", "Example2@email.com"));
+            service.registerUser(new CreateUserDTO("ExampleUser", "Examplepassword", "Example2@email.com"));
         });
     }
 
