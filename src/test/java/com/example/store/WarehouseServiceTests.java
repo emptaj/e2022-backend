@@ -10,20 +10,26 @@ import javax.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import com.example.store.Builder.ExampleDTOBuilder;
 import com.example.store.EqualChecker.EqualDTOChecker;
 import com.example.store.dto.address.AddressDTO;
+import com.example.store.dto.user.RegistrationTokenDTO;
 import com.example.store.dto.warehouse.CreateWarehouseDTO;
 import com.example.store.dto.warehouse.WarehouseDTO;
+import com.example.store.entity.WarehouseEntity;
 import com.example.store.exception.NotFoundException;
 import com.example.store.exception.ValidationException;
 import com.example.store.service.AddressService;
+import com.example.store.service.UserRegistrationService;
 import com.example.store.service.WarehouseService;
 
 @SpringBootTest
+@AutoConfigureMockMvc
 class WarehouseServiceTests {
     
 
@@ -31,7 +37,13 @@ class WarehouseServiceTests {
     private WarehouseService service;
     @Autowired
     private AddressService addressService;
+    @Autowired
+    private UserRegistrationService registerService;
 
+    void registerUser(){
+        ResponseEntity<RegistrationTokenDTO> token = registerService.registerUser(ExampleDTOBuilder.buildExampleUserDTO());
+        registerService.activateUser(token.getBody().getToken());
+    }
     
     @Test
     @Transactional
@@ -45,7 +57,9 @@ class WarehouseServiceTests {
 
     @Test
     @Transactional
+    @WithMockUser(username="admin")
     void createdWarehouseTest(){
+        registerUser();
         CreateWarehouseDTO warehouse = ExampleDTOBuilder.buildExampleWarehouseDTO();
         WarehouseDTO createdWarehouse = service.createWarehouse(warehouse);
         AddressDTO address = addressService.getAddress(createdWarehouse.getAddressId());
@@ -55,6 +69,7 @@ class WarehouseServiceTests {
 
     @Test
     @Transactional
+    @WithMockUser(username="admin")
     void findAddressFromCreatedWarehouseTest(){
         CreateWarehouseDTO warehouse = ExampleDTOBuilder.buildExampleWarehouseDTO();
         WarehouseDTO createdWarehouse = service.createWarehouse(warehouse);
@@ -65,6 +80,7 @@ class WarehouseServiceTests {
 
     @Test
     @Transactional
+    @WithMockUser(username="admin")
     void findCreatedWarehouseTest(){
         CreateWarehouseDTO warehouse = ExampleDTOBuilder.buildExampleWarehouseDTO();
         WarehouseDTO createdWarehouse = service.createWarehouse(warehouse);
@@ -88,21 +104,24 @@ class WarehouseServiceTests {
 
     @Test
     @Transactional
+    @WithMockUser(username="admin")
     void findUnactivedWarehouseTest(){
         CreateWarehouseDTO warehouse = ExampleDTOBuilder.buildExampleWarehouseDTO();
         WarehouseDTO createdWarehouse = service.createWarehouse(warehouse);
         service.deleteWarehouse(createdWarehouse.getId());
 
-        assertTrue(service.getWarehouses(0, 100).
-        getItems()
-        .stream()
-        .filter(deletedWarehouse -> deletedWarehouse.getId() == createdWarehouse.getId())
-        .collect(Collectors.toList())
-        .isEmpty());
+        assertThrows(NotFoundException.class, () -> {
+            service.getWarehouses(0, 100)
+            .getItems()
+            .stream()
+            .filter(deletedWarehouse -> deletedWarehouse.getId() == createdWarehouse.getId())
+            .findFirst().orElseThrow(() -> new NotFoundException(WarehouseEntity.class, createdWarehouse.getId()));
+        });
     }
 
     @Test
     @Transactional
+    @WithMockUser(username="admin")
     void findActiveWarehouseTest(){
         CreateWarehouseDTO warehouse = ExampleDTOBuilder.buildExampleWarehouseDTO();
         WarehouseDTO createdWarehouse = service.createWarehouse(warehouse);
@@ -119,6 +138,7 @@ class WarehouseServiceTests {
 
     @Test
     @Transactional
+    @WithMockUser(username="admin")
     void checkModificationDateTest(){
         CreateWarehouseDTO warehouse = ExampleDTOBuilder.buildExampleWarehouseDTO();
         WarehouseDTO createdWarehouse = service.createWarehouse(warehouse);

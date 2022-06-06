@@ -15,6 +15,7 @@ import com.example.store.dto.address.CreateAddressDTO;
 import com.example.store.exception.NotFoundException;
 import com.example.store.exception.ValidationException;
 import com.example.store.service.AddressService;
+import com.example.store.validator.Validator;
 
 @SpringBootTest
 class AddressServiceTests {
@@ -90,7 +91,7 @@ class AddressServiceTests {
        
 
         assertThrows(ValidationException.class, () -> {
-            service.createAddress(address);
+            Validator.validate(address);
         });
 
     }

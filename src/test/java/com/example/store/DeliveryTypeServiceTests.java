@@ -10,6 +10,7 @@ import javax.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import com.example.store.Builder.ExampleDTOBuilder;
 import com.example.store.EqualChecker.EqualDTOChecker;
@@ -22,6 +23,7 @@ import com.example.store.exception.ValidationException;
 import com.example.store.mapper.DeliveryTypeMapper;
 import com.example.store.service.AddressService;
 import com.example.store.service.DeliveryTypeService;
+import com.example.store.validator.Validator;
 
 @SpringBootTest
 class DeliveryTypeServiceTests {
@@ -62,6 +64,7 @@ class DeliveryTypeServiceTests {
 
     @Test
     @Transactional
+    @WithMockUser(username="admin")
     void CreateFindAndDeleteDeliveryTypeTest(){
         CreateDeliveryTypeDTO deliveryType = ExampleDTOBuilder.buildExampleDeliveryTypeDTO();
         DeliveryTypeDTO createdDeliveryType = service.createDeliveryType(deliveryType);
@@ -76,6 +79,7 @@ class DeliveryTypeServiceTests {
 
     @Test
     @Transactional
+    @WithMockUser(username="admin")
     void getUnactiveDeliveryTypeTest() throws NotFoundException{
         CreateDeliveryTypeDTO deliveryType = ExampleDTOBuilder.buildExampleDeliveryTypeDTO();
         DeliveryTypeDTO createdDeliveryType = service.createDeliveryType(deliveryType);
@@ -110,7 +114,7 @@ class DeliveryTypeServiceTests {
         CreateDeliveryTypeDTO deliveryType = CreateDeliveryTypeDTO.builder().name("").email("Example@email.com").address(ExampleDTOBuilder.BuildExampleAddress()).build();
 
         assertThrows(ValidationException.class, () -> {
-            service.createDeliveryType(deliveryType);
+            Validator.validate(deliveryType);
         });
     }
 
@@ -136,7 +140,7 @@ class DeliveryTypeServiceTests {
        
 
         assertThrows(ValidationException.class, () -> {
-            service.createDeliveryType(deliveryType);
+            Validator.validate(deliveryType);
         });
 
     }
@@ -153,7 +157,7 @@ class DeliveryTypeServiceTests {
        
 
         assertThrows(ValidationException.class, () -> {
-            service.createDeliveryType(deliveryType);
+            Validator.validate(deliveryType);
         });
 
     }
@@ -177,7 +181,7 @@ class DeliveryTypeServiceTests {
        
 
         assertThrows(ValidationException.class, () -> {
-            service.createDeliveryType(deliveryType);
+            Validator.validate(deliveryType);
         });
 
     }

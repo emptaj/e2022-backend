@@ -18,6 +18,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CreateOrderDTO {
     @NotNull(message = "Address should not be empty")
+    @NotEmpty(message = "Address should not be empty")
     private CreateAddressDTO address;
     @NotNull(message = "DeliveryType id should not be empty")
     private Long deliveryTypeId;
