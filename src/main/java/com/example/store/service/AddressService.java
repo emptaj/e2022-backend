@@ -6,7 +6,6 @@ import com.example.store.entity.AddressEntity;
 import com.example.store.exception.NotFoundException;
 import com.example.store.mapper.AddressMapper;
 import com.example.store.repository.AddressRepository;
-import com.example.store.validator.Validator;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
