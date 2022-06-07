@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -27,16 +28,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.sessionManagement().sessionCreationPolicy(STATELESS);
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/api/users/*").permitAll()
-                .antMatchers("/swagger-ui.html").permitAll()
-                .antMatchers("/api/*").authenticated()
+                .antMatchers("/swagger-ui/").permitAll()
                 .antMatchers("/login").permitAll()
-                .anyRequest().permitAll()
+                .antMatchers("/api/**").authenticated()
+                .and()
+                .sessionManagement().sessionCreationPolicy(STATELESS)
                 .and()
                 .addFilter(new JsonObjectAuthenticationFilter(authenticationManagerBean()))
+                .addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling()
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
 
