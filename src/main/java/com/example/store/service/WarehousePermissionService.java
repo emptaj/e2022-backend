@@ -15,6 +15,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -24,8 +26,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class WarehousePermissionService {
 
+
     private final WarehousePermissionRepository warehousePermissionRepository;
     private final RecordFinder<WarehouseEntity, WarehouseRepository> warehouseFinder;
+
+    private final UserRepository userRepository;
     private final RecordFinder<UserEntity, UserRepository> userFinder;
 
 
@@ -35,12 +40,12 @@ public class WarehousePermissionService {
         List<WarehousePermissionEntity> warehousePermissionEntityList =
                 Arrays.stream(WarehousePermission.values()).map(perm -> WarehousePermissionEntity.builder()
                                 .warehouse(warehouseEntity)
+                                .users(new ArrayList<UserEntity>())
                                 .name(String.format("%d:%s", warehouseEntity.getId(), perm))
                                 .build())
                         .collect(Collectors.toList());
 
-        warehousePermissionRepository.saveAll(warehousePermissionEntityList);
-        return warehousePermissionEntityList;
+        return warehousePermissionRepository.saveAll(warehousePermissionEntityList);
     }
 
     @Transactional
@@ -54,7 +59,9 @@ public class WarehousePermissionService {
 
     @Transactional
     public void assignAllPermissions(UserEntity user, Collection<WarehousePermissionEntity> permissionEntities) {
+        permissionEntities.forEach((permission) -> permission.getUsers().add(user));
         user.getWarehousePermissions().addAll(permissionEntities);
+        userRepository.save(user);
     }
 
     @Transactional

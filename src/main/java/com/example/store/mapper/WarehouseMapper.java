@@ -36,6 +36,7 @@ public interface WarehouseMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "address", ignore = true)
+    @Mapping(target = "creationDate", ignore = true)
     @Mapping(target = "active", constant = "false")
     @Mapping(target = "modificationOperator", source = "operator")
     @Mapping(target = "modificationDate", source = "date")
