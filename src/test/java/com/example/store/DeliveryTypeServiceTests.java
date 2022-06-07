@@ -35,6 +35,8 @@ class DeliveryTypeServiceTests {
     @Autowired private DeliveryTypeService service;
     @Autowired private AddressService addressService;
 
+    
+
 
     @Test
     @Transactional
@@ -133,10 +135,11 @@ class DeliveryTypeServiceTests {
     @Test
     @Transactional
     void CheckIfOneItemIsAddedTest() throws NotFoundException{
+        int preSize = service.getActiveDeliveryTypes(0, 100).getItems().size();
         CreateDeliveryTypeDTO deliveryType = ExampleDTOBuilder.buildExampleDeliveryTypeDTO();
         service.createDeliveryType(deliveryType);
 
-        assertTrue(service.getActiveDeliveryTypes(0, 100).getItems().size()==1);
+        assertTrue(service.getActiveDeliveryTypes(0, 100).getItems().size()==preSize+1);
     }
 
     @Test

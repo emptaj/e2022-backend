@@ -3,6 +3,8 @@ package com.example.store;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.stream.Collectors;
+
 import com.example.store.Builder.ExampleDTOBuilder;
 import com.example.store.EqualChecker.EqualDTOChecker;
 import com.example.store.dto.product.ProductDTO;
@@ -26,16 +28,16 @@ import javax.transaction.Transactional;
 public class ProductServiceTests {
 
     @Autowired
-    private ProductService prodserv;
+    private ProductService prodService;
     @Autowired
-    private WarehouseService wareserv;
+    private WarehouseService wareService;
 
     @Test
     @Transactional
     void getNonExistingProductByIdTest() throws NotFoundException{
         Long id = -1L;
         assertThrows(NotFoundException.class, () -> {
-            prodserv.getProduct(id);
+            prodService.getProduct(id);
         });
     }
 
@@ -45,8 +47,8 @@ public class ProductServiceTests {
     void CreateProductTest(){
         UpdateProductDTO test = ExampleDTOBuilder.buildExampleProductDTO();
         CreateWarehouseDTO warehouseTest = ExampleDTOBuilder.buildExampleWarehouseDTO();
-        WarehouseDTO warehouseDTOTest = wareserv.createWarehouse(warehouseTest);
-        ProductDTO generatedProduct = prodserv.createProduct(warehouseDTOTest.getId(), test);
+        WarehouseDTO warehouseDTOTest = wareService.createWarehouse(warehouseTest);
+        ProductDTO generatedProduct = prodService.createProduct(warehouseDTOTest.getId(), test);
         assertTrue(EqualDTOChecker.ifProductEqual(test, generatedProduct));
     }
 
@@ -91,24 +93,72 @@ public class ProductServiceTests {
     void UpdateRemovedProductTest() throws ValidationException{
         UpdateProductDTO test = ExampleDTOBuilder.buildExampleProductDTO();
         CreateWarehouseDTO warehouseTest = ExampleDTOBuilder.buildExampleWarehouseDTO();
-        WarehouseDTO warehouseDTOTest = wareserv.createWarehouse(warehouseTest);
-        ProductDTO generatedProduct = prodserv.createProduct(warehouseDTOTest.getId(), test);
-        prodserv.deleteProduct(generatedProduct.getId());
+        WarehouseDTO warehouseDTOTest = wareService.createWarehouse(warehouseTest);
+        ProductDTO generatedProduct = prodService.createProduct(warehouseDTOTest.getId(), test);
+        prodService.deleteProduct(generatedProduct.getId());
         assertThrows(ValidationException.class, () -> {
-            prodserv.updateProduct(generatedProduct.getId(), test);
+            prodService.updateProduct(generatedProduct.getId(), test);
         });
     }
+
+    @Test
+    @Transactional
+    @WithMockUser(username="admin")
+    void UpdateProductTest() throws ValidationException{
+        UpdateProductDTO test = ExampleDTOBuilder.buildExampleProductDTO();
+        CreateWarehouseDTO warehouseTest = ExampleDTOBuilder.buildExampleWarehouseDTO();
+        WarehouseDTO warehouseDTOTest = wareService.createWarehouse(warehouseTest);
+        ProductDTO generatedProduct = prodService.createProduct(warehouseDTOTest.getId(), test);
+        ProductDTO updatedProduct = prodService.updateProduct(generatedProduct.getId(), UpdateProductDTO.builder()
+        .name("Produkt2")
+        .description("Produkt testowy")
+        .price(1.11F)
+        .build());
+        assertTrue(!EqualDTOChecker.ifProductEqual(test, updatedProduct));
+
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser(username="admin")
+    void CreateProductaGetListWithPlusOneProductTest() throws ValidationException{
+        int preSize = prodService.getProducts(0, 100).getItems().size();
+        UpdateProductDTO test = ExampleDTOBuilder.buildExampleProductDTO();
+        CreateWarehouseDTO warehouseTest = ExampleDTOBuilder.buildExampleWarehouseDTO();
+        WarehouseDTO warehouseDTOTest = wareService.createWarehouse(warehouseTest);
+        prodService.createProduct(warehouseDTOTest.getId(), test);
+        assertTrue(prodService.getProducts(0, 100).getItems().size() == preSize+1);
+
+    }
+
+    @Test
+    @Transactional
+    @WithMockUser(username="admin")
+    void CreateProductaDeleteGetListProductTest(){
+        UpdateProductDTO test = ExampleDTOBuilder.buildExampleProductDTO();
+        CreateWarehouseDTO warehouseTest = ExampleDTOBuilder.buildExampleWarehouseDTO();
+        WarehouseDTO warehouseDTOTest = wareService.createWarehouse(warehouseTest);
+        ProductDTO productCreated = prodService.createProduct(warehouseDTOTest.getId(), test);
+        prodService.deleteProduct(productCreated.getId());
+        assertTrue(prodService.getProducts(0, 100).getItems()
+        .stream()
+        .filter(product -> product.getId() == productCreated.getId())
+        .collect(Collectors.toList())
+        .isEmpty());
+
+    }
+
     @Test
     @Transactional
     @WithMockUser(username="admin")
     void DeleteDeletedProductTest() throws ValidationException{
         UpdateProductDTO test = ExampleDTOBuilder.buildExampleProductDTO();
         CreateWarehouseDTO warehouseTest = ExampleDTOBuilder.buildExampleWarehouseDTO();
-        WarehouseDTO warehouseDTOTest = wareserv.createWarehouse(warehouseTest);
-        ProductDTO generatedProduct = prodserv.createProduct(warehouseDTOTest.getId(), test);
-        prodserv.deleteProduct(generatedProduct.getId());
+        WarehouseDTO warehouseDTOTest = wareService.createWarehouse(warehouseTest);
+        ProductDTO generatedProduct = prodService.createProduct(warehouseDTOTest.getId(), test);
+        prodService.deleteProduct(generatedProduct.getId());
         assertThrows(ValidationException.class, () -> {
-            prodserv.deleteProduct(generatedProduct.getId());
+            prodService.deleteProduct(generatedProduct.getId());
         });
     }
 }
