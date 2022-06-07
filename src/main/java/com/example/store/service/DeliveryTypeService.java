@@ -15,9 +15,9 @@ import com.example.store.dto.deliveryType.DeliveryTypeExDTO;
 import com.example.store.dto.deliveryType.UpdateDeliveryTypeDTO;
 import com.example.store.entity.AddressEntity;
 import com.example.store.entity.DeliveryTypeEntity;
-import com.example.store.exception.NotFoundException;
 import com.example.store.mapper.DeliveryTypeMapper;
 import com.example.store.repository.DeliveryTypeRepository;
+import com.example.store.repository.finder.RecordFinder;
 import com.example.store.validator.Validator;
 
 import lombok.RequiredArgsConstructor;
@@ -32,11 +32,7 @@ public class DeliveryTypeService {
     private final AddressService addressService;
     private final UserService userService;
 
-
-    public DeliveryTypeEntity findDeliveryTypeById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new NotFoundException(DeliveryTypeEntity.class, id));
-    }
+    private final RecordFinder<DeliveryTypeEntity, DeliveryTypeRepository> finder;
 
 
     public ListDTO<DeliveryTypeDTO> getActiveDeliveryTypes(int page, int size) {
@@ -75,7 +71,7 @@ public class DeliveryTypeService {
     
 
     public void deleteDeliveryType(Long deliveryTypeId) {
-        DeliveryTypeEntity entity = findDeliveryTypeById(deliveryTypeId);
+        DeliveryTypeEntity entity = finder.byId(deliveryTypeId);
         Validator.positiveValue(entity.getActive(), "Delivery type already deleted");
         entity = mapper.delete(entity, userService.getLoggedUserEntity(), LocalDate.now());
         repository.save(entity);
@@ -83,7 +79,7 @@ public class DeliveryTypeService {
 
 
     public DeliveryTypeDTO updateDeliveryType(Long deliveryTypeId, UpdateDeliveryTypeDTO dto) {
-        DeliveryTypeEntity deliveryType = findDeliveryTypeById(deliveryTypeId);
+        DeliveryTypeEntity deliveryType = finder.byId(deliveryTypeId);
         Validator.positiveValue(deliveryType.getActive(), "Cannot edit deleted delivery type");
         addressService.updateAddress(deliveryType.getAddress(), dto.getAddress());
         deliveryType = mapper.update(deliveryType, dto, userService.getLoggedUserEntity(), LocalDate.now());
