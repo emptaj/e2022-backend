@@ -13,7 +13,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("api/users/")
 @AllArgsConstructor
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials="true")
 public class UserRegistrationController {
     private final UserRegistrationService userRegistrationService;
 

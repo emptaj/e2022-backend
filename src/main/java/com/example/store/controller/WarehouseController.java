@@ -22,14 +22,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import java.security.Principal;
 
 
 @RestController
 @RequestMapping(path = "/api/warehouses")
-@CrossOrigin
 @Transactional
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials="true")
 public class WarehouseController {
 
     private final WarehouseService service;

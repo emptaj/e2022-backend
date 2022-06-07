@@ -17,9 +17,9 @@ import lombok.RequiredArgsConstructor;
 @Valid
 @RestController
 @RequestMapping(path = "/api")
-@CrossOrigin
 @Transactional
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials="true")
 public class ProductController {
 
     private final ProductService service;
