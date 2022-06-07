@@ -18,9 +18,12 @@ import com.example.store.dto.address.AddressDTO;
 import com.example.store.dto.address.CreateAddressDTO;
 import com.example.store.dto.deliveryType.CreateDeliveryTypeDTO;
 import com.example.store.dto.deliveryType.DeliveryTypeDTO;
+import com.example.store.entity.DeliveryTypeEntity;
 import com.example.store.exception.NotFoundException;
 import com.example.store.exception.ValidationException;
 import com.example.store.mapper.DeliveryTypeMapper;
+import com.example.store.repository.DeliveryTypeRepository;
+import com.example.store.repository.finder.RecordFinder;
 import com.example.store.service.AddressService;
 import com.example.store.service.DeliveryTypeService;
 import com.example.store.validator.Validator;
@@ -28,10 +31,9 @@ import com.example.store.validator.Validator;
 @SpringBootTest
 class DeliveryTypeServiceTests {
     
-    @Autowired
-    private DeliveryTypeService service;
-    @Autowired
-    private AddressService addressService;
+    @Autowired private RecordFinder<DeliveryTypeEntity, DeliveryTypeRepository> deliveryFinder;
+    @Autowired private DeliveryTypeService service;
+    @Autowired private AddressService addressService;
 
 
     @Test
@@ -39,7 +41,7 @@ class DeliveryTypeServiceTests {
     void getNonExistingDeliveryTypeByIdTest() throws NotFoundException{
         Long id = -1L;
         assertThrows(NotFoundException.class, () -> {
-            service.findDeliveryTypeById(id);
+            deliveryFinder.byId(id);
         });
     }
 
@@ -68,7 +70,7 @@ class DeliveryTypeServiceTests {
     void CreateFindAndDeleteDeliveryTypeTest(){
         CreateDeliveryTypeDTO deliveryType = ExampleDTOBuilder.buildExampleDeliveryTypeDTO();
         DeliveryTypeDTO createdDeliveryType = service.createDeliveryType(deliveryType);
-        DeliveryTypeDTO foundedDeliveryType = DeliveryTypeMapper.INSTANCE.toDTO(service.findDeliveryTypeById(createdDeliveryType.getId()));
+        DeliveryTypeDTO foundedDeliveryType = DeliveryTypeMapper.INSTANCE.toDTO(deliveryFinder.byId(createdDeliveryType.getId()));
         AddressDTO addressCreated = addressService.getAddress(createdDeliveryType.getAddressId());
         AddressDTO addressFounded = addressService.getAddress(foundedDeliveryType.getAddressId());
         service.deleteDeliveryType(createdDeliveryType.getId());
