@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,12 +21,13 @@ import java.util.stream.Collectors;
 @Component
 public class AuthoritiesUpdater {
 
+    @Transactional
     public void update(UserEntity user) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         List<WarehousePermissionEntity> warehousePermissions = user.getWarehousePermissions();
+        System.out.println("USER ID: " + user.getId() + " WarehousePermissions = " + warehousePermissions.stream().map(perm -> perm.getName()).collect(Collectors.toList()));
         Collection<? extends GrantedAuthority> newAuthorities = createAuthorities(warehousePermissions);
         Authentication newAuth = new UsernamePasswordAuthenticationToken(user, auth.getCredentials(), newAuthorities);
-
         SecurityContextHolder.getContext().setAuthentication(newAuth);
 
     }

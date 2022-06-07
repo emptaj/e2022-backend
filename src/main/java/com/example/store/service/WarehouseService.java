@@ -54,13 +54,14 @@ public class WarehouseService {
         List<WarehousePermissionEntity> permissions = permissionService.createPermissions(entity);
         permissionService.assignAllPermissions(userEntity, permissions);
         authoritiesUpdater.update(userEntity);
-        
+
         return mapper.toDTO(entity);
     }
 
     @Transactional
     public void deleteWarehouse(Long warehouseId) {
         WarehouseEntity entity = findWarehouseById(warehouseId);
+        Validator.positiveValue(entity.getActive(), "Warehouse with given id not found");
         entity = mapper.delete(entity, userService.getLoggedUserEntity(), LocalDate.now());
         permissionService.deletePermissionForWarehouse(warehouseId);
         repository.save(entity);
@@ -84,9 +85,8 @@ public class WarehouseService {
 
 
     public WarehouseDTO updateWarehouse(Long warehouseId, CreateWarehouseDTO dto) {
-        Validator.validate(dto);
         WarehouseEntity warehouse = findWarehouseById(warehouseId);
-        Validator.positiveValue(warehouse.getActive(), "Cannot edit deleted warehosue");
+        Validator.positiveValue(warehouse.getActive(), "Cannot edit deleted warehouse");
         addressService.updateAddress(warehouse.getAddress(), dto.getAddress());
         warehouse = mapper.update(warehouse, dto.getName(), userService.getLoggedUserEntity(), LocalDate.now());
         warehouse = repository.save(warehouse);

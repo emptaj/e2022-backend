@@ -8,6 +8,8 @@ import com.example.store.exception.NotFoundException;
 import com.example.store.repository.WarehousePermissionRepository;
 import com.example.store.repository.WarehouseRepository;
 
+import com.example.store.security.AuthoritiesUpdater;
+import com.example.store.validator.Validator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -28,6 +30,7 @@ public class WarehousePermissionService {
     private final WarehousePermissionRepository warehousePermissionRepository;
     private final UserService userService;
     private final WarehouseRepository warehouseRepository;
+    private final AuthoritiesUpdater authoritiesUpdater;
 
 
     private WarehouseEntity findWarehouseById(Long id) {
@@ -57,6 +60,7 @@ public class WarehousePermissionService {
         String permissionName = String.format("%d:%s", warehouseId, permission.name());
         WarehousePermissionEntity permissionEntity = getPermissionEntityByName(permissionName);
         assignPermission(user, permissionEntity);
+        authoritiesUpdater.update(user);
     }
 
     @Transactional
@@ -64,7 +68,6 @@ public class WarehousePermissionService {
         user.getWarehousePermissions().addAll(permissionEntities);
     }
 
-    @Transactional
     public void assignPermission(UserEntity user, WarehousePermissionEntity permissionEntity) {
         user.getWarehousePermissions().add(permissionEntity);
 
@@ -88,11 +91,13 @@ public class WarehousePermissionService {
 
     @Transactional
     public void removePermissionToWarehouse(Long warehouseId, Long userId, WarehousePermission warehousePermission) {
-        findWarehouseById(warehouseId);
+        WarehouseEntity warehouseById = findWarehouseById(warehouseId);
+        Validator.positiveValue(warehouseById.getActive(), "Cannot edit deleted warehouse");
         UserEntity user = userService.getUserById(userId);
         String permissionName = String.format("%d:%s", warehouseId, warehousePermission.name());
         WarehousePermissionEntity permissionEntity = getPermissionEntityByName(permissionName);
         removePermission(user, permissionEntity);
+        authoritiesUpdater.update(user);
     }
 
     public List<WarehousePermissionEntity> getAll() {
