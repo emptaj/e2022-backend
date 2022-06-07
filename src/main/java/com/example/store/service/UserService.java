@@ -1,9 +1,9 @@
 package com.example.store.service;
 
 import com.example.store.entity.UserEntity;
-import com.example.store.exception.NotFoundException;
 import com.example.store.exception.ValidationException;
 import com.example.store.repository.UserRepository;
+
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,7 +16,9 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 @Service
 public class UserService implements UserDetailsService {
+
     private final UserRepository userRepository;
+
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -52,9 +54,5 @@ public class UserService implements UserDetailsService {
                 orElseThrow(
                         () -> new UsernameNotFoundException("Auth: user must be logged in")
                 );
-    }
-
-    public UserEntity getUserById(Long userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new NotFoundException(UserEntity.class, userId));
     }
 }

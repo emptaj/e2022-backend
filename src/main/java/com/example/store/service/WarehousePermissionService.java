@@ -5,15 +5,18 @@ import com.example.store.entity.WarehouseEntity;
 import com.example.store.entity.WarehousePermissionEntity;
 import com.example.store.entity.enums.WarehousePermission;
 import com.example.store.exception.NotFoundException;
+import com.example.store.repository.UserRepository;
 import com.example.store.repository.WarehousePermissionRepository;
 import com.example.store.repository.WarehouseRepository;
+import com.example.store.repository.finder.RecordFinder;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -23,15 +26,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class WarehousePermissionService {
 
+
     private final WarehousePermissionRepository warehousePermissionRepository;
-    private final UserService userService;
-    private final WarehouseRepository warehouseRepository;
+    private final RecordFinder<WarehouseEntity, WarehouseRepository> warehouseFinder;
 
-
-    private WarehouseEntity findWarehouseById(Long id) {
-        return warehouseRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(WarehouseEntity.class, id));
-    }
+    private final UserRepository userRepository;
+    private final RecordFinder<UserEntity, UserRepository> userFinder;
 
 
     @Transactional
@@ -40,18 +40,18 @@ public class WarehousePermissionService {
         List<WarehousePermissionEntity> warehousePermissionEntityList =
                 Arrays.stream(WarehousePermission.values()).map(perm -> WarehousePermissionEntity.builder()
                                 .warehouse(warehouseEntity)
+                                .users(new ArrayList<UserEntity>())
                                 .name(String.format("%d:%s", warehouseEntity.getId(), perm))
                                 .build())
                         .collect(Collectors.toList());
 
-        warehousePermissionRepository.saveAll(warehousePermissionEntityList);
-        return warehousePermissionEntityList;
+        return warehousePermissionRepository.saveAll(warehousePermissionEntityList);
     }
 
     @Transactional
     public void assignPermissionToWarehouse(Long warehouseId, Long userId, WarehousePermission permission) {
-        findWarehouseById(warehouseId);
-        UserEntity user = userService.getUserById(userId);
+        warehouseFinder.byId(warehouseId);
+        UserEntity user = userFinder.byId(userId);
         String permissionName = String.format("%d:%s", warehouseId, permission.name());
         WarehousePermissionEntity permissionEntity = getPermissionEntityByName(permissionName);
         assignPermission(user, permissionEntity);
@@ -59,13 +59,15 @@ public class WarehousePermissionService {
 
     @Transactional
     public void assignAllPermissions(UserEntity user, Collection<WarehousePermissionEntity> permissionEntities) {
+        permissionEntities.forEach((permission) -> permission.getUsers().add(user));
         user.getWarehousePermissions().addAll(permissionEntities);
+        userRepository.save(user);
     }
 
     @Transactional
     public void assignPermission(UserEntity user, WarehousePermissionEntity permissionEntity) {
         user.getWarehousePermissions().add(permissionEntity);
-        UserDetails userDetails = (UserDetails) user;
+        // UserDetails userDetails = (UserDetails) user;
     }
 
     public WarehousePermissionEntity getPermissionEntityByName(String permissionName) {
@@ -86,8 +88,8 @@ public class WarehousePermissionService {
 
     @Transactional
     public void removePermissionToWarehouse(Long warehouseId, Long userId, WarehousePermission warehousePermission) {
-        findWarehouseById(warehouseId);
-        UserEntity user = userService.getUserById(userId);
+        warehouseFinder.byId(warehouseId);
+        UserEntity user = userFinder.byId(userId);
         String permissionName = String.format("%d:%s", warehouseId, warehousePermission.name());
         WarehousePermissionEntity permissionEntity = getPermissionEntityByName(permissionName);
         removePermission(user, permissionEntity);
@@ -98,7 +100,7 @@ public class WarehousePermissionService {
     }
 
     public List<WarehousePermissionEntity> getForWarehouse(Long warehouseId) {
-        findWarehouseById(warehouseId);
+        warehouseFinder.byId(warehouseId);
         return warehousePermissionRepository.findAllByWarehouseId(warehouseId);
     }
 
@@ -123,5 +125,16 @@ public class WarehousePermissionService {
                 map(permissionEntity -> new SimpleGrantedAuthority(permissionEntity.getName()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    public boolean hasPermission(UserEntity user, WarehouseEntity warehouse, WarehousePermission permission) {
+        return user.getWarehousePermissions().stream()
+                .filter((p) -> {
+                    return p.getWarehouse().getId() == warehouse.getId() && 
+                           p.getName().equals(warehouse.getId() + ":" + permission.name());
+                })
+                .findFirst()
+                .isPresent();
+
     }
 }
