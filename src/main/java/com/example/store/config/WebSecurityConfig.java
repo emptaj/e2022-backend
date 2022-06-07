@@ -15,6 +15,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+
 @Configuration
 @AllArgsConstructor
 @EnableWebSecurity
@@ -25,14 +27,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-                .csrf().disable()
+        http.sessionManagement().sessionCreationPolicy(STATELESS);
+        http.csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/api/users/*")
                 .permitAll()
                 .antMatchers("/swagger-ui.html")
                 .permitAll()
-                .antMatchers("/api/login").permitAll()
                 .antMatchers("/api/*")
                 .permitAll()
                 .anyRequest()
@@ -63,4 +64,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
+
+
 }
