@@ -221,9 +221,13 @@ public class OrderService {
     }
 
     public ListDTO<OrderDTO> getPendingOrders(Long warehouseId, int page, int size) {
-        warehouseFinder.byId(warehouseId);
+        WarehouseEntity warehouse = warehouseFinder.byId(warehouseId);
+        return getPendingOrders(warehouse, page, size);
+    }
+
+    public ListDTO<OrderDTO> getPendingOrders(WarehouseEntity warehouse, int page, int size) {
         Page<OrderEntity> pageResponse = repository.findAllByWarehouseIdAndStateIn(
-                warehouseId, List.of(NEW, ACCEPTED, SENT), PageRequest.of(page, size));
+                warehouse.getId(), List.of(NEW, ACCEPTED, SENT), PageRequest.of(page, size));
 
         var result = pageResponse.getContent().stream()
                 .map(mapper::toDTO)

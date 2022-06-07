@@ -22,8 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import java.security.Principal;
-
 
 @RestController
 @RequestMapping(path = "/api/warehouses")
