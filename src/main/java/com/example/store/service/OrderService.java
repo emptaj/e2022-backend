@@ -19,6 +19,8 @@ import com.example.store.entity.ProductEntity;
 import com.example.store.entity.UserEntity;
 import com.example.store.entity.WarehouseEntity;
 import com.example.store.entity.enums.OrderState;
+import com.example.store.entity.enums.WarehousePermission;
+import com.example.store.exception.UnauthorizedException;
 import com.example.store.exception.ValidationException;
 import com.example.store.mapper.OrderMapper;
 import com.example.store.repository.DeliveryTypeRepository;
@@ -58,6 +60,7 @@ public class OrderService {
     private final ProductService productService;
     private final AddressService addressService;
     private final UserService userService;
+    private final WarehousePermissionService warehousePermissionService;
 
     private final RecordFinder<OrderEntity, OrderRepository> finder;
     private final RecordFinder<ProductEntity, ProductRepository> productFinder;
@@ -170,6 +173,8 @@ public class OrderService {
 
     public OrderDTO changeOrderState(Long orderId, OrderState nextState) {
         OrderEntity order = finder.byId(orderId);
+        validatePermissions(order.getWarehouse(), WarehousePermission.UPDATE);
+
         OrderState currentState = order.getState();
 
         validateNextState(currentState, nextState);
@@ -178,6 +183,11 @@ public class OrderService {
         order = goNextState(order, nextState, user);
         
         return mapper.toDTO(order);
+    }
+    
+    private void validatePermissions(WarehouseEntity warehouse, WarehousePermission permission) {
+        if (!warehousePermissionService.hasPermission(userService.getLoggedUserEntity(), warehouse, permission))
+            throw new UnauthorizedException("Unauthorized");
     }
     
     private void validateNextState(OrderState currentState, OrderState nextState) {

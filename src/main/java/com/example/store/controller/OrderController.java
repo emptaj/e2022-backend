@@ -6,6 +6,7 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -57,7 +58,8 @@ public class OrderController {
         return service.changeOrderState(orderId, nextState);
     }
 
-    @GetMapping("/warehouses/{warehouseId}/orders/")
+    @PreAuthorize("hasAuthority(#warehouseId + ':READ')")
+    @GetMapping("/warehouses/{warehouseId}/orders")
     public ListDTO<OrderDTO> getPendingOrders(@PathVariable Long warehouseId,
                                               @RequestParam(required = false, defaultValue = "0")  int page,
                                               @RequestParam(required = false, defaultValue = "20") int size

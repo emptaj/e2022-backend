@@ -126,4 +126,15 @@ public class WarehousePermissionService {
                 ))
                 .collect(Collectors.toList());
     }
+
+    public boolean hasPermission(UserEntity user, WarehouseEntity warehouse, WarehousePermission permission) {
+        return user.getWarehousePermissions().stream()
+                .filter((p) -> {
+                    return p.getWarehouse().getId() == warehouse.getId() && 
+                           p.getName().equals(warehouse.getId() + ":" + permission.name());
+                })
+                .findFirst()
+                .isPresent();
+
+    }
 }
