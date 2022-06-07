@@ -6,6 +6,7 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api")
 @Transactional
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials="true")
 public class OrderController {
     
     private final OrderService service;
