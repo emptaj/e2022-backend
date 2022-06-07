@@ -19,11 +19,15 @@ import com.example.store.entity.ProductEntity;
 import com.example.store.entity.UserEntity;
 import com.example.store.entity.WarehouseEntity;
 import com.example.store.entity.enums.OrderState;
-import com.example.store.exception.NotFoundException;
 import com.example.store.exception.ValidationException;
 import com.example.store.mapper.OrderMapper;
+import com.example.store.repository.DeliveryTypeRepository;
 import com.example.store.repository.OrderDetailsRepository;
 import com.example.store.repository.OrderRepository;
+import com.example.store.repository.ProductRepository;
+import com.example.store.repository.UserRepository;
+import com.example.store.repository.WarehouseRepository;
+import com.example.store.repository.finder.RecordFinder;
 import com.example.store.validator.Validator;
 
 import java.time.LocalDate;
@@ -53,31 +57,24 @@ public class OrderService {
 
     private final ProductService productService;
     private final AddressService addressService;
-    private final DeliveryTypeService deliveryService;
     private final UserService userService;
-    private final WarehouseService warehouseService;
 
-
-    public OrderEntity findOrderById(Long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new NotFoundException(OrderEntity.class, id));
-    }
-
-    public OrderDetailsEntity findOrderDetailsById(Long id) {
-        return detailsRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(OrderDetailsEntity.class, id));
-    }
+    private final RecordFinder<OrderEntity, OrderRepository> finder;
+    private final RecordFinder<ProductEntity, ProductRepository> productFinder;
+    private final RecordFinder<WarehouseEntity, WarehouseRepository> warehouseFinder;
+    private final RecordFinder<DeliveryTypeEntity, DeliveryTypeRepository> deliveryFinder;
+    private final RecordFinder<UserEntity, UserRepository> userFinder;
 
 
     public OrderDTO getOrder(Long orderId) {
-        OrderEntity entity = findOrderById(orderId);
+        OrderEntity entity = finder.byId(orderId);
         return mapper.toDTO(entity);
     }
 
 
     public List<OrderDTO> createOrder(CreateOrderDTO dto) {
         AddressEntity address = addressService.createAddressEntity(dto.getAddress());
-        DeliveryTypeEntity deliveryType = deliveryService.findDeliveryTypeById(dto.getDeliveryTypeId());
+        DeliveryTypeEntity deliveryType = deliveryFinder.byId(dto.getDeliveryTypeId());
         UserEntity user = userService.getLoggedUserEntity();
 
         Map<WarehouseEntity, List<Pair<ProductEntity, Integer>>> ordersMap = splitOrder(dto.getOrderDetails());
@@ -104,7 +101,7 @@ public class OrderService {
         var ordersMap = new HashMap<WarehouseEntity, List<Pair<ProductEntity, Integer>>>();
         
         for (CreateOrderDetailsDTO item : orderDetails) {
-            ProductEntity product = productService.findProductById(item.getProductId());
+            ProductEntity product = productFinder.byId(item.getProductId());
             Integer quantity = item.getQuantity();
             Validator.positiveValue(quantity, "Product quantity must be positive");
 
@@ -159,7 +156,7 @@ public class OrderService {
 
 
     public ListDTO<OrderDTO> getUserOrders(Long userId, int page, int size) {
-        UserEntity user = userService.getUserById(userId);
+        UserEntity user = userFinder.byId(userId);
         Page<OrderEntity> pageResponse = repository.findAllByUserIdAndStateNotIn(
                 user.getId(), List.of(OrderState.CANCELLED, OrderState.DELIVERED, OrderState.REJECTED),
                 PageRequest.of(page, size));
@@ -172,7 +169,7 @@ public class OrderService {
     }
 
     public OrderDTO changeOrderState(Long orderId, OrderState nextState) {
-        OrderEntity order = findOrderById(orderId);
+        OrderEntity order = finder.byId(orderId);
         OrderState currentState = order.getState();
 
         validateNextState(currentState, nextState);
@@ -224,7 +221,7 @@ public class OrderService {
     }
 
     public ListDTO<OrderDTO> getPendingOrders(Long warehouseId, int page, int size) {
-        warehouseService.findWarehouseById(warehouseId);
+        warehouseFinder.byId(warehouseId);
         Page<OrderEntity> pageResponse = repository.findAllByWarehouseIdAndStateIn(
                 warehouseId, List.of(NEW, ACCEPTED, SENT), PageRequest.of(page, size));
 
