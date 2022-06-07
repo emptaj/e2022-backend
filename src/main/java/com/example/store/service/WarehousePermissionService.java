@@ -9,6 +9,8 @@ import com.example.store.repository.WarehousePermissionRepository;
 import com.example.store.repository.WarehouseRepository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -65,7 +67,7 @@ public class WarehousePermissionService {
     @Transactional
     public void assignPermission(UserEntity user, WarehousePermissionEntity permissionEntity) {
         user.getWarehousePermissions().add(permissionEntity);
-        UserDetails userDetails = (UserDetails) user;
+
     }
 
     public WarehousePermissionEntity getPermissionEntityByName(String permissionName) {
@@ -114,14 +116,5 @@ public class WarehousePermissionService {
         warehousePermissionRepository.deleteAll(forWarehousePermissions);
     }
 
-    public SimpleGrantedAuthority createAuthority(WarehousePermissionEntity permissionEntity) {
-        return new SimpleGrantedAuthority(permissionEntity.getName());
-    }
 
-    public List<SimpleGrantedAuthority> createAuthorities(List<WarehousePermissionEntity> permissionEntities) {
-        return permissionEntities.stream().
-                map(permissionEntity -> new SimpleGrantedAuthority(permissionEntity.getName()
-                ))
-                .collect(Collectors.toList());
-    }
 }

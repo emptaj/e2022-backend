@@ -14,6 +14,7 @@ import com.example.store.entity.WarehousePermissionEntity;
 import com.example.store.exception.NotFoundException;
 import com.example.store.mapper.WarehouseMapper;
 import com.example.store.repository.WarehouseRepository;
+import com.example.store.security.AuthoritiesUpdater;
 import com.example.store.validator.Validator;
 
 import org.springframework.data.domain.Page;
@@ -34,6 +35,7 @@ public class WarehouseService {
     private final WarehousePermissionService permissionService;
     private final AddressService addressService;
     private final UserService userService;
+    private final AuthoritiesUpdater authoritiesUpdater;
     private final WarehouseMapper mapper = WarehouseMapper.INSTANCE;
 
 
@@ -51,6 +53,8 @@ public class WarehouseService {
 
         List<WarehousePermissionEntity> permissions = permissionService.createPermissions(entity);
         permissionService.assignAllPermissions(userEntity, permissions);
+        authoritiesUpdater.update(userEntity);
+        
         return mapper.toDTO(entity);
     }
 
