@@ -52,7 +52,7 @@ public class JsonObjectAuthenticationFilter extends UsernamePasswordAuthenticati
                 .sign(Algorithm.HMAC256(secret));
 
         Map<String, String> tokens = new HashMap<>();
-        tokens.put("access_token", token);
+        tokens.put("access_token", "Bearer " + token);
         tokens.put("refresh_token", refreshToken);
         response.setContentType(APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(), tokens);

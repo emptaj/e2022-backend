@@ -30,14 +30,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.sessionManagement().sessionCreationPolicy(STATELESS);
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/api/users/*")
-                .permitAll()
-                .antMatchers("/swagger-ui.html")
-                .permitAll()
-                .antMatchers("/api/*")
-                .permitAll()
-                .anyRequest()
-                .permitAll()
+                .antMatchers("/api/users/*").permitAll()
+                .antMatchers("/swagger-ui.html").permitAll()
+                .antMatchers("/api/*").authenticated()
+                .antMatchers("/login").permitAll()
+                .anyRequest().permitAll()
                 .and()
                 .addFilter(new JsonObjectAuthenticationFilter(authenticationManagerBean()))
                 .exceptionHandling()
@@ -52,7 +49,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     DaoAuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-
         provider.setPasswordEncoder(bCryptPasswordEncoder);
         provider.setUserDetailsService(userService);
 
