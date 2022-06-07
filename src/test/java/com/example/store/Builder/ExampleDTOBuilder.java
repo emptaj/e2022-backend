@@ -53,7 +53,6 @@ public class ExampleDTOBuilder {
     public static UpdateProductDTO buildNoDescriptionProductDTO(){
         return UpdateProductDTO.builder()
                 .name("Produkt")
-                .description("")
                 .price(1F)
                 .build();
     }
@@ -68,7 +67,7 @@ public class ExampleDTOBuilder {
         return UpdateProductDTO.builder()
                 .name("Produkt")
                 .description("Produkt testowy")
-                .price(1F)
+                .price(-1F)
                 .build();
     }
 

@@ -13,13 +13,14 @@ import com.example.store.exception.NotFoundException;
 import com.example.store.exception.ValidationException;
 import com.example.store.service.ProductService;
 import com.example.store.service.WarehouseService;
-import io.swagger.annotations.Example;
+import com.example.store.validator.Validator;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import javax.transaction.Transactional;
-import javax.validation.Validation;
 
 @SpringBootTest
 public class ProductServiceTests {
@@ -31,14 +32,6 @@ public class ProductServiceTests {
 
     @Test
     @Transactional
-    void findNonExistingProductByIdTest() throws NotFoundException{
-        Long id = -1L;
-        assertThrows(NotFoundException.class, () -> {
-            prodserv.findProductById(id);
-        });
-    }
-    @Test
-    @Transactional
     void getNonExistingProductByIdTest() throws NotFoundException{
         Long id = -1L;
         assertThrows(NotFoundException.class, () -> {
@@ -48,6 +41,7 @@ public class ProductServiceTests {
 
     @Test
     @Transactional
+    @WithMockUser(username="admin")
     void CreateProductTest(){
         UpdateProductDTO test = ExampleDTOBuilder.buildExampleProductDTO();
         CreateWarehouseDTO warehouseTest = ExampleDTOBuilder.buildExampleWarehouseDTO();
@@ -60,47 +54,40 @@ public class ProductServiceTests {
     @Transactional
     void ValidateProductNameTest() throws ValidationException{
         UpdateProductDTO noNameProduct = ExampleDTOBuilder.buildNoNameProductDTO();
-        CreateWarehouseDTO warehouseTest = ExampleDTOBuilder.buildExampleWarehouseDTO();
-        WarehouseDTO warehouseDTOTest = wareserv.createWarehouse(warehouseTest);
         assertThrows(ValidationException.class, () -> {
-            prodserv.createProduct(warehouseDTOTest.getId(), noNameProduct);
+            Validator.validate(noNameProduct);
         });
     }
 
     @Test
     @Transactional
     void ValidateProductDescriptionTest() throws ValidationException{
-        UpdateProductDTO NoDescriptionProduct = ExampleDTOBuilder.buildNoDescriptionProductDTO();
-        CreateWarehouseDTO warehouseTest = ExampleDTOBuilder.buildExampleWarehouseDTO();
-        WarehouseDTO warehouseDTOTest = wareserv.createWarehouse(warehouseTest);
+        UpdateProductDTO noDescriptionProduct = ExampleDTOBuilder.buildNoDescriptionProductDTO();
         assertThrows(ValidationException.class, () -> {
-            prodserv.createProduct(warehouseDTOTest.getId(), NoDescriptionProduct);
+            Validator.validate(noDescriptionProduct);
         });
     }
 
     @Test
     @Transactional
     void ValidateProductPriceNotNullTest() throws ValidationException{
-        UpdateProductDTO NoPriceProduct = ExampleDTOBuilder.buildNoPriceProductDTO();
-        CreateWarehouseDTO warehouseTest = ExampleDTOBuilder.buildExampleWarehouseDTO();
-        WarehouseDTO warehouseDTOTest = wareserv.createWarehouse(warehouseTest);
+        UpdateProductDTO noPriceProduct = ExampleDTOBuilder.buildNoPriceProductDTO();
         assertThrows(ValidationException.class, () -> {
-            prodserv.createProduct(warehouseDTOTest.getId(), NoPriceProduct);
+            Validator.validate(noPriceProduct);
         });
     }
 
     @Test
     @Transactional
     void ValidateProductPriceTest() throws ValidationException{
-        UpdateProductDTO NegativeStockProduct = ExampleDTOBuilder.buildNegativeStockProductDTO();
-        CreateWarehouseDTO warehouseTest = ExampleDTOBuilder.buildExampleWarehouseDTO();
-        WarehouseDTO warehouseDTOTest = wareserv.createWarehouse(warehouseTest);
+        UpdateProductDTO negativeStockProduct = ExampleDTOBuilder.buildNegativeStockProductDTO();
         assertThrows(ValidationException.class, () -> {
-            prodserv.createProduct(warehouseDTOTest.getId(), NegativeStockProduct);
+            Validator.validate(negativeStockProduct);
         });
     }
     @Test
     @Transactional
+    @WithMockUser(username="admin")
     void UpdateRemovedProductTest() throws ValidationException{
         UpdateProductDTO test = ExampleDTOBuilder.buildExampleProductDTO();
         CreateWarehouseDTO warehouseTest = ExampleDTOBuilder.buildExampleWarehouseDTO();
@@ -113,6 +100,7 @@ public class ProductServiceTests {
     }
     @Test
     @Transactional
+    @WithMockUser(username="admin")
     void DeleteDeletedProductTest() throws ValidationException{
         UpdateProductDTO test = ExampleDTOBuilder.buildExampleProductDTO();
         CreateWarehouseDTO warehouseTest = ExampleDTOBuilder.buildExampleWarehouseDTO();
