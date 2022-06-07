@@ -44,13 +44,14 @@ public class WarehouseService {
 
     public WarehouseDTO createWarehouse(CreateWarehouseDTO dto) {
         AddressEntity address = addressService.createAddressEntity(dto.getAddress());
-        WarehouseEntity entity = mapper.create(dto.getName(), address, LocalDate.now());
-        UserEntity userEntity = userService.getLoggedUserEntity();
-        entity = repository.save(entity);
+        WarehouseEntity warehouse = mapper.create(dto.getName(), address, LocalDate.now());
+        warehouse = repository.save(warehouse);
 
-        List<WarehousePermissionEntity> permissions = permissionService.createPermissions(entity);
+        UserEntity userEntity = userService.getLoggedUserEntity();
+        List<WarehousePermissionEntity> permissions = permissionService.createPermissions(warehouse);
         permissionService.assignAllPermissions(userEntity, permissions);
-        return mapper.toDTO(entity);
+
+        return mapper.toDTO(warehouse);
     }
 
     @Transactional
