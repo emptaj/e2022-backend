@@ -49,6 +49,7 @@ public class ProductService {
 
     public ProductDTO createProduct(Long warehouseId, UpdateProductDTO product) {
         WarehouseEntity warehouse = warehouseFinder.byId(warehouseId);
+        Validator.positiveValue(warehouse.getActive(), "Cannot create product for deleted warehouse");
 
         ProductEntity entity = mapper.create(product, warehouse);
         entity = repository.save(entity);
