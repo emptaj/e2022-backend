@@ -2,8 +2,10 @@ package com.example.store.config;
 
 import com.example.store.service.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -30,17 +32,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .antMatchers("/swagger-ui.html")
                 .permitAll()
+                .antMatchers("/api/login").permitAll()
                 .antMatchers("/api/*")
-                .authenticated()
+                .permitAll()
                 .anyRequest()
                 .permitAll()
                 .and()
-                .formLogin()
-                .and()
-                .logout()
-                .and()
+                .addFilter(new JsonObjectAuthenticationFilter(authenticationManagerBean()))
                 .exceptionHandling()
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
+
     }
 
     @Override
@@ -55,5 +56,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         provider.setUserDetailsService(userService);
 
         return provider;
+    }
+
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
     }
 }
