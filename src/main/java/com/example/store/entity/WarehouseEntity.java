@@ -15,7 +15,8 @@ import lombok.*;
 @Setter
 public class WarehouseEntity {
     @Id
-    @GeneratedValue
+    @SequenceGenerator(name = "sequence_warehouse_id", sequenceName = "sequence_warehouse_id", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence_warehouse_id")
     private Long id;
     private String name;
 

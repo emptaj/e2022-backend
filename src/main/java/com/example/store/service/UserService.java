@@ -16,9 +16,7 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 @Service
 public class UserService implements UserDetailsService {
-
     private final UserRepository userRepository;
-
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -38,18 +36,14 @@ public class UserService implements UserDetailsService {
 
     public UserDetails getLoggedUserPrincipal() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
         if (authentication != null) {
             return (UserDetails) authentication.getPrincipal();
-
         }
-
         throw new ValidationException("Auth: user must be logged in");
     }
 
     public UserEntity getLoggedUserEntity() {
         UserDetails userDetails = getLoggedUserPrincipal();
-
         return userRepository.findByUsername(userDetails.getUsername()).
                 orElseThrow(
                         () -> new UsernameNotFoundException("Auth: user must be logged in")
