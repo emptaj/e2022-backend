@@ -43,6 +43,7 @@ public class JsonObjectAuthenticationFilter extends UsernamePasswordAuthenticati
             BufferedReader reader = request.getReader();
             StringBuilder sb = new StringBuilder();
             String line;
+
             while ((line = reader.readLine()) != null) {
                 sb.append(line);
             }

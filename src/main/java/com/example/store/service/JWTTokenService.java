@@ -61,7 +61,6 @@ public class JWTTokenService {
                 UserDetails userDetails = userService.loadUserByUsername(username);
                 UserEntity userEntity = (UserEntity) userDetails;
                 String access_token = createAccessToken(userDetails);
-
                 //preparing response
                 prepareResponseWithTokens(response, access_token, refresh_token, userEntity.getId());
 
