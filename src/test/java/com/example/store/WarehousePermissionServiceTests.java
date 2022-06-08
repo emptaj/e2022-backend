@@ -9,6 +9,7 @@ import org.apache.tomcat.websocket.WrappedMessageHandler;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import com.example.store.Builder.ExampleDTOBuilder;
@@ -56,17 +57,24 @@ public class WarehousePermissionServiceTests {
     @Test
     @Transactional
     @WithMockUser(username="admin")
-    void CreatePermisionAndAssignToUserTest(){
-        userService.loadUserByUsername("admin");
+    void RemovePermisionAndAssignToUserTest(){
+        UserEntity user = (UserEntity)userService.loadUserByUsername("admin");
         WarehouseDTO warehouse = warehouseService.createWarehouse(ExampleDTOBuilder.buildExampleWarehouseDTO());
-        warehouseService.deleteWarehouse(warehouse.getId());
-
-        assertThrows(NotFoundException.class, () -> {
-            warehousePermissionService.getForWarehouse(warehouse.getId());
-        });    
+        warehousePermissionService.removePermissionToWarehouse(warehouse.getId(), user.getId(), WarehousePermission.READ);
+        assertTrue(user.getWarehousePermissions().size() == 3);
+ 
     }
 
-    
-
+    @Test
+    @Transactional
+    @WithMockUser(username="admin")
+    void CreatePermisionAndAssignToUserTest(){
+        UserEntity user = (UserEntity)userService.loadUserByUsername("admin");
+        WarehouseDTO warehouse = warehouseService.createWarehouse(ExampleDTOBuilder.buildExampleWarehouseDTO());
+        warehousePermissionService.removePermissionToWarehouse(warehouse.getId(), user.getId(), WarehousePermission.READ);
+        warehousePermissionService.assignPermissionToWarehouse(warehouse.getId(), user.getId(), WarehousePermission.READ);
+        assertTrue(user.getWarehousePermissions().size() == 4);
+ 
+    }
 
 }
