@@ -1,9 +1,8 @@
 package com.example.store.config;
 
+import com.example.store.filter.CustomAuthorizationFilter;
 import com.example.store.filter.JsonObjectAuthenticationFilter;
 import com.example.store.service.UserService;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

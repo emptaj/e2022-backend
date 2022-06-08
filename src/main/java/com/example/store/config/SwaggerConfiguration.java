@@ -1,4 +1,4 @@
-package com.example.store.filter;
+package com.example.store.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

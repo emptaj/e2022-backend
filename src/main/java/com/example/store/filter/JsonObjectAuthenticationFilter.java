@@ -54,7 +54,7 @@ public class JsonObjectAuthenticationFilter extends UsernamePasswordAuthenticati
         Map<String, String> tokens = new HashMap<>();
         UserEntity userEntity = (UserEntity) principal;
         tokens.put("user_id", String.valueOf(userEntity.getId()));
-        tokens.put("access_token", "Bearer " + token);
+        tokens.put("access_token", "" + token);
         tokens.put("refresh_token", refreshToken);
         response.setContentType(APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(), tokens);
