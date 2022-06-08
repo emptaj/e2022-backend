@@ -13,7 +13,6 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/api/warehouses/")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials="true")
 public class WarehousePermissionController {
     private final WarehousePermissionService warehousePermissionService;
 

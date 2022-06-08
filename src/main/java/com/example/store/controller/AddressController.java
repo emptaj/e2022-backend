@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/addresses")
 @AllArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials="true")
 public class AddressController {
 
     private final AddressService addressService;

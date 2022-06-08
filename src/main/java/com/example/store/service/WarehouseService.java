@@ -44,7 +44,6 @@ public class WarehouseService {
 
 
     @Transactional
-
     public WarehouseDTO createWarehouse(CreateWarehouseDTO dto) {
         AddressEntity address = addressService.createAddressEntity(dto.getAddress());
         WarehouseEntity warehouse = mapper.create(dto.getName(), address, LocalDate.now());

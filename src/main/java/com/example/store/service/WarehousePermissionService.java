@@ -115,7 +115,7 @@ public class WarehousePermissionService {
 
         forWarehousePermissions.forEach(permissionEntity -> {
             List<UserEntity> users = permissionEntity.getUsers();
-            users.forEach(userEntity -> removeAllPermissions(userEntity, forWarehousePermissions));
+            users.forEach(userEntity -> removePermission(userEntity, permissionEntity));
         });
 
         warehousePermissionRepository.deleteAll(forWarehousePermissions);
