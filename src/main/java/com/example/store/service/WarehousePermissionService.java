@@ -10,6 +10,8 @@ import com.example.store.repository.WarehousePermissionRepository;
 import com.example.store.repository.WarehouseRepository;
 import com.example.store.repository.finder.RecordFinder;
 
+import com.example.store.security.AuthoritiesUpdater;
+import com.example.store.validator.Validator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
@@ -26,8 +28,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class WarehousePermissionService {
 
-
     private final WarehousePermissionRepository warehousePermissionRepository;
+    private final AuthoritiesUpdater authoritiesUpdater;
+
     private final RecordFinder<WarehouseEntity, WarehouseRepository> warehouseFinder;
 
     private final UserRepository userRepository;
@@ -55,6 +58,7 @@ public class WarehousePermissionService {
         String permissionName = String.format("%d:%s", warehouseId, permission.name());
         WarehousePermissionEntity permissionEntity = getPermissionEntityByName(permissionName);
         assignPermission(user, permissionEntity);
+        authoritiesUpdater.update(user);
     }
 
     @Transactional
@@ -64,10 +68,9 @@ public class WarehousePermissionService {
         userRepository.save(user);
     }
 
-    @Transactional
     public void assignPermission(UserEntity user, WarehousePermissionEntity permissionEntity) {
         user.getWarehousePermissions().add(permissionEntity);
-        // UserDetails userDetails = (UserDetails) user;
+
     }
 
     public WarehousePermissionEntity getPermissionEntityByName(String permissionName) {
@@ -88,11 +91,13 @@ public class WarehousePermissionService {
 
     @Transactional
     public void removePermissionToWarehouse(Long warehouseId, Long userId, WarehousePermission warehousePermission) {
-        warehouseFinder.byId(warehouseId);
+        WarehouseEntity warehouseById = warehouseFinder.byId(warehouseId);
+        Validator.positiveValue(warehouseById.getActive(), "Cannot edit deleted warehouse");
         UserEntity user = userFinder.byId(userId);
         String permissionName = String.format("%d:%s", warehouseId, warehousePermission.name());
         WarehousePermissionEntity permissionEntity = getPermissionEntityByName(permissionName);
         removePermission(user, permissionEntity);
+        authoritiesUpdater.update(user);
     }
 
     public List<WarehousePermissionEntity> getAll() {
@@ -116,10 +121,6 @@ public class WarehousePermissionService {
         warehousePermissionRepository.deleteAll(forWarehousePermissions);
     }
 
-    public SimpleGrantedAuthority createAuthority(WarehousePermissionEntity permissionEntity) {
-        return new SimpleGrantedAuthority(permissionEntity.getName());
-    }
-
     public List<SimpleGrantedAuthority> createAuthorities(List<WarehousePermissionEntity> permissionEntities) {
         return permissionEntities.stream().
                 map(permissionEntity -> new SimpleGrantedAuthority(permissionEntity.getName()
@@ -130,8 +131,8 @@ public class WarehousePermissionService {
     public boolean hasPermission(UserEntity user, WarehouseEntity warehouse, WarehousePermission permission) {
         return user.getWarehousePermissions().stream()
                 .filter((p) -> {
-                    return p.getWarehouse().getId() == warehouse.getId() && 
-                           p.getName().equals(warehouse.getId() + ":" + permission.name());
+                    return p.getWarehouse().getId() == warehouse.getId() &&
+                            p.getName().equals(warehouse.getId() + ":" + permission.name());
                 })
                 .findFirst()
                 .isPresent();
