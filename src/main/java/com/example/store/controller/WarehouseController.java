@@ -53,6 +53,7 @@ public class WarehouseController {
         service.deleteWarehouse(warehouseId);
     }
 
+    @PreAuthorize("hasAuthority(#warehouseId + ':UPDATE')")
     @PutMapping("/{warehouseId}")
     public WarehouseDTO updateWarehouse(@PathVariable Long warehouseId,
                                         @RequestBody CreateWarehouseDTO dto) {

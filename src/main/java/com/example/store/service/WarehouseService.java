@@ -15,7 +15,6 @@ import com.example.store.entity.WarehousePermissionEntity;
 import com.example.store.exception.ValidationException;
 import com.example.store.mapper.WarehouseMapper;
 import com.example.store.repository.WarehouseRepository;
-import com.example.store.security.AuthoritiesUpdater;
 import com.example.store.repository.finder.RecordFinder;
 import com.example.store.validator.Validator;
 
@@ -40,7 +39,6 @@ public class WarehouseService {
     private final AddressService addressService;
     private final OrderService orderService;
     private final UserService userService;
-    private final AuthoritiesUpdater authoritiesUpdater;
 
 
     @Transactional
@@ -51,7 +49,6 @@ public class WarehouseService {
         UserEntity userEntity = userService.getLoggedUserEntity();
         List<WarehousePermissionEntity> permissions = permissionService.createPermissions(warehouse);
         permissionService.assignAllPermissions(userEntity, permissions);
-        authoritiesUpdater.update(userEntity);
         return mapper.toDTO(warehouse);
     }
 

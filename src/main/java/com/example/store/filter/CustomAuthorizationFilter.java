@@ -5,7 +5,7 @@ import com.example.store.service.JWTTokenService;
 import com.example.store.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -15,9 +15,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Collection;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
@@ -43,14 +41,12 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
                     //loading user
                     UserDetails userDetails = userService.loadUserByUsername(username);
-                    String[] authorities = decodedJWT.getClaim("authorities").asArray(String.class);
-                    List<SimpleGrantedAuthority> authoritiesCollect = Arrays.stream(authorities).map(SimpleGrantedAuthority::new).
-                            collect(Collectors.toList());
+                    Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
 
                     //authorization
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails,
                             null,
-                            authoritiesCollect);
+                            authorities);
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                     filterChain.doFilter(request, response);
                 } catch (Exception e) {
