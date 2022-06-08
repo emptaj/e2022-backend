@@ -1,6 +1,9 @@
 package com.example.store.controller;
 
+import javax.validation.Valid;
+
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/delivery-types")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials="true")
 public class DeliveryTypeController {
     
     private final DeliveryTypeService service;
@@ -47,7 +51,7 @@ public class DeliveryTypeController {
 
     @PostMapping("")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public DeliveryTypeDTO createDeliveryType(@RequestBody CreateDeliveryTypeDTO dto) {
+    public DeliveryTypeDTO createDeliveryType(@Valid @RequestBody CreateDeliveryTypeDTO dto) {
         return service.createDeliveryType(dto);
     }
 
@@ -58,7 +62,7 @@ public class DeliveryTypeController {
 
     @PutMapping("/{deliveryTypeId}")
     public DeliveryTypeDTO updateDeliveryType(@PathVariable Long deliveryTypeId,
-                                              @RequestBody UpdateDeliveryTypeDTO dto) {
+    @Valid @RequestBody UpdateDeliveryTypeDTO dto) {
         return service.updateDeliveryType(deliveryTypeId, dto);
     }
 

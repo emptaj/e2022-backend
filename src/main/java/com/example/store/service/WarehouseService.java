@@ -5,21 +5,25 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.example.store.dto.ListDTO;
+import com.example.store.dto.order.OrderDTO;
 import com.example.store.dto.warehouse.CreateWarehouseDTO;
 import com.example.store.dto.warehouse.WarehouseDTO;
 import com.example.store.entity.AddressEntity;
 import com.example.store.entity.UserEntity;
 import com.example.store.entity.WarehouseEntity;
 import com.example.store.entity.WarehousePermissionEntity;
-import com.example.store.exception.NotFoundException;
+import com.example.store.exception.ValidationException;
 import com.example.store.mapper.WarehouseMapper;
 import com.example.store.repository.WarehouseRepository;
+<<<<<<< HEAD
 import com.example.store.security.AuthoritiesUpdater;
+=======
+import com.example.store.repository.finder.RecordFinder;
+>>>>>>> dev
 import com.example.store.validator.Validator;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -33,8 +37,13 @@ public class WarehouseService {
 
     private final WarehouseRepository repository;
     private final WarehousePermissionService permissionService;
+    private final WarehouseMapper mapper = WarehouseMapper.INSTANCE;
+    private final RecordFinder<WarehouseEntity, WarehouseRepository> finder;
+    
     private final AddressService addressService;
+    private final OrderService orderService;
     private final UserService userService;
+<<<<<<< HEAD
     private final AuthoritiesUpdater authoritiesUpdater;
     private final WarehouseMapper mapper = WarehouseMapper.INSTANCE;
 
@@ -45,26 +54,47 @@ public class WarehouseService {
     }
     
     @Transactional
+=======
+
+
+
+>>>>>>> dev
     public WarehouseDTO createWarehouse(CreateWarehouseDTO dto) {
         AddressEntity address = addressService.createAddressEntity(dto.getAddress());
-        WarehouseEntity entity = mapper.create(dto.getName(), address, LocalDate.now());
-        UserEntity userEntity = userService.getLoggedUserEntity();
-        entity = repository.save(entity);
+        WarehouseEntity warehouse = mapper.create(dto.getName(), address, LocalDate.now());
+        warehouse = repository.save(warehouse);
 
-        List<WarehousePermissionEntity> permissions = permissionService.createPermissions(entity);
+        UserEntity userEntity = userService.getLoggedUserEntity();
+        List<WarehousePermissionEntity> permissions = permissionService.createPermissions(warehouse);
         permissionService.assignAllPermissions(userEntity, permissions);
+<<<<<<< HEAD
         authoritiesUpdater.update(userEntity);
 
         return mapper.toDTO(entity);
+=======
+
+        return mapper.toDTO(warehouse);
+>>>>>>> dev
     }
 
     @Transactional
     public void deleteWarehouse(Long warehouseId) {
+<<<<<<< HEAD
         WarehouseEntity entity = findWarehouseById(warehouseId);
         Validator.positiveValue(entity.getActive(), "Warehouse with given id not found");
+=======
+        WarehouseEntity entity = finder.byId(warehouseId);
+        validateNoPendingOrders(entity);
+>>>>>>> dev
         entity = mapper.delete(entity, userService.getLoggedUserEntity(), LocalDate.now());
         permissionService.deletePermissionForWarehouse(warehouseId);
         repository.save(entity);
+    }
+
+    private void validateNoPendingOrders(WarehouseEntity warehouse) {
+        ListDTO<OrderDTO> pendingOrders = orderService.getPendingOrders(warehouse, 0, 1);
+        if (pendingOrders.getItems().size() > 0)
+            throw new ValidationException("Cannot delete warehouse with pending orders");
     }
 
 
@@ -80,18 +110,22 @@ public class WarehouseService {
 
 
     public WarehouseDTO getWarehouse(Long warehouseId) {
-        return mapper.toDTO(findWarehouseById(warehouseId));
+        return mapper.toDTO(finder.byId(warehouseId));
     }
 
 
     public WarehouseDTO updateWarehouse(Long warehouseId, CreateWarehouseDTO dto) {
+<<<<<<< HEAD
         WarehouseEntity warehouse = findWarehouseById(warehouseId);
         Validator.positiveValue(warehouse.getActive(), "Cannot edit deleted warehouse");
+=======
+        Validator.validate(dto);
+        WarehouseEntity warehouse = finder.byId(warehouseId);
+        Validator.positiveValue(warehouse.getActive(), "Cannot edit deleted warehosue");
+>>>>>>> dev
         addressService.updateAddress(warehouse.getAddress(), dto.getAddress());
         warehouse = mapper.update(warehouse, dto.getName(), userService.getLoggedUserEntity(), LocalDate.now());
         warehouse = repository.save(warehouse);
         return mapper.toDTO(warehouse);
     }
-
-
 }

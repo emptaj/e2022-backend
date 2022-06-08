@@ -3,8 +3,11 @@ package com.example.store.controller;
 import java.util.List;
 
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,10 +26,12 @@ import com.example.store.service.OrderService;
 
 import lombok.RequiredArgsConstructor;
 
+@Valid
 @RestController
 @RequestMapping("/api")
 @Transactional
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials="true")
 public class OrderController {
     
     private final OrderService service;
@@ -39,7 +44,7 @@ public class OrderController {
 
     @PostMapping("/orders")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public List<OrderDTO> createOrder(@RequestBody CreateOrderDTO dto) {
+    public List<OrderDTO> createOrder(@Valid @RequestBody CreateOrderDTO dto) {
         return service.createOrder(dto);
     }
 
@@ -55,11 +60,12 @@ public class OrderController {
         return service.changeOrderState(orderId, nextState);
     }
 
-    @GetMapping("/orders/")
-    public ListDTO<OrderDTO> getPendingOrders(
-            @RequestParam(required = false, defaultValue = "0")  int page,
-            @RequestParam(required = false, defaultValue = "20") int size
+    @PreAuthorize("hasAuthority(#warehouseId + ':READ')")
+    @GetMapping("/warehouses/{warehouseId}/orders")
+    public ListDTO<OrderDTO> getPendingOrders(@PathVariable Long warehouseId,
+                                              @RequestParam(required = false, defaultValue = "0")  int page,
+                                              @RequestParam(required = false, defaultValue = "20") int size
     ) {
-        return service.getPendingOrders(page, size);
+        return service.getPendingOrders(warehouseId, page, size);
     }
 }

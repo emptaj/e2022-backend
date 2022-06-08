@@ -1,6 +1,7 @@
 package com.example.store.controller;
 
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 
 import com.example.store.dto.ListDTO;
 import com.example.store.dto.product.ProductDTO;
@@ -13,11 +14,12 @@ import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 
+@Valid
 @RestController
 @RequestMapping(path = "/api")
-@CrossOrigin
 @Transactional
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials="true")
 public class ProductController {
 
     private final ProductService service;
@@ -55,13 +57,13 @@ public class ProductController {
     @PostMapping("/warehouses/{warehouseId}/products")
     @ResponseStatus(value = HttpStatus.CREATED)
     ProductDTO createProduct(@PathVariable Long warehouseId,
-                             @RequestBody UpdateProductDTO product) {
+                             @Valid @RequestBody UpdateProductDTO product) {
         return service.createProduct(warehouseId, product);
     }
 
     @PutMapping("/products/{productId}")
     ProductDTO updateProduct(@PathVariable Long productId,
-                             @RequestBody UpdateProductDTO product) {
+                             @Valid @RequestBody UpdateProductDTO product) {
         return service.updateProduct(productId, product);
     }
 
