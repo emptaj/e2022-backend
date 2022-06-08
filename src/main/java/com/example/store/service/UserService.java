@@ -36,12 +36,9 @@ public class UserService implements UserDetailsService {
 
     public UserDetails getLoggedUserPrincipal() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
         if (authentication != null) {
             return (UserDetails) authentication.getPrincipal();
-
         }
-
         throw new ValidationException("Auth: user must be logged in");
     }
 

@@ -25,11 +25,9 @@ public class AuthoritiesUpdater {
     public void update(UserEntity user) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         List<WarehousePermissionEntity> warehousePermissions = user.getWarehousePermissions();
-        System.out.println("USER ID: " + user.getId() + " WarehousePermissions = " + warehousePermissions.stream().map(perm -> perm.getName()).collect(Collectors.toList()));
         Collection<? extends GrantedAuthority> newAuthorities = createAuthorities(warehousePermissions);
         Authentication newAuth = new UsernamePasswordAuthenticationToken(user, auth.getCredentials(), newAuthorities);
         SecurityContextHolder.getContext().setAuthentication(newAuth);
-
     }
 
     public SimpleGrantedAuthority createAuthority(WarehousePermissionEntity permissionEntity) {
