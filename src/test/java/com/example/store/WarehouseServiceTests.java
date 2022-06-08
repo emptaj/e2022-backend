@@ -49,7 +49,7 @@ class WarehouseServiceTests {
 
     @Test
     @Transactional
-    @WithMockUser("admin")
+    @WithMockUser(username="admin")
     void createdWarehouseTest(){
         CreateWarehouseDTO warehouse = ExampleDTOBuilder.buildExampleWarehouseDTO();
         WarehouseDTO createdWarehouse = service.createWarehouse(warehouse);
