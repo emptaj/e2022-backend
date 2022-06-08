@@ -35,9 +35,6 @@ class DeliveryTypeServiceTests {
     @Autowired private DeliveryTypeService service;
     @Autowired private AddressService addressService;
 
-    
-
-
     @Test
     @Transactional
     void getNonExistingDeliveryTypeByIdTest() throws NotFoundException{

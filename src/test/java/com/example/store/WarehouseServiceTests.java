@@ -8,24 +8,22 @@ import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import com.example.store.Builder.ExampleDTOBuilder;
 import com.example.store.EqualChecker.EqualDTOChecker;
 import com.example.store.dto.address.AddressDTO;
-import com.example.store.dto.user.RegistrationTokenDTO;
 import com.example.store.dto.warehouse.CreateWarehouseDTO;
 import com.example.store.dto.warehouse.WarehouseDTO;
 import com.example.store.entity.WarehouseEntity;
 import com.example.store.exception.NotFoundException;
 import com.example.store.exception.ValidationException;
 import com.example.store.service.AddressService;
-import com.example.store.service.UserRegistrationService;
 import com.example.store.service.WarehouseService;
 
 @SpringBootTest
@@ -37,14 +35,7 @@ class WarehouseServiceTests {
     private WarehouseService service;
     @Autowired
     private AddressService addressService;
-    @Autowired
-    private UserRegistrationService registerService;
 
-
-    void registerUser(){
-        ResponseEntity<RegistrationTokenDTO> token = registerService.registerUser(ExampleDTOBuilder.buildExampleUserDTO());
-        registerService.activateUser(token.getBody().getToken());
-    }
     
     @Test
     @Transactional

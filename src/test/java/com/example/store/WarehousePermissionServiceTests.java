@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import javax.transaction.Transactional;
-
-import org.apache.tomcat.websocket.WrappedMessageHandler;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,7 +14,6 @@ import com.example.store.dto.warehouse.WarehouseDTO;
 import com.example.store.entity.UserEntity;
 import com.example.store.entity.enums.WarehousePermission;
 import com.example.store.exception.NotFoundException;
-import com.example.store.service.UserRegistrationService;
 import com.example.store.service.UserService;
 import com.example.store.service.WarehousePermissionService;
 import com.example.store.service.WarehouseService;
@@ -28,8 +25,6 @@ public class WarehousePermissionServiceTests {
     private WarehouseService warehouseService;
     @Autowired
     private WarehousePermissionService warehousePermissionService;
-    @Autowired
-    private UserRegistrationService registrationService;
     @Autowired
     private UserService userService;
 
@@ -56,15 +51,24 @@ public class WarehousePermissionServiceTests {
     @Test
     @Transactional
     @WithMockUser(username="admin")
-    void CreatePermisionAndAssignToUserTest(){
-        userService.loadUserByUsername("admin");
+    void RemovePermisionAndAssignToUserTest(){
+        UserEntity user = (UserEntity)userService.loadUserByUsername("admin");
         WarehouseDTO warehouse = warehouseService.createWarehouse(ExampleDTOBuilder.buildExampleWarehouseDTO());
-        warehouseService.deleteWarehouse(warehouse.getId());
-
-        assertThrows(NotFoundException.class, () -> {
-            warehousePermissionService.getForWarehouse(warehouse.getId());
-        });    
+        warehousePermissionService.removePermissionToWarehouse(warehouse.getId(), user.getId(), WarehousePermission.READ);
+        assertTrue(user.getWarehousePermissions().size() == 3);
+ 
     }
 
+    @Test
+    @Transactional
+    @WithMockUser(username="admin")
+    void CreatePermisionAndAssignToUserTest(){
+        UserEntity user = (UserEntity)userService.loadUserByUsername("admin");
+        WarehouseDTO warehouse = warehouseService.createWarehouse(ExampleDTOBuilder.buildExampleWarehouseDTO());
+        warehousePermissionService.removePermissionToWarehouse(warehouse.getId(), user.getId(), WarehousePermission.READ);
+        warehousePermissionService.assignPermissionToWarehouse(warehouse.getId(), user.getId(), WarehousePermission.READ);
+        assertTrue(user.getWarehousePermissions().size() == 4);
+ 
+    }
 
 }
