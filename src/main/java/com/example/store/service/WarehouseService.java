@@ -15,6 +15,7 @@ import com.example.store.entity.WarehousePermissionEntity;
 import com.example.store.exception.ValidationException;
 import com.example.store.mapper.WarehouseMapper;
 import com.example.store.repository.WarehouseRepository;
+import com.example.store.security.AuthoritiesUpdater;
 import com.example.store.repository.finder.RecordFinder;
 import com.example.store.validator.Validator;
 
@@ -35,28 +36,30 @@ public class WarehouseService {
     private final WarehousePermissionService permissionService;
     private final WarehouseMapper mapper = WarehouseMapper.INSTANCE;
     private final RecordFinder<WarehouseEntity, WarehouseRepository> finder;
-    
+
     private final AddressService addressService;
     private final OrderService orderService;
     private final UserService userService;
+    private final AuthoritiesUpdater authoritiesUpdater;
 
 
+    @Transactional
 
     public WarehouseDTO createWarehouse(CreateWarehouseDTO dto) {
         AddressEntity address = addressService.createAddressEntity(dto.getAddress());
         WarehouseEntity warehouse = mapper.create(dto.getName(), address, LocalDate.now());
         warehouse = repository.save(warehouse);
-
         UserEntity userEntity = userService.getLoggedUserEntity();
         List<WarehousePermissionEntity> permissions = permissionService.createPermissions(warehouse);
         permissionService.assignAllPermissions(userEntity, permissions);
-
+        authoritiesUpdater.update(userEntity);
         return mapper.toDTO(warehouse);
     }
 
     @Transactional
     public void deleteWarehouse(Long warehouseId) {
         WarehouseEntity entity = finder.byId(warehouseId);
+        Validator.positiveValue(entity.getActive(), "Warehouse with given id not found");
         validateNoPendingOrders(entity);
         entity = mapper.delete(entity, userService.getLoggedUserEntity(), LocalDate.now());
         permissionService.deletePermissionForWarehouse(warehouseId);
@@ -85,11 +88,9 @@ public class WarehouseService {
         return mapper.toDTO(finder.byId(warehouseId));
     }
 
-
     public WarehouseDTO updateWarehouse(Long warehouseId, CreateWarehouseDTO dto) {
-        Validator.validate(dto);
         WarehouseEntity warehouse = finder.byId(warehouseId);
-        Validator.positiveValue(warehouse.getActive(), "Cannot edit deleted warehosue");
+        Validator.positiveValue(warehouse.getActive(), "Cannot edit deleted warehouse");
         addressService.updateAddress(warehouse.getAddress(), dto.getAddress());
         warehouse = mapper.update(warehouse, dto.getName(), userService.getLoggedUserEntity(), LocalDate.now());
         warehouse = repository.save(warehouse);

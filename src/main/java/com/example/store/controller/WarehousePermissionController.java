@@ -37,7 +37,7 @@ public class WarehousePermissionController {
 
     }
 
-    @GetMapping("/")
+    @GetMapping("/permissions")
     public List<WarehousePermissionEntity> getPermisions() {
         return warehousePermissionService.getAll();
     }
