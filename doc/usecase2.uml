@@ -1,5 +1,6 @@
 @startuml
 skinparam dpi 300
+skinparam linetype ortho
 left to right direction
 
 actor "Uzytkownik" as AU << Human >>
@@ -10,7 +11,6 @@ together {
 
 package "Logowanie - Rejestracja" {
         together {
-                usecase "Zresetuj hasło" as UC3
                 usecase "Zaloguj się" as UC1
         }
         together {
@@ -22,18 +22,15 @@ package "Logowanie - Rejestracja" {
 
 AU --- UC1
 AU --- UC2
-AU --- UC3
 AU --- UC4
 AU --- UC5
 
-UC3 --- AE
 UC4 --- AE
 
 UC1 --- AB
 UC2 --- AB
-UC3 --- AB
 UC4 --- AB
 UC5 --- AB
 
-UC2 <. UC4: <<extends>>
+UC4 .> UC2: <<extends>>
 @enduml
