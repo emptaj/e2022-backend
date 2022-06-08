@@ -31,9 +31,8 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api")
 @Transactional
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials="true")
 public class OrderController {
-    
+
     private final OrderService service;
 
 
@@ -50,11 +49,11 @@ public class OrderController {
 
     @GetMapping("users/{userId}/orders/")
     public ListDTO<OrderDTO> getUserOrders(@PathVariable Long userId,
-                                           @RequestParam(required = false, defaultValue = "0")    int page,
-                                           @RequestParam(required = false, defaultValue = "20")   int size) {
+                                           @RequestParam(required = false, defaultValue = "0") int page,
+                                           @RequestParam(required = false, defaultValue = "20") int size) {
         return service.getUserOrders(userId, page, size);
     }
-    
+
     @PutMapping("/orders/{orderId}")
     public OrderDTO changeOrderState(@PathVariable Long orderId, @RequestParam OrderState nextState) {
         return service.changeOrderState(orderId, nextState);
@@ -63,7 +62,7 @@ public class OrderController {
     @PreAuthorize("hasAuthority(#warehouseId + ':READ')")
     @GetMapping("/warehouses/{warehouseId}/orders")
     public ListDTO<OrderDTO> getPendingOrders(@PathVariable Long warehouseId,
-                                              @RequestParam(required = false, defaultValue = "0")  int page,
+                                              @RequestParam(required = false, defaultValue = "0") int page,
                                               @RequestParam(required = false, defaultValue = "20") int size
     ) {
         return service.getPendingOrders(warehouseId, page, size);

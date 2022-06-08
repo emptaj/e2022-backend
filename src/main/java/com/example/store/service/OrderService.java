@@ -51,7 +51,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class OrderService {
-    
+
     private final OrderMapper mapper = OrderMapper.INSTANCE;
 
     private final OrderRepository repository;
@@ -99,10 +99,10 @@ public class OrderService {
 
         return ordersDTOList;
     }
-    
+
     private Map<WarehouseEntity, List<Pair<ProductEntity, Integer>>> splitOrder(List<CreateOrderDetailsDTO> orderDetails) {
         var ordersMap = new HashMap<WarehouseEntity, List<Pair<ProductEntity, Integer>>>();
-        
+
         for (CreateOrderDetailsDTO item : orderDetails) {
             ProductEntity product = productFinder.byId(item.getProductId());
             Integer quantity = item.getQuantity();
@@ -113,7 +113,7 @@ public class OrderService {
             if (productList == null) {
                 productList = new ArrayList<>();
                 ordersMap.put(warehouse, productList);
-            } 
+            }
             productList.add(Pair.of(product, quantity));
         }
 
@@ -122,10 +122,11 @@ public class OrderService {
 
     /**
      * Sum up all quantity for duplicated products and leave only unique ones
+     *
      * @param ordersMap
      */
     private void mergeDuplicatedProducts(Map<WarehouseEntity, List<Pair<ProductEntity, Integer>>> ordersMap) {
-        
+
         for (var itemsList : ordersMap.values()) {
 
             var itemsMap = new HashMap<Long, Pair<ProductEntity, Integer>>();
@@ -139,7 +140,7 @@ public class OrderService {
                     quantity += mapItem.getSecond();
                 itemsMap.put(product.getId(), Pair.of(product, quantity));
             }
-            
+
             itemsList.clear();
             itemsList.addAll(itemsMap.values());
         }
@@ -163,11 +164,11 @@ public class OrderService {
         Page<OrderEntity> pageResponse = repository.findAllByUserIdAndStateNotIn(
                 user.getId(), List.of(OrderState.CANCELLED, OrderState.DELIVERED, OrderState.REJECTED),
                 PageRequest.of(page, size));
-        
+
         var result = pageResponse.getContent().stream()
                 .map(mapper::toDTO)
                 .collect(Collectors.toList());
-        
+
         return new ListDTO<>(pageResponse.getTotalPages(), result);
     }
 
@@ -181,15 +182,15 @@ public class OrderService {
 
         UserEntity user = userService.getLoggedUserEntity();
         order = goNextState(order, nextState, user);
-        
+
         return mapper.toDTO(order);
     }
-    
+
     private void validatePermissions(WarehouseEntity warehouse, WarehousePermission permission) {
         if (!warehousePermissionService.hasPermission(userService.getLoggedUserEntity(), warehouse, permission))
             throw new UnauthorizedException("Unauthorized");
     }
-    
+
     private void validateNextState(OrderState currentState, OrderState nextState) {
         switch (currentState) {
             case NEW:
@@ -205,7 +206,7 @@ public class OrderService {
                 validateStateIn(nextState, Collections.emptyList());
         }
     }
-    
+
     private void validateStateIn(OrderState state, List<OrderState> orderStates) {
         if (!orderStates.contains(state))
             throw new ValidationException("Cannot change order state to " + state.name());
@@ -215,12 +216,20 @@ public class OrderService {
         BiConsumer<ProductEntity, Integer> consumer;
 
         switch (nextState) {
-            case ACCEPTED:  consumer = productService::orderProduct;       break;
-            case SENT:      consumer = productService::sendProduct;        break;
-            case CANCELLED: consumer = productService::removeProductOrder; break;
-            default:        consumer = (product, quantity) -> {};
+            case ACCEPTED:
+                consumer = productService::orderProduct;
+                break;
+            case SENT:
+                consumer = productService::sendProduct;
+                break;
+            case CANCELLED:
+                consumer = productService::removeProductOrder;
+                break;
+            default:
+                consumer = (product, quantity) -> {
+                };
         }
-        
+
         for (OrderDetailsEntity details : order.getOrderDetails())
             consumer.accept(details.getProduct(), details.getQuantity());
 

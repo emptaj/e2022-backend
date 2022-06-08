@@ -26,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping(path = "/api/warehouses")
 @Transactional
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials="true")
 public class WarehouseController {
 
     private final WarehouseService service;

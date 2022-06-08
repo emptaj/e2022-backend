@@ -27,24 +27,23 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/delivery-types")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials="true")
 public class DeliveryTypeController {
-    
+
     private final DeliveryTypeService service;
 
 
     @GetMapping("")
     public ListDTO<DeliveryTypeDTO> getDeliveryTypes(
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "20") int size
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
     ) {
         return service.getActiveDeliveryTypes(page, size);
     }
 
     @GetMapping("/extended")
     public ListDTO<DeliveryTypeExDTO> getDeliveryTypesEx(
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "20") int size
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
     ) {
         return service.getDeliveryTypesEx(page, size);
     }
@@ -62,7 +61,7 @@ public class DeliveryTypeController {
 
     @PutMapping("/{deliveryTypeId}")
     public DeliveryTypeDTO updateDeliveryType(@PathVariable Long deliveryTypeId,
-    @Valid @RequestBody UpdateDeliveryTypeDTO dto) {
+                                              @Valid @RequestBody UpdateDeliveryTypeDTO dto) {
         return service.updateDeliveryType(deliveryTypeId, dto);
     }
 

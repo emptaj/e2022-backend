@@ -19,23 +19,22 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping(path = "/api")
 @Transactional
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials="true")
 public class ProductController {
 
     private final ProductService service;
 
 
     @GetMapping("/products")
-    ListDTO<ProductDTO> getProducts(@RequestParam(required = false, defaultValue = "0")  int page,
+    ListDTO<ProductDTO> getProducts(@RequestParam(required = false, defaultValue = "0") int page,
                                     @RequestParam(required = false, defaultValue = "20") int size) {
         return service.getProducts(page, size);
     }
-    
+
     @GetMapping("/warehouses/{warehouseId}/products")
     ListDTO<ProductExDTO> getProductsEx(@PathVariable Long warehouseId,
                                         @RequestParam(required = false, defaultValue = "true") boolean onlyActive,
-                                        @RequestParam(required = false, defaultValue = "0")    int page,
-                                        @RequestParam(required = false, defaultValue = "20")   int size) {
+                                        @RequestParam(required = false, defaultValue = "0") int page,
+                                        @RequestParam(required = false, defaultValue = "20") int size) {
         return service.getProductsEx(warehouseId, onlyActive, page, size);
     }
 
