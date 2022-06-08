@@ -2,6 +2,7 @@ package com.example.store.config;
 
 import com.example.store.filter.CustomAuthorizationFilter;
 import com.example.store.filter.JsonObjectAuthenticationFilter;
+import com.example.store.service.JWTTokenService;
 import com.example.store.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -26,13 +27,15 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserService userService;
+    private final JWTTokenService tokenService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final String secret;
     private final Long expirationTime;
 
-    public WebSecurityConfig(UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder, @Value("${jwt.secret}")
+    public WebSecurityConfig(UserService userService, JWTTokenService tokenService, BCryptPasswordEncoder bCryptPasswordEncoder, @Value("${jwt.secret}")
             String secret, @Value("${jwt.expirationTime}") Long expirationTime) {
         this.userService = userService;
+        this.tokenService = tokenService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.secret = secret;
         this.expirationTime = expirationTime;
@@ -49,7 +52,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .sessionManagement().sessionCreationPolicy(STATELESS)
                 .and()
-                .addFilter(new JsonObjectAuthenticationFilter(expirationTime, secret, authenticationManagerBean()))
+                .addFilter(new JsonObjectAuthenticationFilter(authenticationManagerBean(), tokenService))
                 .addFilterBefore(new CustomAuthorizationFilter(secret, userService), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling()
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));

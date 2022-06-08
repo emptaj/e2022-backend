@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.example.store.dto.LoginCredentialsDTO;
 import com.example.store.entity.UserEntity;
+import com.example.store.service.JWTTokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -31,30 +32,22 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RequiredArgsConstructor
 public class JsonObjectAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-    private final long expirationTime;
-    private final String secret;
     private final AuthenticationManager authenticationManager;
+    private final JWTTokenService tokenService;
 
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException,
+            ServletException {
         UserDetails principal = (UserDetails) authResult.getPrincipal();
-        String token = JWT.create()
-                .withSubject(principal.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + expirationTime))
-                .withClaim("authorities", principal.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
-                .sign(Algorithm.HMAC256(secret));
-
-        String refreshToken = JWT.create()
-                .withSubject(principal.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + expirationTime * 2))
-                .sign(Algorithm.HMAC256(secret));
+        String token = tokenService.createAccessToken(principal);
+        String refreshToken = tokenService.createRefreshToken(principal);
         response.setHeader("Authorization", "Bearer " + token);
 
         Map<String, String> tokens = new HashMap<>();
         UserEntity userEntity = (UserEntity) principal;
         tokens.put("user_id", String.valueOf(userEntity.getId()));
-        tokens.put("access_token", "" + token);
+        tokens.put("access_token", "Bearer " + token);
         tokens.put("refresh_token", refreshToken);
         response.setContentType(APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(), tokens);
