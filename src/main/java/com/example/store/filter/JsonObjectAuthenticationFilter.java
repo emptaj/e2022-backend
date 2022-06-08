@@ -1,10 +1,12 @@
-package com.example.store.config;
+package com.example.store.filter;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.example.store.dto.LoginCredentialsDTO;
+import com.example.store.entity.UserEntity;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -27,14 +29,12 @@ import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
+@RequiredArgsConstructor
 public class JsonObjectAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-    private final long expirationTime = 3600000l;
-    private final String secret = "ptakilatajakluczem";
+    private final long expirationTime;
+    private final String secret;
     private final AuthenticationManager authenticationManager;
 
-    public JsonObjectAuthenticationFilter(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-    }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
@@ -45,13 +45,15 @@ public class JsonObjectAuthenticationFilter extends UsernamePasswordAuthenticati
                 .withClaim("authorities", principal.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .sign(Algorithm.HMAC256(secret));
 
-        response.setHeader("Authorization", "Bearer " + token);
         String refreshToken = JWT.create()
                 .withSubject(principal.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + expirationTime * 2))
                 .sign(Algorithm.HMAC256(secret));
+        response.setHeader("Authorization", "Bearer " + token);
 
         Map<String, String> tokens = new HashMap<>();
+        UserEntity userEntity = (UserEntity) principal;
+        tokens.put("user_id", String.valueOf(userEntity.getId()));
         tokens.put("access_token", "Bearer " + token);
         tokens.put("refresh_token", refreshToken);
         response.setContentType(APPLICATION_JSON_VALUE);
@@ -76,7 +78,6 @@ public class JsonObjectAuthenticationFilter extends UsernamePasswordAuthenticati
             setDetails(request, authenticationToken);
             return authenticationManager.authenticate(authenticationToken);
         } catch (IOException e) {
-            System.out.println("WYJATEK" + e.getMessage());
             throw new IllegalArgumentException(e.getMessage());
 
         }

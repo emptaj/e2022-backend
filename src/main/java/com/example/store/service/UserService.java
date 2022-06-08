@@ -47,7 +47,7 @@ public class UserService implements UserDetailsService {
 
     public UserEntity getLoggedUserEntity() {
         UserDetails userDetails = getLoggedUserPrincipal();
-
+        System.out.println(userDetails);
         return userRepository.findByUsername(userDetails.getUsername()).
                 orElseThrow(
                         () -> new UsernameNotFoundException("Auth: user must be logged in")

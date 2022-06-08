@@ -1,7 +1,10 @@
 package com.example.store.config;
 
+import com.example.store.filter.JsonObjectAuthenticationFilter;
 import com.example.store.service.UserService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -18,13 +21,23 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
+
 @Configuration
-@AllArgsConstructor
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserService userService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final String secret;
+    private final Long expirationTime;
+
+    public WebSecurityConfig(UserService userService, BCryptPasswordEncoder bCryptPasswordEncoder, @Value("${jwt.secret}")
+            String secret, @Value("${jwt.expirationTime}") Long expirationTime) {
+        this.userService = userService;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.secret = secret;
+        this.expirationTime = expirationTime;
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -32,12 +45,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/swagger-ui/").permitAll()
                 .antMatchers("/login").permitAll()
+                .antMatchers("/api/users/**").permitAll()
                 .antMatchers("/api/**").authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(STATELESS)
                 .and()
-                .addFilter(new JsonObjectAuthenticationFilter(authenticationManagerBean()))
-                .addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilter(new JsonObjectAuthenticationFilter(expirationTime, secret, authenticationManagerBean()))
+                .addFilterBefore(new CustomAuthorizationFilter(secret, userService), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling()
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
 

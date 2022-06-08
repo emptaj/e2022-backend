@@ -41,8 +41,8 @@ public class WarehouseService {
         return repository.findById(id)
                 .orElseThrow(() -> new NotFoundException(WarehouseEntity.class, id));
     }
-
-
+    
+    @Transactional
     public WarehouseDTO createWarehouse(CreateWarehouseDTO dto) {
         AddressEntity address = addressService.createAddressEntity(dto.getAddress());
         WarehouseEntity entity = mapper.create(dto.getName(), address, LocalDate.now());
