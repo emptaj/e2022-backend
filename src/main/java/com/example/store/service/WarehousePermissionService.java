@@ -8,16 +8,13 @@ import com.example.store.exception.NotFoundException;
 import com.example.store.repository.UserRepository;
 import com.example.store.repository.WarehousePermissionRepository;
 import com.example.store.repository.WarehouseRepository;
-import com.example.store.repository.finder.RecordFinder;
-
-import com.example.store.security.AuthoritiesUpdater;
+import com.example.store.repository.finder.RecordFinder;;
 import com.example.store.validator.Validator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -29,7 +26,6 @@ import java.util.stream.Collectors;
 public class WarehousePermissionService {
 
     private final WarehousePermissionRepository warehousePermissionRepository;
-    private final AuthoritiesUpdater authoritiesUpdater;
 
     private final RecordFinder<WarehouseEntity, WarehouseRepository> warehouseFinder;
 
@@ -58,7 +54,6 @@ public class WarehousePermissionService {
         String permissionName = String.format("%d:%s", warehouseId, permission.name());
         WarehousePermissionEntity permissionEntity = getPermissionEntityByName(permissionName);
         assignPermission(user, permissionEntity);
-        authoritiesUpdater.update(user);
     }
 
     @Transactional
@@ -97,7 +92,6 @@ public class WarehousePermissionService {
         String permissionName = String.format("%d:%s", warehouseId, warehousePermission.name());
         WarehousePermissionEntity permissionEntity = getPermissionEntityByName(permissionName);
         removePermission(user, permissionEntity);
-        authoritiesUpdater.update(user);
     }
 
     public List<WarehousePermissionEntity> getAll() {

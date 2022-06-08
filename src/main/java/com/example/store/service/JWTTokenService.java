@@ -14,7 +14,9 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -61,6 +63,7 @@ public class JWTTokenService {
                 UserDetails userDetails = userService.loadUserByUsername(username);
                 UserEntity userEntity = (UserEntity) userDetails;
                 String access_token = createAccessToken(userDetails);
+
                 //preparing response
                 prepareResponseWithTokens(response, access_token, refresh_token, userEntity.getId());
 
