@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import javax.transaction.Transactional;
 
 import org.junit.jupiter.api.Test;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,6 @@ import com.example.store.dto.user.CreateUserDTO;
 import com.example.store.dto.user.RegistrationTokenDTO;
 import com.example.store.exception.ValidationException;
 import com.example.store.service.UserRegistrationService;
-
 
 @SpringBootTest
 public class UserRegistrationServiceTests {
