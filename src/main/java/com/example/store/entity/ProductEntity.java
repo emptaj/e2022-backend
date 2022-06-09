@@ -2,8 +2,10 @@ package com.example.store.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -19,7 +21,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ProductEntity {
     @Id
-    @GeneratedValue
+    @SequenceGenerator(name = "sequence_product_id", sequenceName = "sequence_product_id", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence_product_id")
     private Long id;
     private Boolean active;
 

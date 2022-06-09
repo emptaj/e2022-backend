@@ -15,7 +15,8 @@ import java.util.List;
 @Setter
 public class WarehousePermissionEntity {
     @Id
-    @GeneratedValue
+    @SequenceGenerator(name = "sequence_warehouse_permission_id", sequenceName = "sequence_warehouse_permission_id", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence_warehouse_permission_id")
     private Long id;
 
     private String name;
