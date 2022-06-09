@@ -64,12 +64,13 @@ public class UserRegistrationService {
         registrationTokenRepository.save(registrationTokenEntity);
 
         RegistrationTokenDTO registrationTokenDTO = RegistrationTokenMapper.INSTANCE.toDTO(registrationTokenEntity);
+
         emailService.send(createUserDTO.getEmail(),
                 "Confirm registration",
                 emailService.buildConfirmationMail(createUserDTO.getUsername(),
                         registrationTokenDTO.getConfirmationPath()));
-        return new ResponseEntity<RegistrationTokenDTO>(registrationTokenDTO, HttpStatus.CREATED);
 
+        return new ResponseEntity<>(registrationTokenDTO, HttpStatus.CREATED);
     }
 
     @Transactional

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping({ "/api/users", "/api/v1/users" })
+@RequestMapping({"/api/users", "/api/v1/users"})
 @AllArgsConstructor
 public class UserRegistrationController {
     private final UserRegistrationService userRegistrationService;
@@ -22,7 +22,7 @@ public class UserRegistrationController {
 
     }
 
-    @PostMapping("/activate")
+    @GetMapping("/activate")
     private String activateUser(@RequestParam String activationToken) {
         return userRegistrationService.activateUser(activationToken);
     }
