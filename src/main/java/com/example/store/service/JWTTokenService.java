@@ -53,25 +53,26 @@ public class JWTTokenService {
 
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String authorizationHeader = request.getHeader(AUTHORIZATION);
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            try {
-                String refresh_token = authorizationHeader.substring("Bearer ".length());
-                //settings
-                String username = getDecodedJWT(refresh_token, secret).getSubject();
-
-                //loading user
-                UserDetails userDetails = userService.loadUserByUsername(username);
-                UserEntity userEntity = (UserEntity) userDetails;
-                String access_token = createAccessToken(userDetails);
-
-                //preparing response
-                prepareResponseWithTokens(response, access_token, refresh_token, userEntity.getId());
-
-            } catch (Exception e) {
-                prepareFailResponse(response, e.getMessage());
-            }
-        } else {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer")) {
             prepareFailResponse(response, "token is empty");
+            return;
+        }
+
+        try {
+            String refresh_token = authorizationHeader.substring("Bearer ".length());
+            //settings
+            String username = getDecodedJWT(refresh_token, secret).getSubject();
+
+            //loading user
+            UserDetails userDetails = userService.loadUserByUsername(username);
+            UserEntity userEntity = (UserEntity) userDetails;
+            String access_token = createAccessToken(userDetails);
+
+            //preparing response
+            prepareResponseWithTokens(response, access_token, refresh_token, userEntity.getId());
+
+        } catch (Exception e) {
+            prepareFailResponse(response, e.getMessage());
         }
     }
 
