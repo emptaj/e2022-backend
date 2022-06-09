@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("api/users/")
+@RequestMapping({ "/api/users", "/api/v1/users" })
 @AllArgsConstructor
 public class UserRegistrationController {
     private final UserRegistrationService userRegistrationService;
 
-    @PostMapping("/")
+    @PostMapping("")
     private ResponseEntity<RegistrationTokenDTO> registerUser(@Valid @RequestBody CreateUserDTO createUserDTO) {
         return userRegistrationService.registerUser(createUserDTO);
 

@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 
 @Valid
 @RestController
-@RequestMapping(path = "/api")
+@RequestMapping({ "/api", "/api/v1" })
 @Transactional
 @RequiredArgsConstructor
 public class ProductController {
