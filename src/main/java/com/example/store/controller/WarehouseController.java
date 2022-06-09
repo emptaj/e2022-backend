@@ -9,7 +9,6 @@ import com.example.store.dto.warehouse.WarehouseDTO;
 import com.example.store.service.WarehouseService;
 
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping(path = "/api/warehouses")
+@RequestMapping({ "/api/warehouses", "/api/v1/warehouses" })
 @Transactional
 @RequiredArgsConstructor
 public class WarehouseController {

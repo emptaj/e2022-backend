@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/api/warehouses/")
+@RequestMapping({ "/api/warehouses/", "/api/v1/warehouses" })
 @RequiredArgsConstructor
 public class WarehousePermissionController {
     private final WarehousePermissionService warehousePermissionService;
