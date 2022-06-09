@@ -29,6 +29,7 @@ public class UserRegistrationService {
     private final RegistrationTokenRepository registrationTokenRepository;
     private final UserMapper userMapper = UserMapper.INSTANCE;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final EmailService emailService;
 
     public ResponseEntity<RegistrationTokenDTO> registerUser(CreateUserDTO createUserDTO) {
         Optional<UserEntity> byUsername = userRepository.findByUsername(createUserDTO.getUsername());
@@ -63,6 +64,10 @@ public class UserRegistrationService {
         registrationTokenRepository.save(registrationTokenEntity);
 
         RegistrationTokenDTO registrationTokenDTO = RegistrationTokenMapper.INSTANCE.toDTO(registrationTokenEntity);
+        emailService.send(createUserDTO.getEmail(),
+                "Confirm registration",
+                emailService.buildConfirmationMail(createUserDTO.getUsername(),
+                        registrationTokenDTO.getConfirmationPath()));
         return new ResponseEntity<RegistrationTokenDTO>(registrationTokenDTO, HttpStatus.CREATED);
 
     }

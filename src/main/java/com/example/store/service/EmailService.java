@@ -24,19 +24,23 @@ public class EmailService {
             helper.setText(emailContent, true);
             helper.setSubject(subject);
             helper.setFrom(domain);
+            helper.setTo(to);
+            mailSender.send(mimeMailMessage);
         } catch (MessagingException e) {
-            e.printStackTrace();
+            throw new IllegalStateException("failed to send mail");
         }
     }
 
     public String buildConfirmationMail(String name, String link) {
         String html = "<html>\n" +
-                "    <body>\n" +
-                "        <p>Hello, %s</p>\n" +
-                "There is your confimation link: %s\n" +
-                "    </body>\n" +
+                "    <body>\n<center>\n" +
+                "        <h1>Hello, %s</h1>\n" +
+                "<p>There is your confimation link: <a href='%s'> CLICK TO CONFIRM </a></p>\n" +
+                "Link will expire in 20 minutes\n" +
+                "See you soon!" +
+                "    </center></body>\n" +
                 "</html>\n";
-        
+
         return String.format(html, name, link);
 
     }
