@@ -1,0 +1,102 @@
+@startuml
+left to right direction
+skinparam linetype ortho
+actor Klient as AK << Human >>
+actor Administrator as AA << Human >>
+actor Użytkownik as AU << Human >>
+together {
+        package System {
+                package Sklep {
+                        together {
+                                usecase "Przeglądaj wszystkie produkty" as UC0
+                                usecase "Przeglądaj produkty" as UC1
+                                usecase "Pobierz więcej informacji o produkcie" as UC2
+                                usecase "Dodaj produkty do koszyka" as UC3
+                        }
+                        usecase "Sprawdź zawartośc koszyka" as UC4
+                        together {
+                                usecase "Zakup produkty z koszyka" as UC5
+                                usecase "Wybierz typ dostawy" as UC6
+                                usecase "Sprecyzuj opcje dostawy" as UC7
+                                usecase "Potwierdź zamówienie" as UC8
+                        }
+                }
+                
+                package Hurtownia {
+                        usecase "Pobierz listę produktów ze wszystkich hurtowni" as UV1
+                        usecase "Pobierz listę produktów z pojedyńczej hurtowni" as UV2
+                        usecase "Pobierz szczegóły o produkcie" as UV3
+                        usecase "Utwórz nową hurtownię" as UV4
+                        usecase "Zobacz listę hurtowni" as UV5
+                        usecase "Daj uprawnienia w hurtowni" as UV6
+                        usecase "Odbierz uprawnienia w hurtowni" as UV7
+                        usecase "Sprawdź listę zamówień" as UV8
+                        usecase "Zmień stan zamówienia" as UV9
+                        usecase "Zlikwiduj hurtownie" as UV10
+                }
+                usecase "Utwórz nowego dostawcę" as UA1
+                usecase "Edytuj dostawcę" as UA2
+                usecase "Usuń dostawcę dostawcę" as UA3
+                usecase "Pobierz dane o dostawcy" as UA4
+                '        actor Sklep as AS << Application >>
+        }
+        together {
+                actor "Upr. Read" as AUR << Human >>
+                actor "Upr. Update" as AUU << Human >>
+                actor "Upr. Delete" as AUD << Human >>
+        }
+}
+AK -- UC1
+AK -- UC2
+AK -- UC3
+AK -- UC4
+AK -- UC5
+AK -- UC6
+AK -- UC7
+AK -- UC8
+
+UC0 --- UV1
+UC1 --- UV2
+UC3 --- UV3
+UV3 --- UC2
+
+' UC3 --- AS
+' UC4 --- AS
+' UC5 --- AS
+' UC6 --- AS
+' UC7 --- AS
+' UC8 --- AS
+
+UC1 <. UC0 : <<extends>>
+UC1 .> UC2 : <<extends>>
+UC3 .> UC2 : <<extends>>
+
+UC5 .> UC4 : <<extends>>
+UC5 <. UC6 : <<include>>
+UC6 <. UC7 : <<include>>
+UC7 <. UC8 : <<include>>
+
+AA ..> AU : <<extends>>
+AU <.. AK : <<extends>>
+
+AUR .> AU : <<extends>>
+AUD .> AU : <<extends>>
+AUU .> AU : <<extends>>
+
+AU -- UV4
+AU -- UV5
+
+AUR -- UV8
+AUD -- UV10
+
+AA -- UA1
+AA -- UA2
+AA -- UA3
+
+UV6 -- AUU
+UV7 -- AUU
+UV9 -- AUU
+
+UC6 --- UA4
+
+@enduml
