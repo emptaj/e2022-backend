@@ -13,7 +13,8 @@ import java.time.LocalDateTime;
 @Table(name = "RegistrationTokens")
 public class RegistrationTokenEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @SequenceGenerator(name = "sequence_registration_token_id", sequenceName = "sequence_registration_token_id", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence_registration_token_id")
     private Long id;
     private String token;
     private LocalDateTime createdAt;

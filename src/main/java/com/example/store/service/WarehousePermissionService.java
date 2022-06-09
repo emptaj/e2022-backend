@@ -8,7 +8,7 @@ import com.example.store.exception.NotFoundException;
 import com.example.store.repository.UserRepository;
 import com.example.store.repository.WarehousePermissionRepository;
 import com.example.store.repository.WarehouseRepository;
-import com.example.store.repository.finder.RecordFinder;;
+import com.example.store.repository.finder.RecordFinder;
 import com.example.store.validator.Validator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
