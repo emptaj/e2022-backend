@@ -11,6 +11,8 @@ import com.example.store.dto.ListDTO;
 import com.example.store.dto.order.CreateOrderDTO;
 import com.example.store.dto.order.CreateOrderDetailsDTO;
 import com.example.store.dto.order.OrderDTO;
+import com.example.store.dto.payu.NotificationDTO;
+import com.example.store.dto.payu.enums.PayuOrderStatus;
 import com.example.store.entity.AddressEntity;
 import com.example.store.entity.DeliveryTypeEntity;
 import com.example.store.entity.OrderDetailsEntity;
@@ -97,6 +99,8 @@ public class OrderService {
             ordersDTOList.add(mapper.toDTO(order));
         }
 
+        // TODO: utworzyć zamówienie w PayU
+
         return ordersDTOList;
     }
 
@@ -174,16 +178,15 @@ public class OrderService {
 
     public OrderDTO changeOrderState(Long orderId, OrderState nextState) {
         OrderEntity order = finder.byId(orderId);
-        validatePermissions(order.getWarehouse(), WarehousePermission.UPDATE);
-
-        OrderState currentState = order.getState();
-
-        validateNextState(currentState, nextState);
-
-        UserEntity user = userService.getLoggedUserEntity();
-        order = goNextState(order, nextState, user);
-
+        order = changeOrderState(order, nextState);
         return mapper.toDTO(order);
+    }
+
+    private OrderEntity changeOrderState(OrderEntity order, OrderState nextState) {
+        validatePermissions(order.getWarehouse(), WarehousePermission.UPDATE);
+        validateNextState(order.getState(), nextState);
+
+        return goNextState(order, nextState, userService.getLoggedUserEntity());
     }
 
     private void validatePermissions(WarehouseEntity warehouse, WarehousePermission permission) {
@@ -193,17 +196,10 @@ public class OrderService {
 
     private void validateNextState(OrderState currentState, OrderState nextState) {
         switch (currentState) {
-            case NEW:
-                validateStateIn(nextState, List.of(ACCEPTED, REJECTED, CANCELLED));
-                break;
-            case ACCEPTED:
-                validateStateIn(nextState, List.of(CANCELLED, SENT));
-                break;
-            case SENT:
-                validateStateIn(nextState, List.of(DELIVERED));
-                break;
-            default:
-                validateStateIn(nextState, Collections.emptyList());
+            case NEW:     validateStateIn(nextState, List.of(ACCEPTED, REJECTED)); break;
+            case ACCEPTED:validateStateIn(nextState, List.of(CANCELLED, SENT));    break;
+            case SENT:    validateStateIn(nextState, List.of(DELIVERED));          break;
+            default:      validateStateIn(nextState, Collections.emptyList());
         }
     }
 
@@ -216,18 +212,10 @@ public class OrderService {
         BiConsumer<ProductEntity, Integer> consumer;
 
         switch (nextState) {
-            case ACCEPTED:
-                consumer = productService::orderProduct;
-                break;
-            case SENT:
-                consumer = productService::sendProduct;
-                break;
-            case CANCELLED:
-                consumer = productService::removeProductOrder;
-                break;
-            default:
-                consumer = (product, quantity) -> {
-                };
+            case SENT:      consumer = productService::sendProduct;        break;
+            case ACCEPTED:  consumer = productService::orderProduct;       break;
+            case CANCELLED: consumer = productService::removeProductOrder; break;
+            default:        consumer = (product, quantity) -> {};
         }
 
         for (OrderDetailsEntity details : order.getOrderDetails())
@@ -253,5 +241,24 @@ public class OrderService {
                 .collect(Collectors.toList());
 
         return new ListDTO<>(pageResponse.getTotalPages(), result);
+    }
+
+
+    public void acceptPayUNotification(NotificationDTO dto) {
+        OrderEntity order = finder.byId(Long.parseLong(dto.getOrder().getExtOrderId()));
+        PayuOrderStatus payuStatus = dto.getOrder().getStatus();
+
+        switch (payuStatus) {
+            case PENDING:                  break;
+            case WAITING_FOR_CONFIRMATION: break;
+            case COMPLETED:
+                if (!order.getState().equals(ACCEPTED))
+                    changeOrderState(order, ACCEPTED);
+                break;
+            case CANCELED:
+                changeOrderState(order, CANCELLED);
+                break;
+            default:
+        }
     }
 }
