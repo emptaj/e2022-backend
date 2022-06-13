@@ -36,4 +36,5 @@ public class ProductEntity {
     private Integer unitsInStock;
     private Integer unitsInOrder;
 
+    private String imageURL;
 }

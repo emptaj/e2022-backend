@@ -17,4 +17,5 @@ public class ProductExDTO {
     private Float price;
     private Integer unitsInStock;
     private Integer unitsInOrder;
+    private String imageURL;
 }
