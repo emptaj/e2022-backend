@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.store.dto.ListDTO;
 import com.example.store.dto.order.CreateOrderDTO;
 import com.example.store.dto.order.OrderDTO;
+import com.example.store.dto.payu.NotificationDTO;
 import com.example.store.entity.enums.OrderState;
 import com.example.store.service.OrderService;
 
@@ -46,7 +47,7 @@ public class OrderController {
         return service.createOrder(dto);
     }
 
-    @GetMapping("users/{userId}/orders/")
+    @GetMapping("/users/{userId}/orders/")
     public ListDTO<OrderDTO> getUserOrders(@PathVariable Long userId,
                                            @RequestParam(required = false, defaultValue = "0") int page,
                                            @RequestParam(required = false, defaultValue = "20") int size) {
@@ -65,5 +66,10 @@ public class OrderController {
                                               @RequestParam(required = false, defaultValue = "20") int size
     ) {
         return service.getPendingOrders(warehouseId, page, size);
+    }
+
+    @GetMapping("/orders/notify-payment")
+    public void notifyPayment(@RequestBody NotificationDTO dto) {
+        service.acceptPayUNotification(dto);
     }
 }

@@ -2,7 +2,7 @@ package com.example.store.entity.enums;
 
 public enum OrderState {
     NEW,
-    ACCEPTED,
+    ACCEPTED, // Zamówienie opłacone przez system PayU
     REJECTED,
     CANCELLED,
     SENT,
