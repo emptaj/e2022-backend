@@ -27,7 +27,5 @@ public class ProductDTO {
     @PositiveOrZero(message = "Unit in stock cant be negative")
     @NotNull(message = "Unit in stock should not be empty")
     private Integer unitsInStock;
-    @NotNull(message = "Image URL should not be empty")
-    @NotEmpty(message = "Image URL should not be empty")
     private String imageURL;
 }

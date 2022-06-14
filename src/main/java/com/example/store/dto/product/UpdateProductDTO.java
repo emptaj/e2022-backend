@@ -22,4 +22,5 @@ public class UpdateProductDTO {
     @NotNull(message = "Price should not be empty")
     @Positive(message = "Price should be gretter than zero")
     private Float price;
+    private String imageURL;
 }
