@@ -3,6 +3,8 @@ package com.example.store.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -32,9 +34,13 @@ public class PayuService {
 
     public void sendOrder(OrderEntity order) {
         PayuCreateOrderDTO body = createPayuOrder(order);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth("token");
 
+        HttpEntity<PayuCreateOrderDTO> entity = new HttpEntity<>(body, headers);
         ResponseEntity<PayuCreateOrderResponseDTO> response = restTemplate.postForEntity(
-                createOrderURL, body, PayuCreateOrderResponseDTO.class);
+                createOrderURL, entity, PayuCreateOrderResponseDTO.class);
+
         if (!response.getBody().getStatus().getStatus().equals("SUCCESS"))
             System.err.println("PayU create order Failed");
     }
