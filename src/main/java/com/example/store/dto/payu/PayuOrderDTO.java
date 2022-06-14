@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class NotificationOrderDTO {
+public class PayuOrderDTO {
     private String orderId; 
     private String extOrderId; 
     private String orderCreateDate; 
@@ -23,8 +23,8 @@ public class NotificationOrderDTO {
     private String description; 
     private String currencyCode; 
     private String totalAmount;
-    private NotificationBuyerDTO buyer;
-    private NotificationPayMethod payMethod;
-    private List<NotificationProductDTO> products; 
+    private PayuBuyerDTO buyer;
+    private PayuPayMethod payMethod;
+    private List<PayuProductDTO> products; 
     private PayuOrderStatus status;
 }

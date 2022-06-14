@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class NotificationPayMethod {
-    private String type;
+public class PropertiesDTO {
+    private String name;
+    private String value;
 }

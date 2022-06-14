@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.store.dto.ListDTO;
 import com.example.store.dto.order.CreateOrderDTO;
 import com.example.store.dto.order.OrderDTO;
-import com.example.store.dto.payu.NotificationDTO;
+import com.example.store.dto.payu.PayuNotificationDTO;
 import com.example.store.entity.enums.OrderState;
 import com.example.store.service.OrderService;
 
@@ -69,7 +69,7 @@ public class OrderController {
     }
 
     @GetMapping("/orders/notify-payment")
-    public void notifyPayment(@RequestBody NotificationDTO dto) {
+    public void notifyPayment(@RequestBody PayuNotificationDTO dto) {
         service.acceptPayUNotification(dto);
     }
 }
