@@ -11,10 +11,7 @@ import com.example.store.dto.ListDTO;
 import com.example.store.dto.order.CreateOrderDTO;
 import com.example.store.dto.order.CreateOrderDetailsDTO;
 import com.example.store.dto.order.OrderDTO;
-import com.example.store.dto.payu.PayuBuyerDTO;
-import com.example.store.dto.payu.PayuCreateOrderDTO;
 import com.example.store.dto.payu.PayuNotificationDTO;
-import com.example.store.dto.payu.PayuProductDTO;
 import com.example.store.dto.payu.enums.PayuOrderStatus;
 import com.example.store.entity.AddressEntity;
 import com.example.store.entity.DeliveryTypeEntity;
@@ -66,6 +63,7 @@ public class OrderService {
     private final AddressService addressService;
     private final UserService userService;
     private final WarehousePermissionService warehousePermissionService;
+    private final PayuService payuService;
 
     private final RecordFinder<OrderEntity, OrderRepository> finder;
     private final RecordFinder<ProductEntity, ProductRepository> productFinder;
@@ -89,7 +87,7 @@ public class OrderService {
         mergeDuplicatedProducts(ordersMap);
 
         var ordersDTOList = new ArrayList<OrderDTO>();
-        var ordersPayuDTOList = new ArrayList<PayuCreateOrderDTO>();
+        var orderList = new ArrayList<OrderEntity>();
         for (var entry : ordersMap.entrySet()) {
             WarehouseEntity warehouse = entry.getKey();
             List<Pair<ProductEntity, Integer>> items = entry.getValue();
@@ -101,53 +99,14 @@ public class OrderService {
             order.setOrderDetails(orderDetailsList);
 
             ordersDTOList.add(mapper.toDTO(order));
-            ordersPayuDTOList.add(createPayuOrder(order));
+            orderList.add(order);
         }
 
-        for (var payuBody : ordersPayuDTOList) {
-            // TODO: send payuBody 
-        }
+        for (var order : orderList)
+            payuService.sendOrder(order);
 
         return ordersDTOList;
     }
-
-    private PayuCreateOrderDTO createPayuOrder(OrderEntity order) {
-        float sum = 0.0f;
-        for (var detail : order.getOrderDetails())
-            sum += detail.getUnitPrice() * detail.getQuantity();
-
-        UserEntity user = userService.getLoggedUserEntity();
-        
-        List<PayuProductDTO> products = order.getOrderDetails().stream()
-                .map((detail) -> new PayuProductDTO(
-                    detail.getProduct().getName(), 
-                    priceToString(detail.getProduct().getPrice()),
-                    Integer.toString(detail.getQuantity())
-                ))
-                .collect(Collectors.toList());
-        return PayuCreateOrderDTO.builder()
-                .notifyUrl("http://localhost:8080/orders/notify-payment")
-                .customerIp("") // TODO: SET
-                .merchantPosId("") // TODO: SET
-                .description("Don't seek for easter eggs here")
-                .currencyCode("PLN")
-                .totalAmount(priceToString(sum))
-                .extOrderId(Long.toString(order.getId()))
-                .buyer(PayuBuyerDTO.builder()
-                        .email(user.getEmail())
-                        .phone(order.getAddress().getPhone())
-                        .firstName(user.getUsername())
-                        .lastName("")
-                        .language("pl")
-                        .build())
-                .products(products)
-                .build();
-    }
-    
-    private String priceToString(float price) {
-        return Integer.toString((int) (price * 100));
-    }
-
 
     private Map<WarehouseEntity, List<Pair<ProductEntity, Integer>>> splitOrder(List<CreateOrderDetailsDTO> orderDetails) {
         var ordersMap = new HashMap<WarehouseEntity, List<Pair<ProductEntity, Integer>>>();
