@@ -21,7 +21,7 @@ public class PayuService {
     private final UserService userService;
     private RestTemplate restTemplate;
 
-    private static final String createOrderURL = "https://payu.pl"; // TODO: SET
+    private static final String createOrderURL = "https://secure.snd.payu.com/api/v2_1/orders";
 
 
     public PayuService(UserService userService) {
