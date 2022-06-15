@@ -50,6 +50,8 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
+import javax.transaction.Transactional;
+
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -78,6 +80,7 @@ public class OrderService {
     }
 
 
+    @Transactional
     public List<OrderDTO> createOrder(CreateOrderDTO dto) {
         AddressEntity address = addressService.createAddressEntity(dto.getAddress());
         DeliveryTypeEntity deliveryType = deliveryFinder.byId(dto.getDeliveryTypeId());

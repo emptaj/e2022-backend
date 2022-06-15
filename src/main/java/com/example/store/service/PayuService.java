@@ -67,6 +67,7 @@ public class PayuService {
             if (e.getStatusCode().equals(HttpStatus.UNAUTHORIZED)) {
                 signIn();
                 response = sendOrder(body);
+                System.out.println(response.getBody().getRedirectUri());
                 order.setPayuRedirectURL(response.getBody().getRedirectUri());
             }
             else 
