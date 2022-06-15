@@ -55,4 +55,6 @@ public class OrderEntity {
 
     @OneToMany(mappedBy = "order")
     private List<OrderDetailsEntity> orderDetails;
+
+    private String payuRedirectURL;
 }

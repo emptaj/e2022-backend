@@ -86,7 +86,7 @@ public class OrderService {
         Map<WarehouseEntity, List<Pair<ProductEntity, Integer>>> ordersMap = splitOrder(dto.getOrderDetails());
         mergeDuplicatedProducts(ordersMap);
 
-        var ordersDTOList = new ArrayList<OrderDTO>();
+        var orderDTOList = new ArrayList<OrderDTO>();
         var orderList = new ArrayList<OrderEntity>();
         for (var entry : ordersMap.entrySet()) {
             WarehouseEntity warehouse = entry.getKey();
@@ -98,14 +98,18 @@ public class OrderService {
             List<OrderDetailsEntity> orderDetailsList = prepareOrderDetails(items, order);
             order.setOrderDetails(orderDetailsList);
 
-            ordersDTOList.add(mapper.toDTO(order));
+            orderDTOList.add(mapper.toDTO(order));
             orderList.add(order);
         }
 
-        for (var order : orderList)
+        for (int i = 0; i < orderList.size(); ++i) {
+            OrderEntity order = orderList.get(i);
+            OrderDTO orderDTO = orderDTOList.get(i);
             payuService.sendOrder(order);
+            orderDTO.setPayuRedirectURL(order.getPayuRedirectURL());
+        }
 
-        return ordersDTOList;
+        return orderDTOList;
     }
 
     private Map<WarehouseEntity, List<Pair<ProductEntity, Integer>>> splitOrder(List<CreateOrderDetailsDTO> orderDetails) {

@@ -28,4 +28,6 @@ public class OrderDTO {
     private Long deliveryTypeId;
 
     private List<OrderDetailsDTO> orderDetails;
+
+    private String payuRedirectURL;
 }

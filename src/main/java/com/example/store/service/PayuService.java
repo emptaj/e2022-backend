@@ -53,21 +53,25 @@ public class PayuService {
     }
 
 
+    /**
+     * sets PayU redirect URL in order entity
+     */
     public void sendOrder(OrderEntity order) {
         PayuCreateOrderDTO body = createPayuOrder(order);
         ResponseEntity<PayuCreateOrderResponseDTO> response;
         
         try {
             response = sendOrder(body);
+            order.setPayuRedirectURL(response.getBody().getRedirectUri());
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode().equals(HttpStatus.UNAUTHORIZED)) {
                 signIn();
                 response = sendOrder(body);
+                order.setPayuRedirectURL(response.getBody().getRedirectUri());
             }
             else 
                 e.printStackTrace();
         }
-
     }
     
     private ResponseEntity<PayuCreateOrderResponseDTO> sendOrder(PayuCreateOrderDTO body) {
