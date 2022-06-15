@@ -3,16 +3,21 @@ package com.example.store.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.store.dto.payu.PayuBuyerDTO;
 import com.example.store.dto.payu.PayuCreateOrderDTO;
 import com.example.store.dto.payu.PayuCreateOrderResponseDTO;
 import com.example.store.dto.payu.PayuProductDTO;
+import com.example.store.dto.payu.PayuSignInResponseDTO;
 import com.example.store.entity.OrderEntity;
 import com.example.store.entity.UserEntity;
 
@@ -20,29 +25,77 @@ import com.example.store.entity.UserEntity;
 @Service
 public class PayuService {
 
+    private static final String createOrderURL = "https://secure.snd.payu.com/api/v2_1/orders";
+    private static final String signInURL = "https://secure.snd.payu.com/pl/standard/user/oauth/authorize";
+
     private final UserService userService;
     private RestTemplate restTemplate;
 
-    private static final String createOrderURL = "https://secure.snd.payu.com/api/v2_1/orders";
+    @Value("${payu.post_id}")
+    private String postId;
+
+    @Value("${payu.second_key}")
+    private String secondKey;
+
+    @Value("${payu.oauth.client_id}")
+    private String clientId;
+
+    @Value("${payu.oauth.client_secret}")
+    private String clientSecret;
+
+    private String accessToken;
 
 
     public PayuService(UserService userService) {
         this.userService = userService;
         this.restTemplate = new RestTemplate();
+        this.accessToken = "";
     }
 
 
     public void sendOrder(OrderEntity order) {
         PayuCreateOrderDTO body = createPayuOrder(order);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth("token");
+        ResponseEntity<PayuCreateOrderResponseDTO> response;
+        
+        try {
+            response = sendOrder(body);
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode().equals(HttpStatus.UNAUTHORIZED)) {
+                signIn();
+                response = sendOrder(body);
+            }
+            else 
+                e.printStackTrace();
+        }
 
-        HttpEntity<PayuCreateOrderDTO> entity = new HttpEntity<>(body, headers);
-        ResponseEntity<PayuCreateOrderResponseDTO> response = restTemplate.postForEntity(
-                createOrderURL, entity, PayuCreateOrderResponseDTO.class);
+    }
+    
+    private ResponseEntity<PayuCreateOrderResponseDTO> sendOrder(PayuCreateOrderDTO body) {
+        var headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(accessToken);
 
-        if (!response.getBody().getStatus().getStatus().equals("SUCCESS"))
-            System.err.println("PayU create order Failed");
+        var entity = new HttpEntity<PayuCreateOrderDTO>(body, headers);
+        return restTemplate.postForEntity(createOrderURL, entity, PayuCreateOrderResponseDTO.class);
+    }
+
+
+    private void signIn() {
+        var headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        String body = String.format(
+            "grant_type=%s&client_id=%s&client_secret=%s",
+            "client_credentials",
+            clientId,
+            clientSecret
+        );
+        
+        var entity = new HttpEntity<String>(body, headers);
+        ResponseEntity<PayuSignInResponseDTO> response = restTemplate.postForEntity(
+                signInURL, entity, PayuSignInResponseDTO.class);
+        
+        accessToken = response.getBody().getAccess_token();
     }
     
     private PayuCreateOrderDTO createPayuOrder(OrderEntity order) {
@@ -62,14 +115,14 @@ public class PayuService {
 
         return PayuCreateOrderDTO.builder()
                 .notifyUrl("http://localhost:8080/orders/notify-payment")
-                .customerIp("") // TODO: SET
-                .merchantPosId("") // TODO: SET
+                .customerIp("127.0.0.1")
+                .merchantPosId(clientId)
                 .description("Don't seek for easter eggs here")
                 .currencyCode("PLN")
                 .totalAmount(priceToString(sum))
                 .extOrderId(Long.toString(order.getId()))
                 .buyer(PayuBuyerDTO.builder()
-                        .email(user.getEmail())
+                        .email("szyszka.m98@gmail.com")
                         .phone(order.getAddress().getPhone())
                         .firstName(user.getUsername())
                         .lastName("")
