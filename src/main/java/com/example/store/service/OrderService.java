@@ -11,7 +11,7 @@ import com.example.store.dto.ListDTO;
 import com.example.store.dto.order.CreateOrderDTO;
 import com.example.store.dto.order.CreateOrderDetailsDTO;
 import com.example.store.dto.order.OrderDTO;
-import com.example.store.dto.payu.NotificationDTO;
+import com.example.store.dto.payu.PayuNotificationDTO;
 import com.example.store.dto.payu.enums.PayuOrderStatus;
 import com.example.store.entity.AddressEntity;
 import com.example.store.entity.DeliveryTypeEntity;
@@ -63,6 +63,7 @@ public class OrderService {
     private final AddressService addressService;
     private final UserService userService;
     private final WarehousePermissionService warehousePermissionService;
+    private final PayuService payuService;
 
     private final RecordFinder<OrderEntity, OrderRepository> finder;
     private final RecordFinder<ProductEntity, ProductRepository> productFinder;
@@ -85,7 +86,8 @@ public class OrderService {
         Map<WarehouseEntity, List<Pair<ProductEntity, Integer>>> ordersMap = splitOrder(dto.getOrderDetails());
         mergeDuplicatedProducts(ordersMap);
 
-        var ordersDTOList = new ArrayList<OrderDTO>();
+        var orderDTOList = new ArrayList<OrderDTO>();
+        var orderList = new ArrayList<OrderEntity>();
         for (var entry : ordersMap.entrySet()) {
             WarehouseEntity warehouse = entry.getKey();
             List<Pair<ProductEntity, Integer>> items = entry.getValue();
@@ -96,12 +98,18 @@ public class OrderService {
             List<OrderDetailsEntity> orderDetailsList = prepareOrderDetails(items, order);
             order.setOrderDetails(orderDetailsList);
 
-            ordersDTOList.add(mapper.toDTO(order));
+            orderDTOList.add(mapper.toDTO(order));
+            orderList.add(order);
         }
 
-        // TODO: utworzyć zamówienie w PayU
+        for (int i = 0; i < orderList.size(); ++i) {
+            OrderEntity order = orderList.get(i);
+            OrderDTO orderDTO = orderDTOList.get(i);
+            payuService.sendOrder(order);
+            orderDTO.setPayuRedirectURL(order.getPayuRedirectURL());
+        }
 
-        return ordersDTOList;
+        return orderDTOList;
     }
 
     private Map<WarehouseEntity, List<Pair<ProductEntity, Integer>>> splitOrder(List<CreateOrderDetailsDTO> orderDetails) {
@@ -244,7 +252,7 @@ public class OrderService {
     }
 
 
-    public void acceptPayUNotification(NotificationDTO dto) {
+    public void acceptPayUNotification(PayuNotificationDTO dto) {
         OrderEntity order = finder.byId(Long.parseLong(dto.getOrder().getExtOrderId()));
         PayuOrderStatus payuStatus = dto.getOrder().getStatus();
 

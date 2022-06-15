@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class NotificationPropertiesDTO {
-    private String name;
-    private String value;
+public class PayuSignInResponseDTO {
+    private String access_token;
+    private String token_type;
+    private Integer expires_in;
+    private String grant_type;
 }

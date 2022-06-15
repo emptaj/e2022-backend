@@ -1,7 +1,5 @@
 package com.example.store.dto.payu;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,8 +9,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class NotificationDTO {
-    private NotificationOrderDTO order;
-    private String localReceiptDateTime;
-    private List<NotificationPropertiesDTO> properties;
+public class PayuBuyerDTO {
+    private String email;
+    private String phone;
+    private String firstName;
+    private String lastName;
+    private String language;
 }

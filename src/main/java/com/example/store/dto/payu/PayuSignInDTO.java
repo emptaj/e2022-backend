@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class NotificationProductDTO {
-    private String name;
-    private String unitPrice;
-    private String quantity;
+public class PayuSignInDTO {
+    private String grantType;
+    private String clientId;
+    private String clientSecret;
 }
