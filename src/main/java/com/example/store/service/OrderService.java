@@ -280,6 +280,7 @@ public class OrderService {
 
     public void refreshPaymentStatus(Long orderId) {
         OrderEntity order = finder.byId(orderId);
+        if (!order.getState().equals(NEW)) return;
         PayuOrderStatus payuStatus = payuService.getPaymentStatus(order);
         updateOrderStatus(payuStatus, order);
     }
