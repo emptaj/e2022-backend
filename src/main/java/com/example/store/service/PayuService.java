@@ -3,8 +3,6 @@ package com.example.store.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.criteria.Order;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -22,7 +20,6 @@ import com.example.store.dto.payu.PayuCreateOrderResponseDTO;
 import com.example.store.dto.payu.PayuProductDTO;
 import com.example.store.dto.payu.PayuSignInResponseDTO;
 import com.example.store.dto.payu.PayuStatusOrderResponseDTO;
-import com.example.store.dto.payu.PayuStatusOrderResponseDTO.PayuStatusOrderResponseDTOBuilder;
 import com.example.store.dto.payu.enums.PayuOrderStatus;
 import com.example.store.entity.OrderEntity;
 import com.example.store.entity.UserEntity;
@@ -136,7 +133,7 @@ public class PayuService {
                 .totalAmount(priceToString(sum))
                 .extOrderId(Long.toString(order.getId()))
                 .buyer(PayuBuyerDTO.builder()
-                        .email("myszka@gmail.com")
+                        .email("jakub.szlezak@gmail.com")
                         .phone(order.getAddress().getPhone())
                         .firstName(user.getUsername())
                         .lastName("")
@@ -171,17 +168,13 @@ public class PayuService {
         var headers = new HttpHeaders();
         headers.setBearerAuth(accessToken);
 
-        var entity = new HttpEntity<PayuStatusOrderResponseDTO>(headers);
-        PayuOrderStatus status= restTemplate.exchange(
+        var entity = new HttpEntity<PayuStatusOrderResponseDTO>(null, headers);
+        var response = restTemplate.exchange(
             getOrderURL + order.getPayuOrderId(),
             HttpMethod.GET,
             entity,
             PayuStatusOrderResponseDTO.class
-        )
-        .getBody()
-        .getOrder()
-        .getStatus();
-        return status;
-    }   
-
+        );
+        return response.getBody().getOrders().get(0).getStatus();
+    }
 }
