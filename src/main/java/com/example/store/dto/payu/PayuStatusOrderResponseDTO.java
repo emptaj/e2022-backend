@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PayuStatusOrderResponseDTO {
     private List<PayuPropertiesDTO> properties;
-    private PayuOrderDTO order;
+    private List<PayuOrderDTO> orders;
     private PayuDetailStatusDTO status;
-
 }
