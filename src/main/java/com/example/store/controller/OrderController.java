@@ -72,4 +72,10 @@ public class OrderController {
     public void notifyPayment(@RequestBody PayuNotificationDTO dto) {
         service.acceptPayUNotification(dto);
     }
+
+    @PutMapping("/orders/{orderId}/refresh-status")
+    public void refreshPaymentStatus(@PathVariable Long orderId) {
+        service.refreshPaymentStatus(orderId);
+    }
+
 }

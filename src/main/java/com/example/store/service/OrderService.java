@@ -258,7 +258,11 @@ public class OrderService {
     public void acceptPayUNotification(PayuNotificationDTO dto) {
         OrderEntity order = finder.byId(Long.parseLong(dto.getOrder().getExtOrderId()));
         PayuOrderStatus payuStatus = dto.getOrder().getStatus();
+        updateOrderStatus(payuStatus, order);
 
+    }
+
+    private void updateOrderStatus(PayuOrderStatus payuStatus, OrderEntity order){
         switch (payuStatus) {
             case PENDING:                  break;
             case WAITING_FOR_CONFIRMATION: break;
@@ -272,4 +276,12 @@ public class OrderService {
             default:
         }
     }
+
+
+    public void refreshPaymentStatus(Long orderId) {
+        OrderEntity order = finder.byId(orderId);
+        PayuOrderStatus payuStatus = payuService.getPaymentStatus(order);
+        updateOrderStatus(payuStatus, order);
+    }
+
 }

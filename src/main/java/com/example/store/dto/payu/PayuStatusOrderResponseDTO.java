@@ -11,8 +11,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PayuNotificationDTO {
-    private PayuOrderDTO order;
-    private String localReceiptDateTime;
+public class PayuStatusOrderResponseDTO {
     private List<PayuPropertiesDTO> properties;
+    private PayuOrderDTO order;
+    private PayuDetailStatusDTO status;
+
 }

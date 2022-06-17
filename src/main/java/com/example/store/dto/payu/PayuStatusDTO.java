@@ -1,4 +1,4 @@
-package com.example.store.dto;
+package com.example.store.dto.payu;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -49,4 +49,5 @@ public class OrderEntity {
 
     @Column(columnDefinition="text", length=10485760)
     private String payuRedirectURL;
+    private String payuOrderId;
 }

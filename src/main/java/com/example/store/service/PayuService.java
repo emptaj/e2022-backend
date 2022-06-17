@@ -3,9 +3,12 @@ package com.example.store.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.persistence.criteria.Order;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +21,9 @@ import com.example.store.dto.payu.PayuCreateOrderDTO;
 import com.example.store.dto.payu.PayuCreateOrderResponseDTO;
 import com.example.store.dto.payu.PayuProductDTO;
 import com.example.store.dto.payu.PayuSignInResponseDTO;
+import com.example.store.dto.payu.PayuStatusOrderResponseDTO;
+import com.example.store.dto.payu.PayuStatusOrderResponseDTO.PayuStatusOrderResponseDTOBuilder;
+import com.example.store.dto.payu.enums.PayuOrderStatus;
 import com.example.store.entity.OrderEntity;
 import com.example.store.entity.UserEntity;
 
@@ -27,6 +33,7 @@ public class PayuService {
 
     private static final String createOrderURL = "https://secure.snd.payu.com/api/v2_1/orders";
     private static final String signInURL = "https://secure.snd.payu.com/pl/standard/user/oauth/authorize";
+    private static final String getOrderURL = "https://secure.snd.payu.com//api/v2_1/orders/";
 
     private final UserService userService;
     private RestTemplate restTemplate;
@@ -63,12 +70,14 @@ public class PayuService {
         try {
             response = sendOrder(body);
             order.setPayuRedirectURL(response.getBody().getRedirectUri());
+            order.setPayuOrderId(response.getBody().getOrderId());
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode().equals(HttpStatus.UNAUTHORIZED)) {
                 signIn();
                 response = sendOrder(body);
                 System.out.println(response.getBody().getRedirectUri());
                 order.setPayuRedirectURL(response.getBody().getRedirectUri());
+                order.setPayuOrderId(response.getBody().getOrderId());
             }
             else 
                 e.printStackTrace();
@@ -127,7 +136,7 @@ public class PayuService {
                 .totalAmount(priceToString(sum))
                 .extOrderId(Long.toString(order.getId()))
                 .buyer(PayuBuyerDTO.builder()
-                        .email("szyszka.m98@gmail.com")
+                        .email("myszka@gmail.com")
                         .phone(order.getAddress().getPhone())
                         .firstName(user.getUsername())
                         .lastName("")
@@ -140,4 +149,39 @@ public class PayuService {
     private String priceToString(float price) {
         return Integer.toString((int) (price * 100));
     }
+
+
+    public PayuOrderStatus getPaymentStatus(OrderEntity order){
+        PayuOrderStatus status = null;
+        try {
+            status = getStatus(order);
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode().equals(HttpStatus.UNAUTHORIZED)) {
+                signIn();
+                status = getStatus(order);
+            }
+            else{
+                e.printStackTrace();
+            }
+        }
+        return status;
+    }
+
+    private PayuOrderStatus getStatus(OrderEntity order) {
+        var headers = new HttpHeaders();
+        headers.setBearerAuth(accessToken);
+
+        var entity = new HttpEntity<PayuStatusOrderResponseDTO>(headers);
+        PayuOrderStatus status= restTemplate.exchange(
+            getOrderURL + order.getPayuOrderId(),
+            HttpMethod.GET,
+            entity,
+            PayuStatusOrderResponseDTO.class
+        )
+        .getBody()
+        .getOrder()
+        .getStatus();
+        return status;
+    }   
+
 }
