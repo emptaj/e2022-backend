@@ -10,6 +10,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -63,7 +64,7 @@ public class PayuService {
     public void sendOrder(OrderEntity order) {
         PayuCreateOrderDTO body = createPayuOrder(order);
         ResponseEntity<PayuCreateOrderResponseDTO> response;
-        
+
         try {
             response = sendOrder(body);
             order.setPayuRedirectURL(response.getBody().getRedirectUri());
@@ -133,10 +134,10 @@ public class PayuService {
                 .totalAmount(priceToString(sum))
                 .extOrderId(Long.toString(order.getId()))
                 .buyer(PayuBuyerDTO.builder()
-                        .email("jakub.szlezak@gmail.com")
+                        .email(user.getEmail())
                         .phone(order.getAddress().getPhone())
                         .firstName(user.getUsername())
-                        .lastName("")
+                        .lastName(user.getUsername())
                         .language("pl")
                         .build())
                 .products(products)
